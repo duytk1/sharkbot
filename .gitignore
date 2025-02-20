@@ -1,2 +1,6 @@
 env/
 .env
+tokens.db
+tokens.db-shm
+tokens.db-wal
+.tio.tokens.json

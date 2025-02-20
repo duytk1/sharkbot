@@ -3,9 +3,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-# Set your OpenAI API key
 client = OpenAI(
-    # This is the default and can be omitted
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
@@ -18,7 +16,8 @@ class SharkAI:
         """Send a text prompt to OpenAI API and get the response."""
         try:
             word_count = 50
-            pre_prompt = "write as a short paragraph less than " + str(word_count) + " words "
+            pre_prompt = "write as a short paragraph less than " + \
+                str(word_count) + " words "
             chat_completion = client.chat.completions.create(
                 messages=[
                     {
@@ -27,7 +26,7 @@ class SharkAI:
                     }
                 ],
                 # model="gpt-3.5-turbo",
-                model="gpt-4o-mini"
+                model="gpt-4o-mini",
             )
             return chat_completion.choices[0].message.content
         except Exception as e:
