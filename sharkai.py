@@ -23,7 +23,6 @@ class SharkAI:
                 messages=history,
                 model="gpt-4o-mini",
             )
-            print('fff', history)
             return chat_completion.choices[0].message.content
         except Exception as e:
             return f"Error: {e}"
