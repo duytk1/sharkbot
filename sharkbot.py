@@ -7,15 +7,22 @@ import twitchio
 from twitchio.ext import commands
 from twitchio import eventsub
 
+from sharkai import SharkAI
+
 from dotenv import load_dotenv
 load_dotenv()
 
 LOGGER: logging.Logger = logging.getLogger("Bot")
 
-CLIENT_ID: str = os.environ.get("CLIENT_ID")  # The CLIENT ID from the Twitch Dev Console
-CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")  # The CLIENT SECRET from the Twitch Dev Console
+# The CLIENT ID from the Twitch Dev Console
+CLIENT_ID: str = os.environ.get("CLIENT_ID")
+# The CLIENT SECRET from the Twitch Dev Console
+CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("BOT_ID")  # The Account ID of the bot user...
 OWNER_ID = os.environ.get("OWNER_ID")  # Your personal User ID..
+
+pob = 'https://pobb.in/SC7dZcWiNJBC'
+profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 
 class Bot(commands.Bot):
     def __init__(self, *, token_database: asqlite.Pool) -> None:
@@ -102,14 +109,6 @@ class MyComponent(commands.Component):
         !hi, !hello, !howdy, !hey
         """
         await ctx.reply(f"Hello {ctx.chatter.mention}!")
-    
-    @commands.command()
-    async def bot(self, ctx: commands.Context) -> None:
-        """Simple command that says hello!
-
-        !hi, !hello, !howdy, !hey
-        """
-        await ctx.reply(f"Hello {ctx.chatter.mention}!")
 
     @commands.group(invoke_fallback=True)
     async def socials(self, ctx: commands.Context) -> None:
@@ -147,8 +146,27 @@ class MyComponent(commands.Component):
             message=f"Hi... {payload.broadcaster}! You are live!",
         )
 
+    @commands.command()
+    async def ask(self, ctx: commands.Context, *, content: str) -> None:
+        response = SharkAI.chat_with_openai(content)
+        if len(response) > 1000:
+            await ctx.send('Message is too long')
+        elif len(response) > 500:
+            await ctx.send(response[:500])
+            await ctx.send(response[500:])
+        else:
+            await ctx.send(response)
+        
+    @commands.command()
+    async def pob(self, ctx: commands.Context) -> None:
+        await ctx.send(pob)
+        
+    @commands.command()
+    async def profile(self, ctx: commands.Context,) -> None:
+        await ctx.send(profile)
 
-def main() -> None:
+
+def start_bot() -> None:
     twitchio.utils.setup_logging(level=logging.INFO)
 
     async def runner() -> None:
@@ -160,6 +178,3 @@ def main() -> None:
         asyncio.run(runner())
     except KeyboardInterrupt:
         LOGGER.warning("Shutting down due to KeyboardInterrupt...")
-
-if __name__ == "__main__":
-    main()
