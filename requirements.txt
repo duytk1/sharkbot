@@ -1,6 +1,5 @@
-twitchio==2.10.0
 openai==1.63.0
 python-dotenv==1.0.1
-irc
-requests
-# twitchAPI==4.4.0
+gTTS==2.5.4
+playsound==1.2.2
+pygame==2.6.1

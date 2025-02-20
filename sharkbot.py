@@ -6,6 +6,12 @@ import asqlite
 import twitchio
 from twitchio.ext import commands
 from twitchio import eventsub
+import gtts
+from gtts import gTTS
+from playsound import playsound
+import time
+import pygame
+import tkinter as tk
 
 from sharkai import SharkAI
 
@@ -14,15 +20,14 @@ load_dotenv()
 
 LOGGER: logging.Logger = logging.getLogger("Bot")
 
-# The CLIENT ID from the Twitch Dev Console
 CLIENT_ID: str = os.environ.get("CLIENT_ID")
-# The CLIENT SECRET from the Twitch Dev Console
 CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
-BOT_ID = os.environ.get("BOT_ID")  # The Account ID of the bot user...
-OWNER_ID = os.environ.get("OWNER_ID")  # Your personal User ID..
+BOT_ID = os.environ.get("BOT_ID")
+OWNER_ID = os.environ.get("OWNER_ID")
 
 pob = 'https://pobb.in/SC7dZcWiNJBC'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
+
 
 class Bot(commands.Bot):
     def __init__(self, *, token_database: asqlite.Pool) -> None:
@@ -149,18 +154,41 @@ class MyComponent(commands.Component):
     @commands.command()
     async def ask(self, ctx: commands.Context, *, content: str) -> None:
         response = SharkAI.chat_with_openai(content)
+        tts = gTTS(text=response, lang='en')
+        tts.save('tts.mp3')
+        
+        pygame.mixer.init()
+        sound = pygame.mixer.Sound('tts.mp3')
+        duration = int(sound.get_length() * 1000)
+        sound.play()
+
+        # Create a simple Tkinter window
+        root = tk.Tk()
+        root.title("Sound Player")
+
+        def close_window_and_delete_file():
+            try:
+                root.destroy()
+                os.remove('tts.mp3')
+            except FileNotFoundError:
+                print("File not found.")
+        root.after(duration, close_window_and_delete_file)
+        root.mainloop()
+
         if len(response) > 1000:
-            await ctx.send('Message is too long')
+            await ctx.reply('Message is too long.')
         elif len(response) > 500:
-            await ctx.send(response[:500])
-            await ctx.send(response[500:])
+            await ctx.reply(f"{ctx.chatter.mention} response[:500]")
+            await ctx.reply(f"{ctx.chatter.mention} response[500:]")
+            # await ctx.send(response[:500])
+            # await ctx.send(response[500:])
         else:
             await ctx.send(response)
-        
+
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
         await ctx.send(pob)
-        
+
     @commands.command()
     async def profile(self, ctx: commands.Context,) -> None:
         await ctx.send(profile)
