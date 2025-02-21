@@ -8,10 +8,10 @@ from twitchio.ext import commands
 from twitchio import eventsub
 import gtts
 from gtts import gTTS
-from playsound import playsound
 import time
 import pygame
 import tkinter as tk
+import winsound
 
 from sharkai import SharkAI
 
@@ -106,6 +106,7 @@ class MyComponent(commands.Component):
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
         print(
             f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
+        winsound.PlaySound("*", winsound.SND_ALIAS)
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
@@ -151,18 +152,36 @@ class MyComponent(commands.Component):
             message=f"Hi... {payload.broadcaster}! You are live!",
         )
 
+    @commands.command(aliases=["hello", "howdy", "hey"])
+    async def hi(self, ctx: commands.Context) -> None:
+        """Simple command that says hello!
+
+        !hi, !hello, !howdy, !hey
+        """
+        await ctx.reply(f"Hello {ctx.chatter.mention}!")
+
     @commands.command()
     async def ask(self, ctx: commands.Context, *, content: str) -> None:
         response = SharkAI.chat_with_openai(content)
+        print('fff', len(response))
+        if len(response) > 900:
+            await ctx.reply('Message is too long.')
+        elif len(response) >= 500:
+            await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
+            await ctx.reply(response[450:])
+        else:
+            await ctx.send(response)
+
         tts = gTTS(text=response, lang='en')
         tts.save('tts.mp3')
-        
+        time.sleep(1)
+
         pygame.mixer.init()
         sound = pygame.mixer.Sound('tts.mp3')
         duration = int(sound.get_length() * 1000)
+        sound.set_volume(0.5)
         sound.play()
 
-        # Create a simple Tkinter window
         root = tk.Tk()
         root.title("Sound Player")
 
@@ -175,15 +194,6 @@ class MyComponent(commands.Component):
         root.after(duration, close_window_and_delete_file)
         root.mainloop()
 
-        if len(response) > 1000:
-            await ctx.reply('Message is too long.')
-        elif len(response) > 500:
-            await ctx.reply(f"{ctx.chatter.mention} response[:500]")
-            await ctx.reply(f"{ctx.chatter.mention} response[500:]")
-            # await ctx.send(response[:500])
-            # await ctx.send(response[500:])
-        else:
-            await ctx.send(response)
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:

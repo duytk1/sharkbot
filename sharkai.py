@@ -21,7 +21,7 @@ class SharkAI:
             history.append({"role": "user", "content": prompt})
             chat_completion = client.chat.completions.create(
                 messages=history,
-                model="gpt-4o-mini",
+                model="gpt-4o",
             )
             return chat_completion.choices[0].message.content
         except Exception as e:
