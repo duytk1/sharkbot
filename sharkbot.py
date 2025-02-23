@@ -163,7 +163,6 @@ class MyComponent(commands.Component):
     @commands.command()
     async def ask(self, ctx: commands.Context, *, content: str) -> None:
         response = SharkAI.chat_with_openai(content)
-        print('fff', len(response))
         if len(response) > 900:
             await ctx.reply('Message is too long.')
         elif len(response) >= 500:
@@ -172,12 +171,27 @@ class MyComponent(commands.Component):
         else:
             await ctx.send(response)
 
-        tts = gTTS(text=response, lang='en')
-        tts.save('tts.mp3')
+        file_name = 'tts.mp3'
+        self.make_tts(response, file_name)
         time.sleep(1)
 
+        self.play_sound(file_name)
+
+    @commands.command()
+    async def pob(self, ctx: commands.Context) -> None:
+        await ctx.send(pob)
+
+    @commands.command()
+    async def profile(self, ctx: commands.Context,) -> None:
+        await ctx.send(profile)
+
+    def make_tts(self, text, file_name):
+        tts = gTTS(text=text, lang='en')
+        tts.save(file_name)
+
+    def play_sound(self, file_name):
         pygame.mixer.init()
-        sound = pygame.mixer.Sound('tts.mp3')
+        sound = pygame.mixer.Sound(file_name)
         duration = int(sound.get_length() * 1000)
         sound.set_volume(0.5)
         sound.play()
@@ -193,15 +207,6 @@ class MyComponent(commands.Component):
                 print("File not found.")
         root.after(duration, close_window_and_delete_file)
         root.mainloop()
-
-
-    @commands.command()
-    async def pob(self, ctx: commands.Context) -> None:
-        await ctx.send(pob)
-
-    @commands.command()
-    async def profile(self, ctx: commands.Context,) -> None:
-        await ctx.send(profile)
 
 
 def start_bot() -> None:
