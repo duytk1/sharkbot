@@ -198,7 +198,7 @@ class MyComponent(commands.Component):
         await ctx.send(profile)
 
     async def make_tts(self, text, file_name):
-        tts = edge_tts.Communicate(text, "de-DE-ConradNeural")
+        tts = edge_tts.Communicate(text, "vi-VN-HoaiMyNeural")
         print('fff', edge_tts.list_voices())
         await tts.save(file_name)
 

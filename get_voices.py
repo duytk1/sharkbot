@@ -4,6 +4,9 @@ import asyncio
 async def list_voices():
     voices = await edge_tts.list_voices()
     for voice in voices:
-        print(voice)  # Print the entire voice dictionary to inspect available keys
+        print(f"Name: {voice.get('ShortName', 'N/A')}")
+        print(f"  Gender: {voice.get('Gender', 'N/A')}")
+        print(f"  Locale: {voice.get('Locale', 'N/A')}")
+        print(f"  Full Name: {voice.get('FriendlyName', 'N/A')}")
 
 asyncio.run(list_voices())
