@@ -10,9 +10,10 @@ import gtts
 from gtts import gTTS
 import time
 import pygame
-import tkinter as tk
 import winsound
 import threading
+import edge_tts
+import asyncio
 
 from sharkai import SharkAI
 
@@ -126,7 +127,7 @@ class MyComponent(commands.Component):
                     await ctx.send(response)
 
                 file_name = 'tts.mp3'
-                self.make_tts(response, file_name)
+                await self.make_tts(response, file_name)
                 time.sleep(1)
 
                 self.play_sound(file_name)
@@ -189,25 +190,6 @@ class MyComponent(commands.Component):
         await ctx.reply(f"Hello {ctx.chatter.mention}!")
 
     @commands.command()
-    async def ask(self, ctx: commands.Context, *, content: str) -> None:
-        # if payload.broadcaster.name in payload.name or 'sharko' in payload.text:
-        # response = SharkAI.chat_with_openai(content)
-        # if len(response) > 900:
-        #     await ctx.reply('Message is too long.')
-        # elif len(response) >= 500:
-        #     await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
-        #     await ctx.reply(response[450:])
-        # else:
-        #     await ctx.send(response)
-
-        # file_name = 'tts.mp3'
-        # self.make_tts(response, file_name)
-        # time.sleep(1)
-
-        # self.play_sound(file_name)
-        pass
-
-    @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
         await ctx.send(pob)
 
@@ -215,28 +197,10 @@ class MyComponent(commands.Component):
     async def profile(self, ctx: commands.Context,) -> None:
         await ctx.send(profile)
 
-    # @commands.Component.listener()
-    # async def chatbot_message(self, payload: twitchio.ChatMessage) -> None:
-    #     winsound.PlaySound("*", winsound.SND_ALIAS)
-    #     if payload.broadcaster.name in payload.name or 'sharko' in payload.text:
-    #         response = SharkAI.chat_with_openai(payload.text)
-    #         if len(response) > 900:
-    #             await ctx.reply('Message is too long.')
-    #         elif len(response) >= 500:
-    #             await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
-    #             await ctx.reply(response[450:])
-    #         else:
-    #             await ctx.send(response)
-
-    #         file_name = 'tts.mp3'
-    #         self.make_tts(response, file_name)
-    #         time.sleep(1)
-
-    #     self.play_sound(file_name)
-
-    def make_tts(self, text, file_name):
-        tts = gTTS(text=text, lang='en')
-        tts.save(file_name)
+    async def make_tts(self, text, file_name):
+        tts = edge_tts.Communicate(text, "de-DE-ConradNeural")
+        print('fff', edge_tts.list_voices())
+        await tts.save(file_name)
 
     def play_sound(self, file_name):
         pygame.mixer.init()
