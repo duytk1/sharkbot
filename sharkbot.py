@@ -12,6 +12,7 @@ import time
 import pygame
 import tkinter as tk
 import winsound
+import threading
 
 from sharkai import SharkAI
 
@@ -242,19 +243,17 @@ class MyComponent(commands.Component):
         sound = pygame.mixer.Sound(file_name)
         duration = int(sound.get_length() * 1000)
         sound.set_volume(0.5)
-        sound.play()
 
-        root = tk.Tk()
-        root.title("Sound Player")
-
-        def close_window_and_delete_file():
+        def play_and_cleanup():
+            sound.play()
+            pygame.time.wait(duration)
             try:
-                root.destroy()
-                os.remove('tts.mp3')
+                os.remove("tts.mp3")
             except FileNotFoundError:
                 print("File not found.")
-        root.after(duration, close_window_and_delete_file)
-        root.mainloop()
+
+        # Run the sound playback and file deletion in a separate thread
+        threading.Thread(target=play_and_cleanup, daemon=True).start()
 
 
 def start_bot() -> None:
