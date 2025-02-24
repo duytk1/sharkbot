@@ -104,9 +104,31 @@ class MyComponent(commands.Component):
     # We use a listener in our Component to display the messages received.
     @commands.Component.listener()
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
+        chatter_name = payload.chatter.name
+        streamer_name = payload.broadcaster.name
+        message = payload.text
         print(
-            f"[{payload.broadcaster.name}] - {payload.chatter.name}: {payload.text}")
-        winsound.PlaySound("*", winsound.SND_ALIAS)
+            f"[{streamer_name}] - {chatter_name}: {message}")
+        if payload.chatter.name != 'sharkothehuman':
+            winsound.PlaySound("*", winsound.SND_ALIAS)
+        if 'sharko' == message.split(' ', 1)[0] or '@sharkothehuman' == message.split(' ', 1)[0]:
+            if payload.chatter.name != 'sharkothehuman':
+                ctx = self.bot.get_context(payload)
+                response = SharkAI.chat_with_openai(
+                    " ".join(message.split()[1:]))
+                if len(response) > 900:
+                    await ctx.reply('Message is too long.')
+                elif len(response) >= 500:
+                    await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
+                    await ctx.reply(response[450:])
+                else:
+                    await ctx.send(response)
+
+                file_name = 'tts.mp3'
+                self.make_tts(response, file_name)
+                time.sleep(1)
+
+                self.play_sound(file_name)
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
@@ -123,7 +145,8 @@ class MyComponent(commands.Component):
         !socials
         """
         await ctx.send("discord.gg/..., youtube.com/..., twitch.tv/...")\
-    
+
+
     @commands.group(invoke_fallback=True)
     async def ign(self, ctx: commands.Context) -> None:
         await ctx.send(f"{ctx.chatter.mention} " + "MildlyErectBaguette")
@@ -167,20 +190,21 @@ class MyComponent(commands.Component):
     @commands.command()
     async def ask(self, ctx: commands.Context, *, content: str) -> None:
         # if payload.broadcaster.name in payload.name or 'sharko' in payload.text:
-        response = SharkAI.chat_with_openai(content)
-        if len(response) > 900:
-            await ctx.reply('Message is too long.')
-        elif len(response) >= 500:
-            await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
-            await ctx.reply(response[450:])
-        else:
-            await ctx.send(response)
+        # response = SharkAI.chat_with_openai(content)
+        # if len(response) > 900:
+        #     await ctx.reply('Message is too long.')
+        # elif len(response) >= 500:
+        #     await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
+        #     await ctx.reply(response[450:])
+        # else:
+        #     await ctx.send(response)
 
-        file_name = 'tts.mp3'
-        self.make_tts(response, file_name)
-        time.sleep(1)
+        # file_name = 'tts.mp3'
+        # self.make_tts(response, file_name)
+        # time.sleep(1)
 
-        self.play_sound(file_name)
+        # self.play_sound(file_name)
+        pass
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
