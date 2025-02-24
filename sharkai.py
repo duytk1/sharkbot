@@ -9,6 +9,7 @@ client = OpenAI(
 )
 
 history = []
+history.append({"role": "user", "content": "from now on make sure that the message is not longer than 900 characters long. answer as a sassy bot that will include jokes in the response."})
 
 
 class SharkAI:

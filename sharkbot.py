@@ -122,7 +122,11 @@ class MyComponent(commands.Component):
 
         !socials
         """
-        await ctx.send("discord.gg/..., youtube.com/..., twitch.tv/...")
+        await ctx.send("discord.gg/..., youtube.com/..., twitch.tv/...")\
+    
+    @commands.group(invoke_fallback=True)
+    async def ign(self, ctx: commands.Context) -> None:
+        await ctx.send(f"{ctx.chatter.mention} " + "MildlyErectBaguette")
 
     @socials.command(name="discord")
     async def socials_discord(self, ctx: commands.Context) -> None:
@@ -162,6 +166,7 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def ask(self, ctx: commands.Context, *, content: str) -> None:
+        # if payload.broadcaster.name in payload.name or 'sharko' in payload.text:
         response = SharkAI.chat_with_openai(content)
         if len(response) > 900:
             await ctx.reply('Message is too long.')
@@ -184,6 +189,25 @@ class MyComponent(commands.Component):
     @commands.command()
     async def profile(self, ctx: commands.Context,) -> None:
         await ctx.send(profile)
+
+    # @commands.Component.listener()
+    # async def chatbot_message(self, payload: twitchio.ChatMessage) -> None:
+    #     winsound.PlaySound("*", winsound.SND_ALIAS)
+    #     if payload.broadcaster.name in payload.name or 'sharko' in payload.text:
+    #         response = SharkAI.chat_with_openai(payload.text)
+    #         if len(response) > 900:
+    #             await ctx.reply('Message is too long.')
+    #         elif len(response) >= 500:
+    #             await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
+    #             await ctx.reply(response[450:])
+    #         else:
+    #             await ctx.send(response)
+
+    #         file_name = 'tts.mp3'
+    #         self.make_tts(response, file_name)
+    #         time.sleep(1)
+
+    #     self.play_sound(file_name)
 
     def make_tts(self, text, file_name):
         tts = gTTS(text=text, lang='en')
