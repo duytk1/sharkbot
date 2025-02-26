@@ -125,11 +125,9 @@ class MyComponent(commands.Component):
                 else:
                     await ctx.send(response)
 
-                file_name = 'tts.mp3'
-                await self.make_tts(response, file_name)
-                time.sleep(1)
+                await self.make_tts(response)
 
-                self.play_sound(file_name)
+                self.play_sound('tts.mp3')
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
@@ -161,12 +159,12 @@ class MyComponent(commands.Component):
         await ctx.send("discord.gg/...")
 
     @commands.command(aliases=["repeat"])
-    @commands.is_moderator()
     async def say(self, ctx: commands.Context, *, content: str) -> None:
-        """Moderator only command which repeats back what you say.
-
-        !say hello world, !repeat I am cool LUL
         """
+        !say hello world
+        """
+        await self.make_tts(content)
+        self.play_sound('tts.mp3')
         await ctx.send(content)
 
     @commands.Component.listener()
@@ -196,9 +194,9 @@ class MyComponent(commands.Component):
     async def profile(self, ctx: commands.Context,) -> None:
         await ctx.send(profile)
 
-    async def make_tts(self, text, file_name):
-        tts = edge_tts.Communicate(text, "fr-FR-DeniseNeural")
-        await tts.save(file_name)
+    async def make_tts(self, text):
+        tts = edge_tts.Communicate(text, 'ja-JP-NanamiNeural')
+        await tts.save('tts.mp3')
 
     def play_sound(self, file_name):
         pygame.mixer.init()
@@ -209,9 +207,10 @@ class MyComponent(commands.Component):
 
         root = tk.Tk()
         root.title("Sound Player")
+
         def play_and_cleanup():
             root.destroy()
-            os.remove('tts.mp3')
+            os.remove(file_name)
         #     sound.play()
         #     pygame.time.wait(duration)
         #     try:
@@ -221,7 +220,7 @@ class MyComponent(commands.Component):
 
         # Run the sound playback and file deletion in a separate thread
         # threading.Thread(target=play_and_cleanup, daemon=True).start()
-        
+
         root.after(duration, play_and_cleanup)
         root.mainloop()
 
