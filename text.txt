@@ -1,1003 +1,322 @@
-  Full Name: Microsoft Emily Online (Natural) - English (Ireland)
-Name: en-KE-AsiliaNeural
-  Gender: Female
-  Locale: en-KE
-  Full Name: Microsoft Asilia Online (Natural) - English (Kenya)
-Name: en-KE-ChilembaNeural
-  Gender: Male
-  Locale: en-KE
-  Full Name: Microsoft Chilemba Online (Natural) - English (Kenya)
-Name: en-NZ-MitchellNeural
-  Gender: Male
-  Locale: en-NZ
-  Full Name: Microsoft Mitchell Online (Natural) - English (New Zealand)
-Name: en-NZ-MollyNeural
-  Gender: Female
-  Locale: en-NZ
-  Full Name: Microsoft Molly Online (Natural) - English (New Zealand)
-Name: en-NG-AbeoNeural
-  Gender: Male
-  Locale: en-NG
-  Full Name: Microsoft Abeo Online (Natural) - English (Nigeria)
-Name: en-NG-EzinneNeural
-  Gender: Female
-  Locale: en-NG
-  Full Name: Microsoft Ezinne Online (Natural) - English (Nigeria)
-Name: en-PH-JamesNeural
-  Gender: Male
-  Locale: en-PH
-  Full Name: Microsoft James Online (Natural) - English (Philippines)
-Name: en-PH-RosaNeural
-  Gender: Female
-  Locale: en-PH
-  Full Name: Microsoft Rosa Online (Natural) - English (Philippines)
-Name: en-US-AvaNeural
-  Gender: Female
-  Locale: en-US
-  Full Name: Microsoft Ava Online (Natural) - English (United States)
-Name: en-US-AndrewNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft Andrew Online (Natural) - English (United States)
-Name: en-US-EmmaNeural
-  Gender: Female
-  Locale: en-US
-  Full Name: Microsoft Emma Online (Natural) - English (United States)
-Name: en-US-BrianNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft Brian Online (Natural) - English (United States)
-Name: en-SG-LunaNeural
-  Gender: Female
-  Locale: en-SG
-  Full Name: Microsoft Luna Online (Natural) - English (Singapore)
-Name: en-SG-WayneNeural
-  Gender: Male
-  Locale: en-SG
-  Full Name: Microsoft Wayne Online (Natural) - English (Singapore)
-Name: en-ZA-LeahNeural
-  Gender: Female
-  Locale: en-ZA
-  Full Name: Microsoft Leah Online (Natural) - English (South Africa)
-Name: en-ZA-LukeNeural
-  Gender: Male
-  Locale: en-ZA
-  Full Name: Microsoft Luke Online (Natural) - English (South Africa)
-Name: en-TZ-ElimuNeural
-  Gender: Male
-  Locale: en-TZ
-  Full Name: Microsoft Elimu Online (Natural) - English (Tanzania)
-Name: en-TZ-ImaniNeural
-  Gender: Female
-  Locale: en-TZ
-  Full Name: Microsoft Imani Online (Natural) - English (Tanzania)
-Name: en-GB-LibbyNeural
-  Gender: Female
-  Locale: en-GB
-  Full Name: Microsoft Libby Online (Natural) - English (United Kingdom)
-Name: en-GB-MaisieNeural
-  Gender: Female
-  Locale: en-GB
-  Full Name: Microsoft Maisie Online (Natural) - English (United Kingdom)
-Name: en-GB-RyanNeural
-  Gender: Male
-  Locale: en-GB
-  Full Name: Microsoft Ryan Online (Natural) - English (United Kingdom)
-Name: en-GB-SoniaNeural
-  Gender: Female
-  Locale: en-GB
-  Full Name: Microsoft Sonia Online (Natural) - English (United Kingdom)
-Name: en-GB-ThomasNeural
-  Gender: Male
-  Locale: en-GB
-  Full Name: Microsoft Thomas Online (Natural) - English (United Kingdom)
-Name: en-US-AnaNeural
-  Gender: Female
-  Locale: en-US
-  Full Name: Microsoft Ana Online (Natural) - English (United States)
-Name: en-US-AndrewMultilingualNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft AndrewMultilingual Online (Natural) - English (United States)
-Name: en-US-AriaNeural
-  Gender: Female
-  Locale: en-US
-  Full Name: Microsoft Aria Online (Natural) - English (United States)
-Name: en-US-AvaMultilingualNeural
-  Gender: Female
-  Locale: en-US
-  Full Name: Microsoft AvaMultilingual Online (Natural) - English (United States)
-Name: en-US-BrianMultilingualNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft BrianMultilingual Online (Natural) - English (United States)
-Name: en-US-ChristopherNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft Christopher Online (Natural) - English (United States)
-Name: en-US-EmmaMultilingualNeural
-  Gender: Female
-  Locale: en-US
-  Full Name: Microsoft EmmaMultilingual Online (Natural) - English (United States)
-Name: en-US-EricNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft Eric Online (Natural) - English (United States)
-Name: en-US-GuyNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft Guy Online (Natural) - English (United States)
-Name: en-US-JennyNeural
-  Gender: Female
-  Locale: en-US
-  Full Name: Microsoft Jenny Online (Natural) - English (United States)
-Name: en-US-MichelleNeural
-  Gender: Female
-  Locale: en-US
-  Full Name: Microsoft Michelle Online (Natural) - English (United States)
-Name: en-US-RogerNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft Roger Online (Natural) - English (United States)
-Name: en-US-SteffanNeural
-  Gender: Male
-  Locale: en-US
-  Full Name: Microsoft Steffan Online (Natural) - English (United States)
-Name: et-EE-AnuNeural
-  Gender: Female
-  Locale: et-EE
-  Full Name: Microsoft Anu Online (Natural) - Estonian (Estonia)
-Name: et-EE-KertNeural
-  Gender: Male
-  Locale: et-EE
-  Full Name: Microsoft Kert Online (Natural) - Estonian (Estonia)
-Name: fil-PH-AngeloNeural
-  Gender: Male
-  Locale: fil-PH
-  Full Name: Microsoft Angelo Online (Natural) - Filipino (Philippines)
-Name: fil-PH-BlessicaNeural
-  Gender: Female
-  Locale: fil-PH
-  Full Name: Microsoft Blessica Online (Natural) - Filipino (Philippines)
-Name: fi-FI-HarriNeural
-  Gender: Male
-  Locale: fi-FI
-  Full Name: Microsoft Harri Online (Natural) - Finnish (Finland)
-Name: fi-FI-NooraNeural
-  Gender: Female
-  Locale: fi-FI
-  Full Name: Microsoft Noora Online (Natural) - Finnish (Finland)
-Name: fr-BE-CharlineNeural
-  Gender: Female
-  Locale: fr-BE
-  Full Name: Microsoft Charline Online (Natural) - French (Belgium)
-Name: fr-BE-GerardNeural
-  Gender: Male
-  Locale: fr-BE
-  Full Name: Microsoft Gerard Online (Natural) - French (Belgium)
-Name: fr-CA-ThierryNeural
-  Gender: Male
-  Locale: fr-CA
-  Full Name: Microsoft Thierry Online (Natural) - French (Canada)
-Name: fr-CA-AntoineNeural
-  Gender: Male
-  Locale: fr-CA
-  Full Name: Microsoft Antoine Online (Natural) - French (Canada)
-Name: fr-CA-JeanNeural
-  Gender: Male
-  Locale: fr-CA
-  Full Name: Microsoft Jean Online (Natural) - French (Canada)
-Name: fr-CA-SylvieNeural
-  Gender: Female
-  Locale: fr-CA
-  Full Name: Microsoft Sylvie Online (Natural) - French (Canada)
-Name: fr-FR-VivienneMultilingualNeural
-  Gender: Female
-  Locale: fr-FR
-  Full Name: Microsoft VivienneMultilingual Online (Natural) - French (France)
-Name: fr-FR-RemyMultilingualNeural
-  Gender: Male
-  Locale: fr-FR
-  Full Name: Microsoft RemyMultilingual Online (Natural) - French (France)
-Name: fr-FR-DeniseNeural
-  Gender: Female
-  Locale: fr-FR
-  Full Name: Microsoft Denise Online (Natural) - French (France)
-Name: fr-FR-EloiseNeural
-  Gender: Female
-  Locale: fr-FR
-  Full Name: Microsoft Eloise Online (Natural) - French (France)
-Name: fr-FR-HenriNeural
-  Gender: Male
-  Locale: fr-FR
-  Full Name: Microsoft Henri Online (Natural) - French (France)
-Name: fr-CH-ArianeNeural
-  Gender: Female
-  Locale: fr-CH
-  Full Name: Microsoft Ariane Online (Natural) - French (Switzerland)
-Name: fr-CH-FabriceNeural
-  Gender: Male
-  Locale: fr-CH
-  Full Name: Microsoft Fabrice Online (Natural) - French (Switzerland)
-Name: gl-ES-RoiNeural
-  Gender: Male
-  Locale: gl-ES
-  Full Name: Microsoft Roi Online (Natural) - Galician
-Name: gl-ES-SabelaNeural
-  Gender: Female
-  Locale: gl-ES
-  Full Name: Microsoft Sabela Online (Natural) - Galician
-Name: ka-GE-EkaNeural
-  Gender: Female
-  Locale: ka-GE
-  Full Name: Microsoft Eka Online (Natural) - Georgian (Georgia)
-Name: ka-GE-GiorgiNeural
-  Gender: Male
-  Locale: ka-GE
-  Full Name: Microsoft Giorgi Online (Natural) - Georgian (Georgia)
-Name: de-AT-IngridNeural
-  Gender: Female
-  Locale: de-AT
-  Full Name: Microsoft Ingrid Online (Natural) - German (Austria)
-Name: de-AT-JonasNeural
-  Gender: Male
-  Locale: de-AT
-  Full Name: Microsoft Jonas Online (Natural) - German (Austria)
-Name: de-DE-SeraphinaMultilingualNeural
-  Gender: Female
-  Locale: de-DE
-  Full Name: Microsoft SeraphinaMultilingual Online (Natural) - German (Germany)
-Name: de-DE-FlorianMultilingualNeural
-  Gender: Male
-  Locale: de-DE
-  Full Name: Microsoft FlorianMultilingual Online (Natural) - German (Germany)
-Name: de-DE-AmalaNeural
-  Gender: Female
-  Locale: de-DE
-  Full Name: Microsoft Amala Online (Natural) - German (Germany)
-Name: de-DE-ConradNeural
-  Gender: Male
-  Locale: de-DE
-  Full Name: Microsoft Conrad Online (Natural) - German (Germany)
-Name: de-DE-KatjaNeural
-  Gender: Female
-  Locale: de-DE
-  Full Name: Microsoft Katja Online (Natural) - German (Germany)
-Name: de-DE-KillianNeural
-  Gender: Male
-  Locale: de-DE
-  Full Name: Microsoft Killian Online (Natural) - German (Germany)
-Name: de-CH-JanNeural
-  Gender: Male
-  Locale: de-CH
-  Full Name: Microsoft Jan Online (Natural) - German (Switzerland)
-Name: de-CH-LeniNeural
-  Gender: Female
-  Locale: de-CH
-  Full Name: Microsoft Leni Online (Natural) - German (Switzerland)
-Name: el-GR-AthinaNeural
-  Gender: Female
-  Locale: el-GR
-  Full Name: Microsoft Athina Online (Natural) - Greek (Greece)
-Name: el-GR-NestorasNeural
-  Gender: Male
-  Locale: el-GR
-  Full Name: Microsoft Nestoras Online (Natural) - Greek (Greece)
-Name: gu-IN-DhwaniNeural
-  Gender: Female
-  Locale: gu-IN
-  Full Name: Microsoft Dhwani Online (Natural) - Gujarati (India)
-Name: gu-IN-NiranjanNeural
-  Gender: Male
-  Locale: gu-IN
-  Full Name: Microsoft Niranjan Online (Natural) - Gujarati (India)
-Name: he-IL-AvriNeural
-  Gender: Male
-  Locale: he-IL
-  Full Name: Microsoft Avri Online (Natural) - Hebrew (Israel)
-Name: he-IL-HilaNeural
-  Gender: Female
-  Locale: he-IL
-  Full Name: Microsoft Hila Online (Natural) - Hebrew (Israel)
-Name: hi-IN-MadhurNeural
-  Gender: Male
-  Locale: hi-IN
-  Full Name: Microsoft Madhur Online (Natural) - Hindi (India)
-Name: hi-IN-SwaraNeural
-  Gender: Female
-  Locale: hi-IN
-  Full Name: Microsoft Swara Online (Natural) - Hindi (India)
-Name: hu-HU-NoemiNeural
-  Gender: Female
-  Locale: hu-HU
-  Full Name: Microsoft Noemi Online (Natural) - Hungarian (Hungary)
-Name: hu-HU-TamasNeural
-  Gender: Male
-  Locale: hu-HU
-  Full Name: Microsoft Tamas Online (Natural) - Hungarian (Hungary)
-Name: is-IS-GudrunNeural
-  Gender: Female
-  Locale: is-IS
-  Full Name: Microsoft Gudrun Online (Natural) - Icelandic (Iceland)
-Name: is-IS-GunnarNeural
-  Gender: Male
-  Locale: is-IS
-  Full Name: Microsoft Gunnar Online (Natural) - Icelandic (Iceland)
-Name: id-ID-ArdiNeural
-  Gender: Male
-  Locale: id-ID
-  Full Name: Microsoft Ardi Online (Natural) - Indonesian (Indonesia)
-Name: id-ID-GadisNeural
-  Gender: Female
-  Locale: id-ID
-  Full Name: Microsoft Gadis Online (Natural) - Indonesian (Indonesia)
-Name: iu-Latn-CA-SiqiniqNeural
-  Gender: Female
-  Locale: iu-Latn-CA
-  Full Name: Microsoft Siqiniq Online (Natural) - Inuktitut (Latin, Canada)
-Name: iu-Latn-CA-TaqqiqNeural
-  Gender: Male
-  Locale: iu-Latn-CA
-  Full Name: Microsoft Taqqiq Online (Natural) - Inuktitut (Latin, Canada)
-Name: iu-Cans-CA-SiqiniqNeural
-  Gender: Female
-  Locale: iu-Cans-CA
-  Full Name: Microsoft Siqiniq Online (Natural) - Inuktitut (Syllabics, Canada)
-Name: iu-Cans-CA-TaqqiqNeural
-  Gender: Male
-  Locale: iu-Cans-CA
-  Full Name: Microsoft Taqqiq Online (Natural) - Inuktitut (Syllabics, Canada)
-Name: ga-IE-ColmNeural
-  Gender: Male
-  Locale: ga-IE
-  Full Name: Microsoft Colm Online (Natural) - Irish (Ireland)
-Name: ga-IE-OrlaNeural
-  Gender: Female
-  Locale: ga-IE
-  Full Name: Microsoft Orla Online (Natural) - Irish (Ireland)
-Name: it-IT-GiuseppeMultilingualNeural
-  Gender: Male
-  Locale: it-IT
-  Full Name: Microsoft GiuseppeMultilingual Online (Natural) - Italian (Italy)
-Name: it-IT-DiegoNeural
-  Gender: Male
-  Locale: it-IT
-  Full Name: Microsoft Diego Online (Natural) - Italian (Italy)
-Name: it-IT-ElsaNeural
-  Gender: Female
-  Locale: it-IT
-  Full Name: Microsoft Elsa Online (Natural) - Italian (Italy)
-Name: it-IT-IsabellaNeural
-  Gender: Female
-  Locale: it-IT
-  Full Name: Microsoft Isabella Online (Natural) - Italian (Italy)
-Name: ja-JP-KeitaNeural
-  Gender: Male
-  Locale: ja-JP
-  Full Name: Microsoft Keita Online (Natural) - Japanese (Japan)
-Name: ja-JP-NanamiNeural
-  Gender: Female
-  Locale: ja-JP
-  Full Name: Microsoft Nanami Online (Natural) - Japanese (Japan)
-Name: jv-ID-DimasNeural
-  Gender: Male
-  Locale: jv-ID
-  Full Name: Microsoft Dimas Online (Natural) - Javanese (Indonesia)
-Name: jv-ID-SitiNeural
-  Gender: Female
-  Locale: jv-ID
-  Full Name: Microsoft Siti Online (Natural) - Javanese (Indonesia)
-Name: kn-IN-GaganNeural
-  Gender: Male
-  Locale: kn-IN
-  Full Name: Microsoft Gagan Online (Natural) - Kannada (India)
-Name: kn-IN-SapnaNeural
-  Gender: Female
-  Locale: kn-IN
-  Full Name: Microsoft Sapna Online (Natural) - Kannada (India)
-Name: kk-KZ-AigulNeural
-  Gender: Female
-  Locale: kk-KZ
-  Full Name: Microsoft Aigul Online (Natural) - Kazakh (Kazakhstan)
-Name: kk-KZ-DauletNeural
-  Gender: Male
-  Locale: kk-KZ
-  Full Name: Microsoft Daulet Online (Natural) - Kazakh (Kazakhstan)
-Name: km-KH-PisethNeural
-  Gender: Male
-  Locale: km-KH
-  Full Name: Microsoft Piseth Online (Natural) - Khmer (Cambodia)
-Name: km-KH-SreymomNeural
-  Gender: Female
-  Locale: km-KH
-  Full Name: Microsoft Sreymom Online (Natural) - Khmer (Cambodia)
-Name: ko-KR-HyunsuMultilingualNeural
-  Gender: Male
-  Locale: ko-KR
-  Full Name: Microsoft HyunsuMultilingual Online (Natural) - Korean (Korea)
-Name: ko-KR-InJoonNeural
-  Gender: Male
-  Locale: ko-KR
-  Full Name: Microsoft InJoon Online (Natural) - Korean (Korea)
-Name: ko-KR-SunHiNeural
-  Gender: Female
-  Locale: ko-KR
-  Full Name: Microsoft SunHi Online (Natural) - Korean (Korea)
-Name: lo-LA-ChanthavongNeural
-  Gender: Male
-  Locale: lo-LA
-  Full Name: Microsoft Chanthavong Online (Natural) - Lao (Laos)
-Name: lo-LA-KeomanyNeural
-  Gender: Female
-  Locale: lo-LA
-  Full Name: Microsoft Keomany Online (Natural) - Lao (Laos)
-Name: lv-LV-EveritaNeural
-  Gender: Female
-  Locale: lv-LV
-  Full Name: Microsoft Everita Online (Natural) - Latvian (Latvia)
-Name: lv-LV-NilsNeural
-  Gender: Male
-  Locale: lv-LV
-  Full Name: Microsoft Nils Online (Natural) - Latvian (Latvia)
-Name: lt-LT-LeonasNeural
-  Gender: Male
-  Locale: lt-LT
-  Full Name: Microsoft Leonas Online (Natural) - Lithuanian (Lithuania)
-Name: lt-LT-OnaNeural
-  Gender: Female
-  Locale: lt-LT
-  Full Name: Microsoft Ona Online (Natural) - Lithuanian (Lithuania)
-Name: mk-MK-AleksandarNeural
-  Gender: Male
-  Locale: mk-MK
-  Full Name: Microsoft Aleksandar Online (Natural) - Macedonian (North Macedonia)
-Name: mk-MK-MarijaNeural
-  Gender: Female
-  Locale: mk-MK
-  Full Name: Microsoft Marija Online (Natural) - Macedonian (North Macedonia)
-Name: ms-MY-OsmanNeural
-  Gender: Male
-  Locale: ms-MY
-  Full Name: Microsoft Osman Online (Natural) - Malay (Malaysia)
-Name: ms-MY-YasminNeural
-  Gender: Female
-  Locale: ms-MY
-  Full Name: Microsoft Yasmin Online (Natural) - Malay (Malaysia)
-Name: ml-IN-MidhunNeural
-  Gender: Male
-  Locale: ml-IN
-  Full Name: Microsoft Midhun Online (Natural) - Malayalam (India)
-Name: ml-IN-SobhanaNeural
-  Gender: Female
-  Locale: ml-IN
-  Full Name: Microsoft Sobhana Online (Natural) - Malayalam (India)
-Name: mt-MT-GraceNeural
-  Gender: Female
-  Locale: mt-MT
-  Full Name: Microsoft Grace Online (Natural) - Maltese (Malta)
-Name: mt-MT-JosephNeural
-  Gender: Male
-  Locale: mt-MT
-  Full Name: Microsoft Joseph Online (Natural) - Maltese (Malta)
-Name: mr-IN-AarohiNeural
-  Gender: Female
-  Locale: mr-IN
-  Full Name: Microsoft Aarohi Online (Natural) - Marathi (India)
-Name: mr-IN-ManoharNeural
-  Gender: Male
-  Locale: mr-IN
-  Full Name: Microsoft Manohar Online (Natural) - Marathi (India)
-Name: mn-MN-BataaNeural
-  Gender: Male
-  Locale: mn-MN
-  Full Name: Microsoft Bataa Online (Natural) - Mongolian (Mongolia)
-Name: mn-MN-YesuiNeural
-  Gender: Female
-  Locale: mn-MN
-  Full Name: Microsoft Yesui Online (Natural) - Mongolian (Mongolia)
-Name: ne-NP-HemkalaNeural
-  Gender: Female
-  Locale: ne-NP
-  Full Name: Microsoft Hemkala Online (Natural) - Nepali (Nepal)
-Name: ne-NP-SagarNeural
-  Gender: Male
-  Locale: ne-NP
-  Full Name: Microsoft Sagar Online (Natural) - Nepali (Nepal)
-Name: nb-NO-FinnNeural
-  Gender: Male
-  Locale: nb-NO
-  Full Name: Microsoft Finn Online (Natural) - Norwegian (Bokmål Norway)
-Name: nb-NO-PernilleNeural
-  Gender: Female
-  Locale: nb-NO
-  Full Name: Microsoft Pernille Online (Natural) - Norwegian (Bokmål, Norway)
-Name: ps-AF-GulNawazNeural
-  Gender: Male
-  Locale: ps-AF
-  Full Name: Microsoft GulNawaz Online (Natural) - Pashto (Afghanistan)
-Name: ps-AF-LatifaNeural
-  Gender: Female
-  Locale: ps-AF
-  Full Name: Microsoft Latifa Online (Natural) - Pashto (Afghanistan)
-Name: fa-IR-DilaraNeural
-  Gender: Female
-  Locale: fa-IR
-  Full Name: Microsoft Dilara Online (Natural) - Persian (Iran)
-Name: fa-IR-FaridNeural
-  Gender: Male
-  Locale: fa-IR
-  Full Name: Microsoft Farid Online (Natural) - Persian (Iran)
-Name: pl-PL-MarekNeural
-  Gender: Male
-  Locale: pl-PL
-  Full Name: Microsoft Marek Online (Natural) - Polish (Poland)
-Name: pl-PL-ZofiaNeural
-  Gender: Female
-  Locale: pl-PL
-  Full Name: Microsoft Zofia Online (Natural) - Polish (Poland)
-Name: pt-BR-ThalitaMultilingualNeural
-  Gender: Female
-  Locale: pt-BR
-  Full Name: Microsoft ThalitaMultilingual Online (Natural) - Portuguese (Brazil)
-Name: pt-BR-AntonioNeural
-  Gender: Male
-  Locale: pt-BR
-  Full Name: Microsoft Antonio Online (Natural) - Portuguese (Brazil)
-Name: pt-BR-FranciscaNeural
-  Gender: Female
-  Locale: pt-BR
-  Full Name: Microsoft Francisca Online (Natural) - Portuguese (Brazil)
-Name: pt-PT-DuarteNeural
-  Gender: Male
-  Locale: pt-PT
-  Full Name: Microsoft Duarte Online (Natural) - Portuguese (Portugal)
-Name: pt-PT-RaquelNeural
-  Gender: Female
-  Locale: pt-PT
-  Full Name: Microsoft Raquel Online (Natural) - Portuguese (Portugal)
-Name: ro-RO-AlinaNeural
-  Gender: Female
-  Locale: ro-RO
-  Full Name: Microsoft Alina Online (Natural) - Romanian (Romania)
-Name: ro-RO-EmilNeural
-  Gender: Male
-  Locale: ro-RO
-  Full Name: Microsoft Emil Online (Natural) - Romanian (Romania)
-Name: ru-RU-DmitryNeural
-  Gender: Male
-  Locale: ru-RU
-  Full Name: Microsoft Dmitry Online (Natural) - Russian (Russia)
-Name: ru-RU-SvetlanaNeural
-  Gender: Female
-  Locale: ru-RU
-  Full Name: Microsoft Svetlana Online (Natural) - Russian (Russia)
-Name: sr-RS-NicholasNeural
-  Gender: Male
-  Locale: sr-RS
-  Full Name: Microsoft Nicholas Online (Natural) - Serbian (Serbia)
-Name: sr-RS-SophieNeural
-  Gender: Female
-  Locale: sr-RS
-  Full Name: Microsoft Sophie Online (Natural) - Serbian (Serbia)
-Name: si-LK-SameeraNeural
-  Gender: Male
-  Locale: si-LK
-  Full Name: Microsoft Sameera Online (Natural) - Sinhala (Sri Lanka)
-Name: si-LK-ThiliniNeural
-  Gender: Female
-  Locale: si-LK
-  Full Name: Microsoft Thilini Online (Natural) - Sinhala (Sri Lanka)
-Name: sk-SK-LukasNeural
-  Gender: Male
-  Locale: sk-SK
-  Full Name: Microsoft Lukas Online (Natural) - Slovak (Slovakia)
-Name: sk-SK-ViktoriaNeural
-  Gender: Female
-  Locale: sk-SK
-  Full Name: Microsoft Viktoria Online (Natural) - Slovak (Slovakia)
-Name: sl-SI-PetraNeural
-  Gender: Female
-  Locale: sl-SI
-  Full Name: Microsoft Petra Online (Natural) - Slovenian (Slovenia)
-Name: sl-SI-RokNeural
-  Gender: Male
-  Locale: sl-SI
-  Full Name: Microsoft Rok Online (Natural) - Slovenian (Slovenia)
-Name: so-SO-MuuseNeural
-  Gender: Male
-  Locale: so-SO
-  Full Name: Microsoft Muuse Online (Natural) - Somali (Somalia)
-Name: so-SO-UbaxNeural
-  Gender: Female
-  Locale: so-SO
-  Full Name: Microsoft Ubax Online (Natural) - Somali (Somalia)
-Name: es-AR-ElenaNeural
-  Gender: Female
-  Locale: es-AR
-  Full Name: Microsoft Elena Online (Natural) - Spanish (Argentina)
-Name: es-AR-TomasNeural
-  Gender: Male
-  Locale: es-AR
-  Full Name: Microsoft Tomas Online (Natural) - Spanish (Argentina)
-Name: es-BO-MarceloNeural
-  Gender: Male
-  Locale: es-BO
-  Full Name: Microsoft Marcelo Online (Natural) - Spanish (Bolivia)
-Name: es-BO-SofiaNeural
-  Gender: Female
-  Locale: es-BO
-  Full Name: Microsoft Sofia Online (Natural) - Spanish (Bolivia)
-Name: es-CL-CatalinaNeural
-  Gender: Female
-  Locale: es-CL
-  Full Name: Microsoft Catalina Online (Natural) - Spanish (Chile)
-Name: es-CL-LorenzoNeural
-  Gender: Male
-  Locale: es-CL
-  Full Name: Microsoft Lorenzo Online (Natural) - Spanish (Chile)
-Name: es-CO-GonzaloNeural
-  Gender: Male
-  Locale: es-CO
-  Full Name: Microsoft Gonzalo Online (Natural) - Spanish (Colombia)
-Name: es-CO-SalomeNeural
-  Gender: Female
-  Locale: es-CO
-  Full Name: Microsoft Salome Online (Natural) - Spanish (Colombia)
-Name: es-ES-XimenaNeural
-  Gender: Female
-  Locale: es-ES
-  Full Name: Microsoft Ximena Online (Natural) - Spanish (Colombia)
-Name: es-CR-JuanNeural
-  Gender: Male
-  Locale: es-CR
-  Full Name: Microsoft Juan Online (Natural) - Spanish (Costa Rica)
-Name: es-CR-MariaNeural
-  Gender: Female
-  Locale: es-CR
-  Full Name: Microsoft Maria Online (Natural) - Spanish (Costa Rica)
-Name: es-CU-BelkysNeural
-  Gender: Female
-  Locale: es-CU
-  Full Name: Microsoft Belkys Online (Natural) - Spanish (Cuba)
-Name: es-CU-ManuelNeural
-  Gender: Male
-  Locale: es-CU
-  Full Name: Microsoft Manuel Online (Natural) - Spanish (Cuba)
-Name: es-DO-EmilioNeural
-  Gender: Male
-  Locale: es-DO
-  Full Name: Microsoft Emilio Online (Natural) - Spanish (Dominican Republic)
-Name: es-DO-RamonaNeural
-  Gender: Female
-  Locale: es-DO
-  Full Name: Microsoft Ramona Online (Natural) - Spanish (Dominican Republic)
-Name: es-EC-AndreaNeural
-  Gender: Female
-  Locale: es-EC
-  Full Name: Microsoft Andrea Online (Natural) - Spanish (Ecuador)
-Name: es-EC-LuisNeural
-  Gender: Male
-  Locale: es-EC
-  Full Name: Microsoft Luis Online (Natural) - Spanish (Ecuador)
-Name: es-SV-LorenaNeural
-  Gender: Female
-  Locale: es-SV
-  Full Name: Microsoft Lorena Online (Natural) - Spanish (El Salvador)
-Name: es-SV-RodrigoNeural
-  Gender: Male
-  Locale: es-SV
-  Full Name: Microsoft Rodrigo Online (Natural) - Spanish (El Salvador)
-Name: es-GQ-JavierNeural
-  Gender: Male
-  Locale: es-GQ
-  Full Name: Microsoft Javier Online (Natural) - Spanish (Equatorial Guinea)
-Name: es-GQ-TeresaNeural
-  Gender: Female
-  Locale: es-GQ
-  Full Name: Microsoft Teresa Online (Natural) - Spanish (Equatorial Guinea)
-Name: es-GT-AndresNeural
-  Gender: Male
-  Locale: es-GT
-  Full Name: Microsoft Andres Online (Natural) - Spanish (Guatemala)
-Name: es-GT-MartaNeural
-  Gender: Female
-  Locale: es-GT
-  Full Name: Microsoft Marta Online (Natural) - Spanish (Guatemala)
-Name: es-HN-CarlosNeural
-  Gender: Male
-  Locale: es-HN
-  Full Name: Microsoft Carlos Online (Natural) - Spanish (Honduras)
-Name: es-HN-KarlaNeural
-  Gender: Female
-  Locale: es-HN
-  Full Name: Microsoft Karla Online (Natural) - Spanish (Honduras)
-Name: es-MX-DaliaNeural
-  Gender: Female
-  Locale: es-MX
-  Full Name: Microsoft Dalia Online (Natural) - Spanish (Mexico)
-Name: es-MX-JorgeNeural
-  Gender: Male
-  Locale: es-MX
-  Full Name: Microsoft Jorge Online (Natural) - Spanish (Mexico)
-Name: es-NI-FedericoNeural
-  Gender: Male
-  Locale: es-NI
-  Full Name: Microsoft Federico Online (Natural) - Spanish (Nicaragua)
-Name: es-NI-YolandaNeural
-  Gender: Female
-  Locale: es-NI
-  Full Name: Microsoft Yolanda Online (Natural) - Spanish (Nicaragua)
-Name: es-PA-MargaritaNeural
-  Gender: Female
-  Locale: es-PA
-  Full Name: Microsoft Margarita Online (Natural) - Spanish (Panama)
-Name: es-PA-RobertoNeural
-  Gender: Male
-  Locale: es-PA
-  Full Name: Microsoft Roberto Online (Natural) - Spanish (Panama)
-Name: es-PY-MarioNeural
-  Gender: Male
-  Locale: es-PY
-  Full Name: Microsoft Mario Online (Natural) - Spanish (Paraguay)
-Name: es-PY-TaniaNeural
-  Gender: Female
-  Locale: es-PY
-  Full Name: Microsoft Tania Online (Natural) - Spanish (Paraguay)
-Name: es-PE-AlexNeural
-  Gender: Male
-  Locale: es-PE
-  Full Name: Microsoft Alex Online (Natural) - Spanish (Peru)
-Name: es-PE-CamilaNeural
-  Gender: Female
-  Locale: es-PE
-  Full Name: Microsoft Camila Online (Natural) - Spanish (Peru)
-Name: es-PR-KarinaNeural
-  Gender: Female
-  Locale: es-PR
-  Full Name: Microsoft Karina Online (Natural) - Spanish (Puerto Rico)
-Name: es-PR-VictorNeural
-  Gender: Male
-  Locale: es-PR
-  Full Name: Microsoft Victor Online (Natural) - Spanish (Puerto Rico)
-Name: es-ES-AlvaroNeural
-  Gender: Male
-  Locale: es-ES
-  Full Name: Microsoft Alvaro Online (Natural) - Spanish (Spain)
-Name: es-ES-ElviraNeural
-  Gender: Female
-  Locale: es-ES
-  Full Name: Microsoft Elvira Online (Natural) - Spanish (Spain)
-Name: es-US-AlonsoNeural
-  Gender: Male
-  Locale: es-US
-  Full Name: Microsoft Alonso Online (Natural) - Spanish (United States)
-Name: es-US-PalomaNeural
-  Gender: Female
-  Locale: es-US
-  Full Name: Microsoft Paloma Online (Natural) - Spanish (United States)
-Name: es-UY-MateoNeural
-  Gender: Male
-  Locale: es-UY
-  Full Name: Microsoft Mateo Online (Natural) - Spanish (Uruguay)
-Name: es-UY-ValentinaNeural
-  Gender: Female
-  Locale: es-UY
-  Full Name: Microsoft Valentina Online (Natural) - Spanish (Uruguay)
-Name: es-VE-PaolaNeural
-  Gender: Female
-  Locale: es-VE
-  Full Name: Microsoft Paola Online (Natural) - Spanish (Venezuela)
-Name: es-VE-SebastianNeural
-  Gender: Male
-  Locale: es-VE
-  Full Name: Microsoft Sebastian Online (Natural) - Spanish (Venezuela)
-Name: su-ID-JajangNeural
-  Gender: Male
-  Locale: su-ID
-  Full Name: Microsoft Jajang Online (Natural) - Sundanese (Indonesia)
-Name: su-ID-TutiNeural
-  Gender: Female
-  Locale: su-ID
-  Full Name: Microsoft Tuti Online (Natural) - Sundanese (Indonesia)
-Name: sw-KE-RafikiNeural
-  Gender: Male
-  Locale: sw-KE
-  Full Name: Microsoft Rafiki Online (Natural) - Swahili (Kenya)
-Name: sw-KE-ZuriNeural
-  Gender: Female
-  Locale: sw-KE
-  Full Name: Microsoft Zuri Online (Natural) - Swahili (Kenya)
-Name: sw-TZ-DaudiNeural
-  Gender: Male
-  Locale: sw-TZ
-  Full Name: Microsoft Daudi Online (Natural) - Swahili (Tanzania)
-Name: sw-TZ-RehemaNeural
-  Gender: Female
-  Locale: sw-TZ
-  Full Name: Microsoft Rehema Online (Natural) - Swahili (Tanzania)
-Name: sv-SE-MattiasNeural
-  Gender: Male
-  Locale: sv-SE
-  Full Name: Microsoft Mattias Online (Natural) - Swedish (Sweden)
-Name: sv-SE-SofieNeural
-  Gender: Female
-  Locale: sv-SE
-  Full Name: Microsoft Sofie Online (Natural) - Swedish (Sweden)
-Name: ta-IN-PallaviNeural
-  Gender: Female
-  Locale: ta-IN
-  Full Name: Microsoft Pallavi Online (Natural) - Tamil (India)
-Name: ta-IN-ValluvarNeural
-  Gender: Male
-  Locale: ta-IN
-  Full Name: Microsoft Valluvar Online (Natural) - Tamil (India)
-Name: ta-MY-KaniNeural
-  Gender: Female
-  Locale: ta-MY
-  Full Name: Microsoft Kani Online (Natural) - Tamil (Malaysia)
-Name: ta-MY-SuryaNeural
-  Gender: Male
-  Locale: ta-MY
-  Full Name: Microsoft Surya Online (Natural) - Tamil (Malaysia)
-Name: ta-SG-AnbuNeural
-  Gender: Male
-  Locale: ta-SG
-  Full Name: Microsoft Anbu Online (Natural) - Tamil (Singapore)
-Name: ta-SG-VenbaNeural
-  Gender: Female
-  Locale: ta-SG
-  Full Name: Microsoft Venba Online (Natural) - Tamil (Singapore)
-Name: ta-LK-KumarNeural
-  Gender: Male
-  Locale: ta-LK
-  Full Name: Microsoft Kumar Online (Natural) - Tamil (Sri Lanka)
-Name: ta-LK-SaranyaNeural
-  Gender: Female
-  Locale: ta-LK
-  Full Name: Microsoft Saranya Online (Natural) - Tamil (Sri Lanka)
-Name: te-IN-MohanNeural
-  Gender: Male
-  Locale: te-IN
-  Full Name: Microsoft Mohan Online (Natural) - Telugu (India)
-Name: te-IN-ShrutiNeural
-  Gender: Female
-  Locale: te-IN
-  Full Name: Microsoft Shruti Online (Natural) - Telugu (India)
-Name: th-TH-NiwatNeural
-  Gender: Male
-  Locale: th-TH
-  Full Name: Microsoft Niwat Online (Natural) - Thai (Thailand)
-Name: th-TH-PremwadeeNeural
-  Gender: Female
-  Locale: th-TH
-  Full Name: Microsoft Premwadee Online (Natural) - Thai (Thailand)
-Name: tr-TR-EmelNeural
-  Gender: Female
-  Locale: tr-TR
-  Full Name: Microsoft Emel Online (Natural) - Turkish (Turkey)
-Name: tr-TR-AhmetNeural
-  Gender: Male
-  Locale: tr-TR
-  Full Name: Microsoft Ahmet Online (Natural) - Turkish (Türkiye)
-Name: uk-UA-OstapNeural
-  Gender: Male
-  Locale: uk-UA
-  Full Name: Microsoft Ostap Online (Natural) - Ukrainian (Ukraine)
-Name: uk-UA-PolinaNeural
-  Gender: Female
-  Locale: uk-UA
-  Full Name: Microsoft Polina Online (Natural) - Ukrainian (Ukraine)
-Name: ur-IN-GulNeural
-  Gender: Female
-  Locale: ur-IN
-  Full Name: Microsoft Gul Online (Natural) - Urdu (India)
-Name: ur-IN-SalmanNeural
-  Gender: Male
-  Locale: ur-IN
-  Full Name: Microsoft Salman Online (Natural) - Urdu (India)
-Name: ur-PK-AsadNeural
-  Gender: Male
-  Locale: ur-PK
-  Full Name: Microsoft Asad Online (Natural) - Urdu (Pakistan)
-Name: ur-PK-UzmaNeural
-  Gender: Female
-  Locale: ur-PK
-  Full Name: Microsoft Uzma Online (Natural) - Urdu (Pakistan)
-Name: uz-UZ-MadinaNeural
-  Gender: Female
-  Locale: uz-UZ
-  Full Name: Microsoft Madina Online (Natural) - Uzbek (Uzbekistan)
-Name: uz-UZ-SardorNeural
-  Gender: Male
-  Locale: uz-UZ
-  Full Name: Microsoft Sardor Online (Natural) - Uzbek (Uzbekistan)
-Name: vi-VN-HoaiMyNeural
-  Gender: Female
-  Locale: vi-VN
-  Full Name: Microsoft HoaiMy Online (Natural) - Vietnamese (Vietnam)
-Name: vi-VN-NamMinhNeural
-  Gender: Male
-  Locale: vi-VN
-  Full Name: Microsoft NamMinh Online (Natural) - Vietnamese (Vietnam)
-Name: cy-GB-AledNeural
-  Gender: Male
-  Locale: cy-GB
-  Gender: Male
-  Locale: vi-VN
-  Full Name: Microsoft NamMinh Online (Natural) - Vietnamese (Vietnam)
-Name: cy-GB-AledNeural
-  Gender: Male
-  Locale: cy-GB
-  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
-Name: cy-GB-NiaNeural
-  Gender: Female
-  Locale: cy-GB
-  Full Name: Microsoft NamMinh Online (Natural) - Vietnamese (Vietnam)
-Name: cy-GB-AledNeural
-  Gender: Male
-  Locale: cy-GB
-  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
-Name: cy-GB-NiaNeural
-  Gender: Female
-  Locale: cy-GB
-  Gender: Male
-  Locale: cy-GB
-  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
-Name: cy-GB-NiaNeural
-  Gender: Female
-  Locale: cy-GB
-  Locale: cy-GB
-  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
-Name: cy-GB-NiaNeural
-  Gender: Female
-  Locale: cy-GB
-  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
-Name: cy-GB-NiaNeural
-  Gender: Female
-  Locale: cy-GB
-  Full Name: Microsoft Nia Online (Natural) - Welsh (United Kingdom)
-Name: zu-ZA-ThandoNeural
-  Gender: Female
-  Locale: cy-GB
-  Full Name: Microsoft Nia Online (Natural) - Welsh (United Kingdom)
-Name: zu-ZA-ThandoNeural
-  Full Name: Microsoft Nia Online (Natural) - Welsh (United Kingdom)
-Name: zu-ZA-ThandoNeural
-Name: zu-ZA-ThandoNeural
-  Gender: Female
-  Locale: zu-ZA
-  Gender: Female
-  Locale: zu-ZA
-  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
-Name: zu-ZA-ThembaNeural
-  Gender: Male
-  Locale: zu-ZA
-  Full Name: Microsoft Themba Online (Natural) - Zulu (South Africa)
-  Gender: Female
-  Locale: zu-ZA
-  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
-Name: zu-ZA-ThembaNeural
-  Gender: Male
-  Locale: zu-ZA
-  Gender: Female
-  Locale: zu-ZA
-  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
-Name: zu-ZA-ThembaNeural
-  Gender: Male
-  Gender: Female
-  Locale: zu-ZA
-  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
-Name: zu-ZA-ThembaNeural
-  Gender: Female
-  Locale: zu-ZA
-  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
-  Gender: Female
-  Locale: zu-ZA
-  Gender: Female
-  Gender: Female
-  Locale: zu-ZA
-  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
-Name: zu-ZA-ThembaNeural
-  Gender: Male
-  Locale: zu-ZA
-  Full Name: Microsoft Themba Online (Natural) - Zulu (South Africa)
+{'country': 'af-ZA', 'gender': 'Female', 'code': 'af-ZA-AdriNeural'}
+{'country': 'af-ZA', 'gender': 'Male', 'code': 'af-ZA-WillemNeural'}
+{'country': 'sq-AL', 'gender': 'Female', 'code': 'sq-AL-AnilaNeural'}
+{'country': 'sq-AL', 'gender': 'Male', 'code': 'sq-AL-IlirNeural'}
+{'country': 'am-ET', 'gender': 'Male', 'code': 'am-ET-AmehaNeural'}
+{'country': 'am-ET', 'gender': 'Female', 'code': 'am-ET-MekdesNeural'}
+{'country': 'ar-DZ', 'gender': 'Female', 'code': 'ar-DZ-AminaNeural'}
+{'country': 'ar-DZ', 'gender': 'Male', 'code': 'ar-DZ-IsmaelNeural'}
+{'country': 'ar-BH', 'gender': 'Male', 'code': 'ar-BH-AliNeural'}
+{'country': 'ar-BH', 'gender': 'Female', 'code': 'ar-BH-LailaNeural'}
+{'country': 'ar-EG', 'gender': 'Female', 'code': 'ar-EG-SalmaNeural'}
+{'country': 'ar-EG', 'gender': 'Male', 'code': 'ar-EG-ShakirNeural'}
+{'country': 'ar-IQ', 'gender': 'Male', 'code': 'ar-IQ-BasselNeural'}
+{'country': 'ar-IQ', 'gender': 'Female', 'code': 'ar-IQ-RanaNeural'}
+{'country': 'ar-JO', 'gender': 'Female', 'code': 'ar-JO-SanaNeural'}
+{'country': 'ar-JO', 'gender': 'Male', 'code': 'ar-JO-TaimNeural'}
+{'country': 'ar-KW', 'gender': 'Male', 'code': 'ar-KW-FahedNeural'}
+{'country': 'ar-KW', 'gender': 'Female', 'code': 'ar-KW-NouraNeural'}
+{'country': 'ar-LB', 'gender': 'Female', 'code': 'ar-LB-LaylaNeural'}
+{'country': 'ar-LB', 'gender': 'Male', 'code': 'ar-LB-RamiNeural'}
+{'country': 'ar-LY', 'gender': 'Female', 'code': 'ar-LY-ImanNeural'}
+{'country': 'ar-LY', 'gender': 'Male', 'code': 'ar-LY-OmarNeural'}
+{'country': 'ar-MA', 'gender': 'Male', 'code': 'ar-MA-JamalNeural'}
+{'country': 'ar-MA', 'gender': 'Female', 'code': 'ar-MA-MounaNeural'}
+{'country': 'ar-OM', 'gender': 'Male', 'code': 'ar-OM-AbdullahNeural'}
+{'country': 'ar-OM', 'gender': 'Female', 'code': 'ar-OM-AyshaNeural'}
+{'country': 'ar-QA', 'gender': 'Female', 'code': 'ar-QA-AmalNeural'}
+{'country': 'ar-QA', 'gender': 'Male', 'code': 'ar-QA-MoazNeural'}
+{'country': 'ar-SA', 'gender': 'Male', 'code': 'ar-SA-HamedNeural'}
+{'country': 'ar-SA', 'gender': 'Female', 'code': 'ar-SA-ZariyahNeural'}
+{'country': 'ar-SY', 'gender': 'Female', 'code': 'ar-SY-AmanyNeural'}
+{'country': 'ar-SY', 'gender': 'Male', 'code': 'ar-SY-LaithNeural'}
+{'country': 'ar-TN', 'gender': 'Male', 'code': 'ar-TN-HediNeural'}
+{'country': 'ar-TN', 'gender': 'Female', 'code': 'ar-TN-ReemNeural'}
+{'country': 'ar-AE', 'gender': 'Female', 'code': 'ar-AE-FatimaNeural'}
+{'country': 'ar-AE', 'gender': 'Male', 'code': 'ar-AE-HamdanNeural'}
+{'country': 'ar-YE', 'gender': 'Female', 'code': 'ar-YE-MaryamNeural'}
+{'country': 'ar-YE', 'gender': 'Male', 'code': 'ar-YE-SalehNeural'}
+{'country': 'az-AZ', 'gender': 'Male', 'code': 'az-AZ-BabekNeural'}
+{'country': 'az-AZ', 'gender': 'Female', 'code': 'az-AZ-BanuNeural'}
+{'country': 'bn-BD', 'gender': 'Female', 'code': 'bn-BD-NabanitaNeural'}
+{'country': 'bn-BD', 'gender': 'Male', 'code': 'bn-BD-PradeepNeural'}
+{'country': 'bn-IN', 'gender': 'Male', 'code': 'bn-IN-BashkarNeural'}
+{'country': 'bn-IN', 'gender': 'Female', 'code': 'bn-IN-TanishaaNeural'}
+{'country': 'bs-BA', 'gender': 'Female', 'code': 'bs-BA-VesnaNeural'}
+{'country': 'bs-BA', 'gender': 'Male', 'code': 'bs-BA-GoranNeural'}
+{'country': 'bg-BG', 'gender': 'Male', 'code': 'bg-BG-BorislavNeural'}
+{'country': 'bg-BG', 'gender': 'Female', 'code': 'bg-BG-KalinaNeural'}
+{'country': 'my-MM', 'gender': 'Female', 'code': 'my-MM-NilarNeural'}
+{'country': 'my-MM', 'gender': 'Male', 'code': 'my-MM-ThihaNeural'}
+{'country': 'ca-ES', 'gender': 'Male', 'code': 'ca-ES-EnricNeural'}
+{'country': 'ca-ES', 'gender': 'Female', 'code': 'ca-ES-JoanaNeural'}
+{'country': 'zh-HK', 'gender': 'Female', 'code': 'zh-HK-HiuGaaiNeural'}
+{'country': 'zh-HK', 'gender': 'Female', 'code': 'zh-HK-HiuMaanNeural'}
+{'country': 'zh-HK', 'gender': 'Male', 'code': 'zh-HK-WanLungNeural'}
+{'country': 'zh-CN', 'gender': 'Female', 'code': 'zh-CN-XiaoxiaoNeural'}
+{'country': 'zh-CN', 'gender': 'Female', 'code': 'zh-CN-XiaoyiNeural'}
+{'country': 'zh-CN', 'gender': 'Male', 'code': 'zh-CN-YunjianNeural'}
+{'country': 'zh-CN', 'gender': 'Male', 'code': 'zh-CN-YunxiNeural'}
+{'country': 'zh-CN', 'gender': 'Male', 'code': 'zh-CN-YunxiaNeural'}
+{'country': 'zh-CN', 'gender': 'Male', 'code': 'zh-CN-YunyangNeural'}
+{'country': 'zh-CN-liaoning', 'gender': 'Female', 'code': 'zh-CN-liaoning-XiaobeiNeural'}
+{'country': 'zh-TW', 'gender': 'Female', 'code': 'zh-TW-HsiaoChenNeural'}
+{'country': 'zh-TW', 'gender': 'Male', 'code': 'zh-TW-YunJheNeural'}
+{'country': 'zh-TW', 'gender': 'Female', 'code': 'zh-TW-HsiaoYuNeural'}
+{'country': 'zh-CN-shaanxi', 'gender': 'Female', 'code': 'zh-CN-shaanxi-XiaoniNeural'}
+{'country': 'hr-HR', 'gender': 'Female', 'code': 'hr-HR-GabrijelaNeural'}
+{'country': 'hr-HR', 'gender': 'Male', 'code': 'hr-HR-SreckoNeural'}
+{'country': 'cs-CZ', 'gender': 'Male', 'code': 'cs-CZ-AntoninNeural'}
+{'country': 'cs-CZ', 'gender': 'Female', 'code': 'cs-CZ-VlastaNeural'}
+{'country': 'da-DK', 'gender': 'Female', 'code': 'da-DK-ChristelNeural'}
+{'country': 'da-DK', 'gender': 'Male', 'code': 'da-DK-JeppeNeural'}
+{'country': 'nl-BE', 'gender': 'Male', 'code': 'nl-BE-ArnaudNeural'}
+{'country': 'nl-BE', 'gender': 'Female', 'code': 'nl-BE-DenaNeural'}
+{'country': 'nl-NL', 'gender': 'Female', 'code': 'nl-NL-ColetteNeural'}
+{'country': 'nl-NL', 'gender': 'Female', 'code': 'nl-NL-FennaNeural'}
+{'country': 'nl-NL', 'gender': 'Male', 'code': 'nl-NL-MaartenNeural'}
+{'country': 'en-AU', 'gender': 'Female', 'code': 'en-AU-NatashaNeural'}
+{'country': 'en-AU', 'gender': 'Male', 'code': 'en-AU-WilliamNeural'}
+{'country': 'en-CA', 'gender': 'Female', 'code': 'en-CA-ClaraNeural'}
+{'country': 'en-CA', 'gender': 'Male', 'code': 'en-CA-LiamNeural'}
+{'country': 'en-HK', 'gender': 'Female', 'code': 'en-HK-YanNeural'}
+{'country': 'en-HK', 'gender': 'Male', 'code': 'en-HK-SamNeural'}
+{'country': 'en-IN', 'gender': 'Female', 'code': 'en-IN-NeerjaExpressiveNeural'}
+{'country': 'en-IN', 'gender': 'Female', 'code': 'en-IN-NeerjaNeural'}
+{'country': 'en-IN', 'gender': 'Male', 'code': 'en-IN-PrabhatNeural'}
+{'country': 'en-IE', 'gender': 'Male', 'code': 'en-IE-ConnorNeural'}
+{'country': 'en-IE', 'gender': 'Female', 'code': 'en-IE-EmilyNeural'}
+{'country': 'en-KE', 'gender': 'Female', 'code': 'en-KE-AsiliaNeural'}
+{'country': 'en-KE', 'gender': 'Male', 'code': 'en-KE-ChilembaNeural'}
+{'country': 'en-NZ', 'gender': 'Male', 'code': 'en-NZ-MitchellNeural'}
+{'country': 'en-NZ', 'gender': 'Female', 'code': 'en-NZ-MollyNeural'}
+{'country': 'en-NG', 'gender': 'Male', 'code': 'en-NG-AbeoNeural'}
+{'country': 'en-NG', 'gender': 'Female', 'code': 'en-NG-EzinneNeural'}
+{'country': 'en-PH', 'gender': 'Male', 'code': 'en-PH-JamesNeural'}
+{'country': 'en-PH', 'gender': 'Female', 'code': 'en-PH-RosaNeural'}
+{'country': 'en-US', 'gender': 'Female', 'code': 'en-US-AvaNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-AndrewNeural'}
+{'country': 'en-US', 'gender': 'Female', 'code': 'en-US-EmmaNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-BrianNeural'}
+{'country': 'en-SG', 'gender': 'Female', 'code': 'en-SG-LunaNeural'}
+{'country': 'en-SG', 'gender': 'Male', 'code': 'en-SG-WayneNeural'}
+{'country': 'en-ZA', 'gender': 'Female', 'code': 'en-ZA-LeahNeural'}
+{'country': 'en-ZA', 'gender': 'Male', 'code': 'en-ZA-LukeNeural'}
+{'country': 'en-TZ', 'gender': 'Male', 'code': 'en-TZ-ElimuNeural'}
+{'country': 'en-TZ', 'gender': 'Female', 'code': 'en-TZ-ImaniNeural'}
+{'country': 'en-GB', 'gender': 'Female', 'code': 'en-GB-LibbyNeural'}
+{'country': 'en-GB', 'gender': 'Female', 'code': 'en-GB-MaisieNeural'}
+{'country': 'en-GB', 'gender': 'Male', 'code': 'en-GB-RyanNeural'}
+{'country': 'en-GB', 'gender': 'Female', 'code': 'en-GB-SoniaNeural'}
+{'country': 'en-GB', 'gender': 'Male', 'code': 'en-GB-ThomasNeural'}
+{'country': 'en-US', 'gender': 'Female', 'code': 'en-US-AnaNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-AndrewMultilingualNeural'}
+{'country': 'en-US', 'gender': 'Female', 'code': 'en-US-AriaNeural'}
+{'country': 'en-US', 'gender': 'Female', 'code': 'en-US-AvaMultilingualNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-BrianMultilingualNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-ChristopherNeural'}
+{'country': 'en-US', 'gender': 'Female', 'code': 'en-US-EmmaMultilingualNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-EricNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-GuyNeural'}
+{'country': 'en-US', 'gender': 'Female', 'code': 'en-US-JennyNeural'}
+{'country': 'en-US', 'gender': 'Female', 'code': 'en-US-MichelleNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-RogerNeural'}
+{'country': 'en-US', 'gender': 'Male', 'code': 'en-US-SteffanNeural'}
+{'country': 'et-EE', 'gender': 'Female', 'code': 'et-EE-AnuNeural'}
+{'country': 'et-EE', 'gender': 'Male', 'code': 'et-EE-KertNeural'}
+{'country': 'fil-PH', 'gender': 'Male', 'code': 'fil-PH-AngeloNeural'}
+{'country': 'fil-PH', 'gender': 'Female', 'code': 'fil-PH-BlessicaNeural'}
+{'country': 'fi-FI', 'gender': 'Male', 'code': 'fi-FI-HarriNeural'}
+{'country': 'fi-FI', 'gender': 'Female', 'code': 'fi-FI-NooraNeural'}
+{'country': 'fr-BE', 'gender': 'Female', 'code': 'fr-BE-CharlineNeural'}
+{'country': 'fr-BE', 'gender': 'Male', 'code': 'fr-BE-GerardNeural'}
+{'country': 'fr-CA', 'gender': 'Male', 'code': 'fr-CA-ThierryNeural'}
+{'country': 'fr-CA', 'gender': 'Male', 'code': 'fr-CA-AntoineNeural'}
+{'country': 'fr-CA', 'gender': 'Male', 'code': 'fr-CA-JeanNeural'}
+{'country': 'fr-CA', 'gender': 'Female', 'code': 'fr-CA-SylvieNeural'}
+{'country': 'fr-FR', 'gender': 'Female', 'code': 'fr-FR-VivienneMultilingualNeural'}
+{'country': 'fr-FR', 'gender': 'Male', 'code': 'fr-FR-RemyMultilingualNeural'}
+{'country': 'fr-FR', 'gender': 'Female', 'code': 'fr-FR-DeniseNeural'}
+{'country': 'fr-FR', 'gender': 'Female', 'code': 'fr-FR-EloiseNeural'}
+{'country': 'fr-FR', 'gender': 'Male', 'code': 'fr-FR-HenriNeural'}
+{'country': 'fr-CH', 'gender': 'Female', 'code': 'fr-CH-ArianeNeural'}
+{'country': 'fr-CH', 'gender': 'Male', 'code': 'fr-CH-FabriceNeural'}
+{'country': 'gl-ES', 'gender': 'Male', 'code': 'gl-ES-RoiNeural'}
+{'country': 'gl-ES', 'gender': 'Female', 'code': 'gl-ES-SabelaNeural'}
+{'country': 'ka-GE', 'gender': 'Female', 'code': 'ka-GE-EkaNeural'}
+{'country': 'ka-GE', 'gender': 'Male', 'code': 'ka-GE-GiorgiNeural'}
+{'country': 'de-AT', 'gender': 'Female', 'code': 'de-AT-IngridNeural'}
+{'country': 'de-AT', 'gender': 'Male', 'code': 'de-AT-JonasNeural'}
+{'country': 'de-DE', 'gender': 'Female', 'code': 'de-DE-SeraphinaMultilingualNeural'}
+{'country': 'de-DE', 'gender': 'Male', 'code': 'de-DE-FlorianMultilingualNeural'}
+{'country': 'de-DE', 'gender': 'Female', 'code': 'de-DE-AmalaNeural'}
+{'country': 'de-DE', 'gender': 'Male', 'code': 'de-DE-ConradNeural'}
+{'country': 'de-DE', 'gender': 'Female', 'code': 'de-DE-KatjaNeural'}
+{'country': 'de-DE', 'gender': 'Male', 'code': 'de-DE-KillianNeural'}
+{'country': 'de-CH', 'gender': 'Male', 'code': 'de-CH-JanNeural'}
+{'country': 'de-CH', 'gender': 'Female', 'code': 'de-CH-LeniNeural'}
+{'country': 'el-GR', 'gender': 'Female', 'code': 'el-GR-AthinaNeural'}
+{'country': 'el-GR', 'gender': 'Male', 'code': 'el-GR-NestorasNeural'}
+{'country': 'gu-IN', 'gender': 'Female', 'code': 'gu-IN-DhwaniNeural'}
+{'country': 'gu-IN', 'gender': 'Male', 'code': 'gu-IN-NiranjanNeural'}
+{'country': 'he-IL', 'gender': 'Male', 'code': 'he-IL-AvriNeural'}
+{'country': 'he-IL', 'gender': 'Female', 'code': 'he-IL-HilaNeural'}
+{'country': 'hi-IN', 'gender': 'Male', 'code': 'hi-IN-MadhurNeural'}
+{'country': 'hi-IN', 'gender': 'Female', 'code': 'hi-IN-SwaraNeural'}
+{'country': 'hu-HU', 'gender': 'Female', 'code': 'hu-HU-NoemiNeural'}
+{'country': 'hu-HU', 'gender': 'Male', 'code': 'hu-HU-TamasNeural'}
+{'country': 'is-IS', 'gender': 'Female', 'code': 'is-IS-GudrunNeural'}
+{'country': 'is-IS', 'gender': 'Male', 'code': 'is-IS-GunnarNeural'}
+{'country': 'id-ID', 'gender': 'Male', 'code': 'id-ID-ArdiNeural'}
+{'country': 'id-ID', 'gender': 'Female', 'code': 'id-ID-GadisNeural'}
+{'country': 'iu-Latn-CA', 'gender': 'Female', 'code': 'iu-Latn-CA-SiqiniqNeural'}
+{'country': 'iu-Latn-CA', 'gender': 'Male', 'code': 'iu-Latn-CA-TaqqiqNeural'}
+{'country': 'iu-Cans-CA', 'gender': 'Female', 'code': 'iu-Cans-CA-SiqiniqNeural'}
+{'country': 'iu-Cans-CA', 'gender': 'Male', 'code': 'iu-Cans-CA-TaqqiqNeural'}
+{'country': 'ga-IE', 'gender': 'Male', 'code': 'ga-IE-ColmNeural'}
+{'country': 'ga-IE', 'gender': 'Female', 'code': 'ga-IE-OrlaNeural'}
+{'country': 'it-IT', 'gender': 'Male', 'code': 'it-IT-GiuseppeMultilingualNeural'}
+{'country': 'it-IT', 'gender': 'Male', 'code': 'it-IT-DiegoNeural'}
+{'country': 'it-IT', 'gender': 'Female', 'code': 'it-IT-ElsaNeural'}
+{'country': 'it-IT', 'gender': 'Female', 'code': 'it-IT-IsabellaNeural'}
+{'country': 'ja-JP', 'gender': 'Male', 'code': 'ja-JP-KeitaNeural'}
+{'country': 'ja-JP', 'gender': 'Female', 'code': 'ja-JP-NanamiNeural'}
+{'country': 'jv-ID', 'gender': 'Male', 'code': 'jv-ID-DimasNeural'}
+{'country': 'jv-ID', 'gender': 'Female', 'code': 'jv-ID-SitiNeural'}
+{'country': 'kn-IN', 'gender': 'Male', 'code': 'kn-IN-GaganNeural'}
+{'country': 'kn-IN', 'gender': 'Female', 'code': 'kn-IN-SapnaNeural'}
+{'country': 'kk-KZ', 'gender': 'Female', 'code': 'kk-KZ-AigulNeural'}
+{'country': 'kk-KZ', 'gender': 'Male', 'code': 'kk-KZ-DauletNeural'}
+{'country': 'km-KH', 'gender': 'Male', 'code': 'km-KH-PisethNeural'}
+{'country': 'km-KH', 'gender': 'Female', 'code': 'km-KH-SreymomNeural'}
+{'country': 'ko-KR', 'gender': 'Male', 'code': 'ko-KR-HyunsuMultilingualNeural'}
+{'country': 'ko-KR', 'gender': 'Male', 'code': 'ko-KR-InJoonNeural'}
+{'country': 'ko-KR', 'gender': 'Female', 'code': 'ko-KR-SunHiNeural'}
+{'country': 'lo-LA', 'gender': 'Male', 'code': 'lo-LA-ChanthavongNeural'}
+{'country': 'lo-LA', 'gender': 'Female', 'code': 'lo-LA-KeomanyNeural'}
+{'country': 'lv-LV', 'gender': 'Female', 'code': 'lv-LV-EveritaNeural'}
+{'country': 'lv-LV', 'gender': 'Male', 'code': 'lv-LV-NilsNeural'}
+{'country': 'lt-LT', 'gender': 'Male', 'code': 'lt-LT-LeonasNeural'}
+{'country': 'lt-LT', 'gender': 'Female', 'code': 'lt-LT-OnaNeural'}
+{'country': 'mk-MK', 'gender': 'Male', 'code': 'mk-MK-AleksandarNeural'}
+{'country': 'mk-MK', 'gender': 'Female', 'code': 'mk-MK-MarijaNeural'}
+{'country': 'ms-MY', 'gender': 'Male', 'code': 'ms-MY-OsmanNeural'}
+{'country': 'ms-MY', 'gender': 'Female', 'code': 'ms-MY-YasminNeural'}
+{'country': 'ml-IN', 'gender': 'Male', 'code': 'ml-IN-MidhunNeural'}
+{'country': 'ml-IN', 'gender': 'Female', 'code': 'ml-IN-SobhanaNeural'}
+{'country': 'mt-MT', 'gender': 'Female', 'code': 'mt-MT-GraceNeural'}
+{'country': 'mt-MT', 'gender': 'Male', 'code': 'mt-MT-JosephNeural'}
+{'country': 'mr-IN', 'gender': 'Female', 'code': 'mr-IN-AarohiNeural'}
+{'country': 'mr-IN', 'gender': 'Male', 'code': 'mr-IN-ManoharNeural'}
+{'country': 'mn-MN', 'gender': 'Male', 'code': 'mn-MN-BataaNeural'}
+{'country': 'mn-MN', 'gender': 'Female', 'code': 'mn-MN-YesuiNeural'}
+{'country': 'ne-NP', 'gender': 'Female', 'code': 'ne-NP-HemkalaNeural'}
+{'country': 'ne-NP', 'gender': 'Male', 'code': 'ne-NP-SagarNeural'}
+{'country': 'nb-NO', 'gender': 'Male', 'code': 'nb-NO-FinnNeural'}
+{'country': 'nb-NO', 'gender': 'Female', 'code': 'nb-NO-PernilleNeural'}
+{'country': 'ps-AF', 'gender': 'Male', 'code': 'ps-AF-GulNawazNeural'}
+{'country': 'ps-AF', 'gender': 'Female', 'code': 'ps-AF-LatifaNeural'}
+{'country': 'fa-IR', 'gender': 'Female', 'code': 'fa-IR-DilaraNeural'}
+{'country': 'fa-IR', 'gender': 'Male', 'code': 'fa-IR-FaridNeural'}
+{'country': 'pl-PL', 'gender': 'Male', 'code': 'pl-PL-MarekNeural'}
+{'country': 'pl-PL', 'gender': 'Female', 'code': 'pl-PL-ZofiaNeural'}
+{'country': 'pt-BR', 'gender': 'Female', 'code': 'pt-BR-ThalitaMultilingualNeural'}
+{'country': 'pt-BR', 'gender': 'Male', 'code': 'pt-BR-AntonioNeural'}
+{'country': 'pt-BR', 'gender': 'Female', 'code': 'pt-BR-FranciscaNeural'}
+{'country': 'pt-PT', 'gender': 'Male', 'code': 'pt-PT-DuarteNeural'}
+{'country': 'pt-PT', 'gender': 'Female', 'code': 'pt-PT-RaquelNeural'}
+{'country': 'ro-RO', 'gender': 'Female', 'code': 'ro-RO-AlinaNeural'}
+{'country': 'ro-RO', 'gender': 'Male', 'code': 'ro-RO-EmilNeural'}
+{'country': 'ru-RU', 'gender': 'Male', 'code': 'ru-RU-DmitryNeural'}
+{'country': 'ru-RU', 'gender': 'Female', 'code': 'ru-RU-SvetlanaNeural'}
+{'country': 'sr-RS', 'gender': 'Male', 'code': 'sr-RS-NicholasNeural'}
+{'country': 'sr-RS', 'gender': 'Female', 'code': 'sr-RS-SophieNeural'}
+{'country': 'si-LK', 'gender': 'Male', 'code': 'si-LK-SameeraNeural'}
+{'country': 'si-LK', 'gender': 'Female', 'code': 'si-LK-ThiliniNeural'}
+{'country': 'sk-SK', 'gender': 'Male', 'code': 'sk-SK-LukasNeural'}
+{'country': 'sk-SK', 'gender': 'Female', 'code': 'sk-SK-ViktoriaNeural'}
+{'country': 'sl-SI', 'gender': 'Female', 'code': 'sl-SI-PetraNeural'}
+{'country': 'sl-SI', 'gender': 'Male', 'code': 'sl-SI-RokNeural'}
+{'country': 'so-SO', 'gender': 'Male', 'code': 'so-SO-MuuseNeural'}
+{'country': 'so-SO', 'gender': 'Female', 'code': 'so-SO-UbaxNeural'}
+{'country': 'es-AR', 'gender': 'Female', 'code': 'es-AR-ElenaNeural'}
+{'country': 'es-AR', 'gender': 'Male', 'code': 'es-AR-TomasNeural'}
+{'country': 'es-BO', 'gender': 'Male', 'code': 'es-BO-MarceloNeural'}
+{'country': 'es-BO', 'gender': 'Female', 'code': 'es-BO-SofiaNeural'}
+{'country': 'es-CL', 'gender': 'Female', 'code': 'es-CL-CatalinaNeural'}
+{'country': 'es-CL', 'gender': 'Male', 'code': 'es-CL-LorenzoNeural'}
+{'country': 'es-CO', 'gender': 'Male', 'code': 'es-CO-GonzaloNeural'}
+{'country': 'es-CO', 'gender': 'Female', 'code': 'es-CO-SalomeNeural'}
+{'country': 'es-ES', 'gender': 'Female', 'code': 'es-ES-XimenaNeural'}
+{'country': 'es-CR', 'gender': 'Male', 'code': 'es-CR-JuanNeural'}
+{'country': 'es-CR', 'gender': 'Female', 'code': 'es-CR-MariaNeural'}
+{'country': 'es-CU', 'gender': 'Female', 'code': 'es-CU-BelkysNeural'}
+{'country': 'es-CU', 'gender': 'Male', 'code': 'es-CU-ManuelNeural'}
+{'country': 'es-DO', 'gender': 'Male', 'code': 'es-DO-EmilioNeural'}
+{'country': 'es-DO', 'gender': 'Female', 'code': 'es-DO-RamonaNeural'}
+{'country': 'es-EC', 'gender': 'Female', 'code': 'es-EC-AndreaNeural'}
+{'country': 'es-EC', 'gender': 'Male', 'code': 'es-EC-LuisNeural'}
+{'country': 'es-SV', 'gender': 'Female', 'code': 'es-SV-LorenaNeural'}
+{'country': 'es-SV', 'gender': 'Male', 'code': 'es-SV-RodrigoNeural'}
+{'country': 'es-GQ', 'gender': 'Male', 'code': 'es-GQ-JavierNeural'}
+{'country': 'es-GQ', 'gender': 'Female', 'code': 'es-GQ-TeresaNeural'}
+{'country': 'es-GT', 'gender': 'Male', 'code': 'es-GT-AndresNeural'}
+{'country': 'es-GT', 'gender': 'Female', 'code': 'es-GT-MartaNeural'}
+{'country': 'es-HN', 'gender': 'Male', 'code': 'es-HN-CarlosNeural'}
+{'country': 'es-HN', 'gender': 'Female', 'code': 'es-HN-KarlaNeural'}
+{'country': 'es-MX', 'gender': 'Female', 'code': 'es-MX-DaliaNeural'}
+{'country': 'es-MX', 'gender': 'Male', 'code': 'es-MX-JorgeNeural'}
+{'country': 'es-NI', 'gender': 'Male', 'code': 'es-NI-FedericoNeural'}
+{'country': 'es-NI', 'gender': 'Female', 'code': 'es-NI-YolandaNeural'}
+{'country': 'es-PA', 'gender': 'Female', 'code': 'es-PA-MargaritaNeural'}
+{'country': 'es-PA', 'gender': 'Male', 'code': 'es-PA-RobertoNeural'}
+{'country': 'es-PY', 'gender': 'Male', 'code': 'es-PY-MarioNeural'}
+{'country': 'es-PY', 'gender': 'Female', 'code': 'es-PY-TaniaNeural'}
+{'country': 'es-PE', 'gender': 'Male', 'code': 'es-PE-AlexNeural'}
+{'country': 'es-PE', 'gender': 'Female', 'code': 'es-PE-CamilaNeural'}
+{'country': 'es-PR', 'gender': 'Female', 'code': 'es-PR-KarinaNeural'}
+{'country': 'es-PR', 'gender': 'Male', 'code': 'es-PR-VictorNeural'}
+{'country': 'es-ES', 'gender': 'Male', 'code': 'es-ES-AlvaroNeural'}
+{'country': 'es-ES', 'gender': 'Female', 'code': 'es-ES-ElviraNeural'}
+{'country': 'es-US', 'gender': 'Male', 'code': 'es-US-AlonsoNeural'}
+{'country': 'es-US', 'gender': 'Female', 'code': 'es-US-PalomaNeural'}
+{'country': 'es-UY', 'gender': 'Male', 'code': 'es-UY-MateoNeural'}
+{'country': 'es-UY', 'gender': 'Female', 'code': 'es-UY-ValentinaNeural'}
+{'country': 'es-VE', 'gender': 'Female', 'code': 'es-VE-PaolaNeural'}
+{'country': 'es-VE', 'gender': 'Male', 'code': 'es-VE-SebastianNeural'}
+{'country': 'su-ID', 'gender': 'Male', 'code': 'su-ID-JajangNeural'}
+{'country': 'su-ID', 'gender': 'Female', 'code': 'su-ID-TutiNeural'}
+{'country': 'sw-KE', 'gender': 'Male', 'code': 'sw-KE-RafikiNeural'}
+{'country': 'sw-KE', 'gender': 'Female', 'code': 'sw-KE-ZuriNeural'}
+{'country': 'sw-TZ', 'gender': 'Male', 'code': 'sw-TZ-DaudiNeural'}
+{'country': 'sw-TZ', 'gender': 'Female', 'code': 'sw-TZ-RehemaNeural'}
+{'country': 'sv-SE', 'gender': 'Male', 'code': 'sv-SE-MattiasNeural'}
+{'country': 'sv-SE', 'gender': 'Female', 'code': 'sv-SE-SofieNeural'}
+{'country': 'ta-IN', 'gender': 'Female', 'code': 'ta-IN-PallaviNeural'}
+{'country': 'ta-IN', 'gender': 'Male', 'code': 'ta-IN-ValluvarNeural'}
+{'country': 'ta-MY', 'gender': 'Female', 'code': 'ta-MY-KaniNeural'}
+{'country': 'ta-MY', 'gender': 'Male', 'code': 'ta-MY-SuryaNeural'}
+{'country': 'ta-SG', 'gender': 'Male', 'code': 'ta-SG-AnbuNeural'}
+{'country': 'ta-SG', 'gender': 'Female', 'code': 'ta-SG-VenbaNeural'}
+{'country': 'ta-LK', 'gender': 'Male', 'code': 'ta-LK-KumarNeural'}
+{'country': 'ta-LK', 'gender': 'Female', 'code': 'ta-LK-SaranyaNeural'}
+{'country': 'te-IN', 'gender': 'Male', 'code': 'te-IN-MohanNeural'}
+{'country': 'te-IN', 'gender': 'Female', 'code': 'te-IN-ShrutiNeural'}
+{'country': 'th-TH', 'gender': 'Male', 'code': 'th-TH-NiwatNeural'}
+{'country': 'th-TH', 'gender': 'Female', 'code': 'th-TH-PremwadeeNeural'}
+{'country': 'tr-TR', 'gender': 'Female', 'code': 'tr-TR-EmelNeural'}
+{'country': 'tr-TR', 'gender': 'Male', 'code': 'tr-TR-AhmetNeural'}
+{'country': 'uk-UA', 'gender': 'Male', 'code': 'uk-UA-OstapNeural'}
+{'country': 'uk-UA', 'gender': 'Female', 'code': 'uk-UA-PolinaNeural'}
+{'country': 'ur-IN', 'gender': 'Female', 'code': 'ur-IN-GulNeural'}
+{'country': 'ur-IN', 'gender': 'Male', 'code': 'ur-IN-SalmanNeural'}
+{'country': 'ur-PK', 'gender': 'Male', 'code': 'ur-PK-AsadNeural'}
+{'country': 'ur-PK', 'gender': 'Female', 'code': 'ur-PK-UzmaNeural'}
+{'country': 'uz-UZ', 'gender': 'Female', 'code': 'uz-UZ-MadinaNeural'}
+{'country': 'uz-UZ', 'gender': 'Male', 'code': 'uz-UZ-SardorNeural'}
+{'country': 'vi-VN', 'gender': 'Female', 'code': 'vi-VN-HoaiMyNeural'}
+{'country': 'vi-VN', 'gender': 'Male', 'code': 'vi-VN-NamMinhNeural'}
+{'country': 'cy-GB', 'gender': 'Male', 'code': 'cy-GB-AledNeural'}
+{'country': 'cy-GB', 'gender': 'Female', 'code': 'cy-GB-NiaNeural'}
+{'country': 'zu-ZA', 'gender': 'Female', 'code': 'zu-ZA-ThandoNeural'}
+{'country': 'zu-ZA', 'gender': 'Male', 'code': 'zu-ZA-ThembaNeural'}
