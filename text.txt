@@ -1,0 +1,1003 @@
+  Full Name: Microsoft Emily Online (Natural) - English (Ireland)
+Name: en-KE-AsiliaNeural
+  Gender: Female
+  Locale: en-KE
+  Full Name: Microsoft Asilia Online (Natural) - English (Kenya)
+Name: en-KE-ChilembaNeural
+  Gender: Male
+  Locale: en-KE
+  Full Name: Microsoft Chilemba Online (Natural) - English (Kenya)
+Name: en-NZ-MitchellNeural
+  Gender: Male
+  Locale: en-NZ
+  Full Name: Microsoft Mitchell Online (Natural) - English (New Zealand)
+Name: en-NZ-MollyNeural
+  Gender: Female
+  Locale: en-NZ
+  Full Name: Microsoft Molly Online (Natural) - English (New Zealand)
+Name: en-NG-AbeoNeural
+  Gender: Male
+  Locale: en-NG
+  Full Name: Microsoft Abeo Online (Natural) - English (Nigeria)
+Name: en-NG-EzinneNeural
+  Gender: Female
+  Locale: en-NG
+  Full Name: Microsoft Ezinne Online (Natural) - English (Nigeria)
+Name: en-PH-JamesNeural
+  Gender: Male
+  Locale: en-PH
+  Full Name: Microsoft James Online (Natural) - English (Philippines)
+Name: en-PH-RosaNeural
+  Gender: Female
+  Locale: en-PH
+  Full Name: Microsoft Rosa Online (Natural) - English (Philippines)
+Name: en-US-AvaNeural
+  Gender: Female
+  Locale: en-US
+  Full Name: Microsoft Ava Online (Natural) - English (United States)
+Name: en-US-AndrewNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft Andrew Online (Natural) - English (United States)
+Name: en-US-EmmaNeural
+  Gender: Female
+  Locale: en-US
+  Full Name: Microsoft Emma Online (Natural) - English (United States)
+Name: en-US-BrianNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft Brian Online (Natural) - English (United States)
+Name: en-SG-LunaNeural
+  Gender: Female
+  Locale: en-SG
+  Full Name: Microsoft Luna Online (Natural) - English (Singapore)
+Name: en-SG-WayneNeural
+  Gender: Male
+  Locale: en-SG
+  Full Name: Microsoft Wayne Online (Natural) - English (Singapore)
+Name: en-ZA-LeahNeural
+  Gender: Female
+  Locale: en-ZA
+  Full Name: Microsoft Leah Online (Natural) - English (South Africa)
+Name: en-ZA-LukeNeural
+  Gender: Male
+  Locale: en-ZA
+  Full Name: Microsoft Luke Online (Natural) - English (South Africa)
+Name: en-TZ-ElimuNeural
+  Gender: Male
+  Locale: en-TZ
+  Full Name: Microsoft Elimu Online (Natural) - English (Tanzania)
+Name: en-TZ-ImaniNeural
+  Gender: Female
+  Locale: en-TZ
+  Full Name: Microsoft Imani Online (Natural) - English (Tanzania)
+Name: en-GB-LibbyNeural
+  Gender: Female
+  Locale: en-GB
+  Full Name: Microsoft Libby Online (Natural) - English (United Kingdom)
+Name: en-GB-MaisieNeural
+  Gender: Female
+  Locale: en-GB
+  Full Name: Microsoft Maisie Online (Natural) - English (United Kingdom)
+Name: en-GB-RyanNeural
+  Gender: Male
+  Locale: en-GB
+  Full Name: Microsoft Ryan Online (Natural) - English (United Kingdom)
+Name: en-GB-SoniaNeural
+  Gender: Female
+  Locale: en-GB
+  Full Name: Microsoft Sonia Online (Natural) - English (United Kingdom)
+Name: en-GB-ThomasNeural
+  Gender: Male
+  Locale: en-GB
+  Full Name: Microsoft Thomas Online (Natural) - English (United Kingdom)
+Name: en-US-AnaNeural
+  Gender: Female
+  Locale: en-US
+  Full Name: Microsoft Ana Online (Natural) - English (United States)
+Name: en-US-AndrewMultilingualNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft AndrewMultilingual Online (Natural) - English (United States)
+Name: en-US-AriaNeural
+  Gender: Female
+  Locale: en-US
+  Full Name: Microsoft Aria Online (Natural) - English (United States)
+Name: en-US-AvaMultilingualNeural
+  Gender: Female
+  Locale: en-US
+  Full Name: Microsoft AvaMultilingual Online (Natural) - English (United States)
+Name: en-US-BrianMultilingualNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft BrianMultilingual Online (Natural) - English (United States)
+Name: en-US-ChristopherNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft Christopher Online (Natural) - English (United States)
+Name: en-US-EmmaMultilingualNeural
+  Gender: Female
+  Locale: en-US
+  Full Name: Microsoft EmmaMultilingual Online (Natural) - English (United States)
+Name: en-US-EricNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft Eric Online (Natural) - English (United States)
+Name: en-US-GuyNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft Guy Online (Natural) - English (United States)
+Name: en-US-JennyNeural
+  Gender: Female
+  Locale: en-US
+  Full Name: Microsoft Jenny Online (Natural) - English (United States)
+Name: en-US-MichelleNeural
+  Gender: Female
+  Locale: en-US
+  Full Name: Microsoft Michelle Online (Natural) - English (United States)
+Name: en-US-RogerNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft Roger Online (Natural) - English (United States)
+Name: en-US-SteffanNeural
+  Gender: Male
+  Locale: en-US
+  Full Name: Microsoft Steffan Online (Natural) - English (United States)
+Name: et-EE-AnuNeural
+  Gender: Female
+  Locale: et-EE
+  Full Name: Microsoft Anu Online (Natural) - Estonian (Estonia)
+Name: et-EE-KertNeural
+  Gender: Male
+  Locale: et-EE
+  Full Name: Microsoft Kert Online (Natural) - Estonian (Estonia)
+Name: fil-PH-AngeloNeural
+  Gender: Male
+  Locale: fil-PH
+  Full Name: Microsoft Angelo Online (Natural) - Filipino (Philippines)
+Name: fil-PH-BlessicaNeural
+  Gender: Female
+  Locale: fil-PH
+  Full Name: Microsoft Blessica Online (Natural) - Filipino (Philippines)
+Name: fi-FI-HarriNeural
+  Gender: Male
+  Locale: fi-FI
+  Full Name: Microsoft Harri Online (Natural) - Finnish (Finland)
+Name: fi-FI-NooraNeural
+  Gender: Female
+  Locale: fi-FI
+  Full Name: Microsoft Noora Online (Natural) - Finnish (Finland)
+Name: fr-BE-CharlineNeural
+  Gender: Female
+  Locale: fr-BE
+  Full Name: Microsoft Charline Online (Natural) - French (Belgium)
+Name: fr-BE-GerardNeural
+  Gender: Male
+  Locale: fr-BE
+  Full Name: Microsoft Gerard Online (Natural) - French (Belgium)
+Name: fr-CA-ThierryNeural
+  Gender: Male
+  Locale: fr-CA
+  Full Name: Microsoft Thierry Online (Natural) - French (Canada)
+Name: fr-CA-AntoineNeural
+  Gender: Male
+  Locale: fr-CA
+  Full Name: Microsoft Antoine Online (Natural) - French (Canada)
+Name: fr-CA-JeanNeural
+  Gender: Male
+  Locale: fr-CA
+  Full Name: Microsoft Jean Online (Natural) - French (Canada)
+Name: fr-CA-SylvieNeural
+  Gender: Female
+  Locale: fr-CA
+  Full Name: Microsoft Sylvie Online (Natural) - French (Canada)
+Name: fr-FR-VivienneMultilingualNeural
+  Gender: Female
+  Locale: fr-FR
+  Full Name: Microsoft VivienneMultilingual Online (Natural) - French (France)
+Name: fr-FR-RemyMultilingualNeural
+  Gender: Male
+  Locale: fr-FR
+  Full Name: Microsoft RemyMultilingual Online (Natural) - French (France)
+Name: fr-FR-DeniseNeural
+  Gender: Female
+  Locale: fr-FR
+  Full Name: Microsoft Denise Online (Natural) - French (France)
+Name: fr-FR-EloiseNeural
+  Gender: Female
+  Locale: fr-FR
+  Full Name: Microsoft Eloise Online (Natural) - French (France)
+Name: fr-FR-HenriNeural
+  Gender: Male
+  Locale: fr-FR
+  Full Name: Microsoft Henri Online (Natural) - French (France)
+Name: fr-CH-ArianeNeural
+  Gender: Female
+  Locale: fr-CH
+  Full Name: Microsoft Ariane Online (Natural) - French (Switzerland)
+Name: fr-CH-FabriceNeural
+  Gender: Male
+  Locale: fr-CH
+  Full Name: Microsoft Fabrice Online (Natural) - French (Switzerland)
+Name: gl-ES-RoiNeural
+  Gender: Male
+  Locale: gl-ES
+  Full Name: Microsoft Roi Online (Natural) - Galician
+Name: gl-ES-SabelaNeural
+  Gender: Female
+  Locale: gl-ES
+  Full Name: Microsoft Sabela Online (Natural) - Galician
+Name: ka-GE-EkaNeural
+  Gender: Female
+  Locale: ka-GE
+  Full Name: Microsoft Eka Online (Natural) - Georgian (Georgia)
+Name: ka-GE-GiorgiNeural
+  Gender: Male
+  Locale: ka-GE
+  Full Name: Microsoft Giorgi Online (Natural) - Georgian (Georgia)
+Name: de-AT-IngridNeural
+  Gender: Female
+  Locale: de-AT
+  Full Name: Microsoft Ingrid Online (Natural) - German (Austria)
+Name: de-AT-JonasNeural
+  Gender: Male
+  Locale: de-AT
+  Full Name: Microsoft Jonas Online (Natural) - German (Austria)
+Name: de-DE-SeraphinaMultilingualNeural
+  Gender: Female
+  Locale: de-DE
+  Full Name: Microsoft SeraphinaMultilingual Online (Natural) - German (Germany)
+Name: de-DE-FlorianMultilingualNeural
+  Gender: Male
+  Locale: de-DE
+  Full Name: Microsoft FlorianMultilingual Online (Natural) - German (Germany)
+Name: de-DE-AmalaNeural
+  Gender: Female
+  Locale: de-DE
+  Full Name: Microsoft Amala Online (Natural) - German (Germany)
+Name: de-DE-ConradNeural
+  Gender: Male
+  Locale: de-DE
+  Full Name: Microsoft Conrad Online (Natural) - German (Germany)
+Name: de-DE-KatjaNeural
+  Gender: Female
+  Locale: de-DE
+  Full Name: Microsoft Katja Online (Natural) - German (Germany)
+Name: de-DE-KillianNeural
+  Gender: Male
+  Locale: de-DE
+  Full Name: Microsoft Killian Online (Natural) - German (Germany)
+Name: de-CH-JanNeural
+  Gender: Male
+  Locale: de-CH
+  Full Name: Microsoft Jan Online (Natural) - German (Switzerland)
+Name: de-CH-LeniNeural
+  Gender: Female
+  Locale: de-CH
+  Full Name: Microsoft Leni Online (Natural) - German (Switzerland)
+Name: el-GR-AthinaNeural
+  Gender: Female
+  Locale: el-GR
+  Full Name: Microsoft Athina Online (Natural) - Greek (Greece)
+Name: el-GR-NestorasNeural
+  Gender: Male
+  Locale: el-GR
+  Full Name: Microsoft Nestoras Online (Natural) - Greek (Greece)
+Name: gu-IN-DhwaniNeural
+  Gender: Female
+  Locale: gu-IN
+  Full Name: Microsoft Dhwani Online (Natural) - Gujarati (India)
+Name: gu-IN-NiranjanNeural
+  Gender: Male
+  Locale: gu-IN
+  Full Name: Microsoft Niranjan Online (Natural) - Gujarati (India)
+Name: he-IL-AvriNeural
+  Gender: Male
+  Locale: he-IL
+  Full Name: Microsoft Avri Online (Natural) - Hebrew (Israel)
+Name: he-IL-HilaNeural
+  Gender: Female
+  Locale: he-IL
+  Full Name: Microsoft Hila Online (Natural) - Hebrew (Israel)
+Name: hi-IN-MadhurNeural
+  Gender: Male
+  Locale: hi-IN
+  Full Name: Microsoft Madhur Online (Natural) - Hindi (India)
+Name: hi-IN-SwaraNeural
+  Gender: Female
+  Locale: hi-IN
+  Full Name: Microsoft Swara Online (Natural) - Hindi (India)
+Name: hu-HU-NoemiNeural
+  Gender: Female
+  Locale: hu-HU
+  Full Name: Microsoft Noemi Online (Natural) - Hungarian (Hungary)
+Name: hu-HU-TamasNeural
+  Gender: Male
+  Locale: hu-HU
+  Full Name: Microsoft Tamas Online (Natural) - Hungarian (Hungary)
+Name: is-IS-GudrunNeural
+  Gender: Female
+  Locale: is-IS
+  Full Name: Microsoft Gudrun Online (Natural) - Icelandic (Iceland)
+Name: is-IS-GunnarNeural
+  Gender: Male
+  Locale: is-IS
+  Full Name: Microsoft Gunnar Online (Natural) - Icelandic (Iceland)
+Name: id-ID-ArdiNeural
+  Gender: Male
+  Locale: id-ID
+  Full Name: Microsoft Ardi Online (Natural) - Indonesian (Indonesia)
+Name: id-ID-GadisNeural
+  Gender: Female
+  Locale: id-ID
+  Full Name: Microsoft Gadis Online (Natural) - Indonesian (Indonesia)
+Name: iu-Latn-CA-SiqiniqNeural
+  Gender: Female
+  Locale: iu-Latn-CA
+  Full Name: Microsoft Siqiniq Online (Natural) - Inuktitut (Latin, Canada)
+Name: iu-Latn-CA-TaqqiqNeural
+  Gender: Male
+  Locale: iu-Latn-CA
+  Full Name: Microsoft Taqqiq Online (Natural) - Inuktitut (Latin, Canada)
+Name: iu-Cans-CA-SiqiniqNeural
+  Gender: Female
+  Locale: iu-Cans-CA
+  Full Name: Microsoft Siqiniq Online (Natural) - Inuktitut (Syllabics, Canada)
+Name: iu-Cans-CA-TaqqiqNeural
+  Gender: Male
+  Locale: iu-Cans-CA
+  Full Name: Microsoft Taqqiq Online (Natural) - Inuktitut (Syllabics, Canada)
+Name: ga-IE-ColmNeural
+  Gender: Male
+  Locale: ga-IE
+  Full Name: Microsoft Colm Online (Natural) - Irish (Ireland)
+Name: ga-IE-OrlaNeural
+  Gender: Female
+  Locale: ga-IE
+  Full Name: Microsoft Orla Online (Natural) - Irish (Ireland)
+Name: it-IT-GiuseppeMultilingualNeural
+  Gender: Male
+  Locale: it-IT
+  Full Name: Microsoft GiuseppeMultilingual Online (Natural) - Italian (Italy)
+Name: it-IT-DiegoNeural
+  Gender: Male
+  Locale: it-IT
+  Full Name: Microsoft Diego Online (Natural) - Italian (Italy)
+Name: it-IT-ElsaNeural
+  Gender: Female
+  Locale: it-IT
+  Full Name: Microsoft Elsa Online (Natural) - Italian (Italy)
+Name: it-IT-IsabellaNeural
+  Gender: Female
+  Locale: it-IT
+  Full Name: Microsoft Isabella Online (Natural) - Italian (Italy)
+Name: ja-JP-KeitaNeural
+  Gender: Male
+  Locale: ja-JP
+  Full Name: Microsoft Keita Online (Natural) - Japanese (Japan)
+Name: ja-JP-NanamiNeural
+  Gender: Female
+  Locale: ja-JP
+  Full Name: Microsoft Nanami Online (Natural) - Japanese (Japan)
+Name: jv-ID-DimasNeural
+  Gender: Male
+  Locale: jv-ID
+  Full Name: Microsoft Dimas Online (Natural) - Javanese (Indonesia)
+Name: jv-ID-SitiNeural
+  Gender: Female
+  Locale: jv-ID
+  Full Name: Microsoft Siti Online (Natural) - Javanese (Indonesia)
+Name: kn-IN-GaganNeural
+  Gender: Male
+  Locale: kn-IN
+  Full Name: Microsoft Gagan Online (Natural) - Kannada (India)
+Name: kn-IN-SapnaNeural
+  Gender: Female
+  Locale: kn-IN
+  Full Name: Microsoft Sapna Online (Natural) - Kannada (India)
+Name: kk-KZ-AigulNeural
+  Gender: Female
+  Locale: kk-KZ
+  Full Name: Microsoft Aigul Online (Natural) - Kazakh (Kazakhstan)
+Name: kk-KZ-DauletNeural
+  Gender: Male
+  Locale: kk-KZ
+  Full Name: Microsoft Daulet Online (Natural) - Kazakh (Kazakhstan)
+Name: km-KH-PisethNeural
+  Gender: Male
+  Locale: km-KH
+  Full Name: Microsoft Piseth Online (Natural) - Khmer (Cambodia)
+Name: km-KH-SreymomNeural
+  Gender: Female
+  Locale: km-KH
+  Full Name: Microsoft Sreymom Online (Natural) - Khmer (Cambodia)
+Name: ko-KR-HyunsuMultilingualNeural
+  Gender: Male
+  Locale: ko-KR
+  Full Name: Microsoft HyunsuMultilingual Online (Natural) - Korean (Korea)
+Name: ko-KR-InJoonNeural
+  Gender: Male
+  Locale: ko-KR
+  Full Name: Microsoft InJoon Online (Natural) - Korean (Korea)
+Name: ko-KR-SunHiNeural
+  Gender: Female
+  Locale: ko-KR
+  Full Name: Microsoft SunHi Online (Natural) - Korean (Korea)
+Name: lo-LA-ChanthavongNeural
+  Gender: Male
+  Locale: lo-LA
+  Full Name: Microsoft Chanthavong Online (Natural) - Lao (Laos)
+Name: lo-LA-KeomanyNeural
+  Gender: Female
+  Locale: lo-LA
+  Full Name: Microsoft Keomany Online (Natural) - Lao (Laos)
+Name: lv-LV-EveritaNeural
+  Gender: Female
+  Locale: lv-LV
+  Full Name: Microsoft Everita Online (Natural) - Latvian (Latvia)
+Name: lv-LV-NilsNeural
+  Gender: Male
+  Locale: lv-LV
+  Full Name: Microsoft Nils Online (Natural) - Latvian (Latvia)
+Name: lt-LT-LeonasNeural
+  Gender: Male
+  Locale: lt-LT
+  Full Name: Microsoft Leonas Online (Natural) - Lithuanian (Lithuania)
+Name: lt-LT-OnaNeural
+  Gender: Female
+  Locale: lt-LT
+  Full Name: Microsoft Ona Online (Natural) - Lithuanian (Lithuania)
+Name: mk-MK-AleksandarNeural
+  Gender: Male
+  Locale: mk-MK
+  Full Name: Microsoft Aleksandar Online (Natural) - Macedonian (North Macedonia)
+Name: mk-MK-MarijaNeural
+  Gender: Female
+  Locale: mk-MK
+  Full Name: Microsoft Marija Online (Natural) - Macedonian (North Macedonia)
+Name: ms-MY-OsmanNeural
+  Gender: Male
+  Locale: ms-MY
+  Full Name: Microsoft Osman Online (Natural) - Malay (Malaysia)
+Name: ms-MY-YasminNeural
+  Gender: Female
+  Locale: ms-MY
+  Full Name: Microsoft Yasmin Online (Natural) - Malay (Malaysia)
+Name: ml-IN-MidhunNeural
+  Gender: Male
+  Locale: ml-IN
+  Full Name: Microsoft Midhun Online (Natural) - Malayalam (India)
+Name: ml-IN-SobhanaNeural
+  Gender: Female
+  Locale: ml-IN
+  Full Name: Microsoft Sobhana Online (Natural) - Malayalam (India)
+Name: mt-MT-GraceNeural
+  Gender: Female
+  Locale: mt-MT
+  Full Name: Microsoft Grace Online (Natural) - Maltese (Malta)
+Name: mt-MT-JosephNeural
+  Gender: Male
+  Locale: mt-MT
+  Full Name: Microsoft Joseph Online (Natural) - Maltese (Malta)
+Name: mr-IN-AarohiNeural
+  Gender: Female
+  Locale: mr-IN
+  Full Name: Microsoft Aarohi Online (Natural) - Marathi (India)
+Name: mr-IN-ManoharNeural
+  Gender: Male
+  Locale: mr-IN
+  Full Name: Microsoft Manohar Online (Natural) - Marathi (India)
+Name: mn-MN-BataaNeural
+  Gender: Male
+  Locale: mn-MN
+  Full Name: Microsoft Bataa Online (Natural) - Mongolian (Mongolia)
+Name: mn-MN-YesuiNeural
+  Gender: Female
+  Locale: mn-MN
+  Full Name: Microsoft Yesui Online (Natural) - Mongolian (Mongolia)
+Name: ne-NP-HemkalaNeural
+  Gender: Female
+  Locale: ne-NP
+  Full Name: Microsoft Hemkala Online (Natural) - Nepali (Nepal)
+Name: ne-NP-SagarNeural
+  Gender: Male
+  Locale: ne-NP
+  Full Name: Microsoft Sagar Online (Natural) - Nepali (Nepal)
+Name: nb-NO-FinnNeural
+  Gender: Male
+  Locale: nb-NO
+  Full Name: Microsoft Finn Online (Natural) - Norwegian (Bokmål Norway)
+Name: nb-NO-PernilleNeural
+  Gender: Female
+  Locale: nb-NO
+  Full Name: Microsoft Pernille Online (Natural) - Norwegian (Bokmål, Norway)
+Name: ps-AF-GulNawazNeural
+  Gender: Male
+  Locale: ps-AF
+  Full Name: Microsoft GulNawaz Online (Natural) - Pashto (Afghanistan)
+Name: ps-AF-LatifaNeural
+  Gender: Female
+  Locale: ps-AF
+  Full Name: Microsoft Latifa Online (Natural) - Pashto (Afghanistan)
+Name: fa-IR-DilaraNeural
+  Gender: Female
+  Locale: fa-IR
+  Full Name: Microsoft Dilara Online (Natural) - Persian (Iran)
+Name: fa-IR-FaridNeural
+  Gender: Male
+  Locale: fa-IR
+  Full Name: Microsoft Farid Online (Natural) - Persian (Iran)
+Name: pl-PL-MarekNeural
+  Gender: Male
+  Locale: pl-PL
+  Full Name: Microsoft Marek Online (Natural) - Polish (Poland)
+Name: pl-PL-ZofiaNeural
+  Gender: Female
+  Locale: pl-PL
+  Full Name: Microsoft Zofia Online (Natural) - Polish (Poland)
+Name: pt-BR-ThalitaMultilingualNeural
+  Gender: Female
+  Locale: pt-BR
+  Full Name: Microsoft ThalitaMultilingual Online (Natural) - Portuguese (Brazil)
+Name: pt-BR-AntonioNeural
+  Gender: Male
+  Locale: pt-BR
+  Full Name: Microsoft Antonio Online (Natural) - Portuguese (Brazil)
+Name: pt-BR-FranciscaNeural
+  Gender: Female
+  Locale: pt-BR
+  Full Name: Microsoft Francisca Online (Natural) - Portuguese (Brazil)
+Name: pt-PT-DuarteNeural
+  Gender: Male
+  Locale: pt-PT
+  Full Name: Microsoft Duarte Online (Natural) - Portuguese (Portugal)
+Name: pt-PT-RaquelNeural
+  Gender: Female
+  Locale: pt-PT
+  Full Name: Microsoft Raquel Online (Natural) - Portuguese (Portugal)
+Name: ro-RO-AlinaNeural
+  Gender: Female
+  Locale: ro-RO
+  Full Name: Microsoft Alina Online (Natural) - Romanian (Romania)
+Name: ro-RO-EmilNeural
+  Gender: Male
+  Locale: ro-RO
+  Full Name: Microsoft Emil Online (Natural) - Romanian (Romania)
+Name: ru-RU-DmitryNeural
+  Gender: Male
+  Locale: ru-RU
+  Full Name: Microsoft Dmitry Online (Natural) - Russian (Russia)
+Name: ru-RU-SvetlanaNeural
+  Gender: Female
+  Locale: ru-RU
+  Full Name: Microsoft Svetlana Online (Natural) - Russian (Russia)
+Name: sr-RS-NicholasNeural
+  Gender: Male
+  Locale: sr-RS
+  Full Name: Microsoft Nicholas Online (Natural) - Serbian (Serbia)
+Name: sr-RS-SophieNeural
+  Gender: Female
+  Locale: sr-RS
+  Full Name: Microsoft Sophie Online (Natural) - Serbian (Serbia)
+Name: si-LK-SameeraNeural
+  Gender: Male
+  Locale: si-LK
+  Full Name: Microsoft Sameera Online (Natural) - Sinhala (Sri Lanka)
+Name: si-LK-ThiliniNeural
+  Gender: Female
+  Locale: si-LK
+  Full Name: Microsoft Thilini Online (Natural) - Sinhala (Sri Lanka)
+Name: sk-SK-LukasNeural
+  Gender: Male
+  Locale: sk-SK
+  Full Name: Microsoft Lukas Online (Natural) - Slovak (Slovakia)
+Name: sk-SK-ViktoriaNeural
+  Gender: Female
+  Locale: sk-SK
+  Full Name: Microsoft Viktoria Online (Natural) - Slovak (Slovakia)
+Name: sl-SI-PetraNeural
+  Gender: Female
+  Locale: sl-SI
+  Full Name: Microsoft Petra Online (Natural) - Slovenian (Slovenia)
+Name: sl-SI-RokNeural
+  Gender: Male
+  Locale: sl-SI
+  Full Name: Microsoft Rok Online (Natural) - Slovenian (Slovenia)
+Name: so-SO-MuuseNeural
+  Gender: Male
+  Locale: so-SO
+  Full Name: Microsoft Muuse Online (Natural) - Somali (Somalia)
+Name: so-SO-UbaxNeural
+  Gender: Female
+  Locale: so-SO
+  Full Name: Microsoft Ubax Online (Natural) - Somali (Somalia)
+Name: es-AR-ElenaNeural
+  Gender: Female
+  Locale: es-AR
+  Full Name: Microsoft Elena Online (Natural) - Spanish (Argentina)
+Name: es-AR-TomasNeural
+  Gender: Male
+  Locale: es-AR
+  Full Name: Microsoft Tomas Online (Natural) - Spanish (Argentina)
+Name: es-BO-MarceloNeural
+  Gender: Male
+  Locale: es-BO
+  Full Name: Microsoft Marcelo Online (Natural) - Spanish (Bolivia)
+Name: es-BO-SofiaNeural
+  Gender: Female
+  Locale: es-BO
+  Full Name: Microsoft Sofia Online (Natural) - Spanish (Bolivia)
+Name: es-CL-CatalinaNeural
+  Gender: Female
+  Locale: es-CL
+  Full Name: Microsoft Catalina Online (Natural) - Spanish (Chile)
+Name: es-CL-LorenzoNeural
+  Gender: Male
+  Locale: es-CL
+  Full Name: Microsoft Lorenzo Online (Natural) - Spanish (Chile)
+Name: es-CO-GonzaloNeural
+  Gender: Male
+  Locale: es-CO
+  Full Name: Microsoft Gonzalo Online (Natural) - Spanish (Colombia)
+Name: es-CO-SalomeNeural
+  Gender: Female
+  Locale: es-CO
+  Full Name: Microsoft Salome Online (Natural) - Spanish (Colombia)
+Name: es-ES-XimenaNeural
+  Gender: Female
+  Locale: es-ES
+  Full Name: Microsoft Ximena Online (Natural) - Spanish (Colombia)
+Name: es-CR-JuanNeural
+  Gender: Male
+  Locale: es-CR
+  Full Name: Microsoft Juan Online (Natural) - Spanish (Costa Rica)
+Name: es-CR-MariaNeural
+  Gender: Female
+  Locale: es-CR
+  Full Name: Microsoft Maria Online (Natural) - Spanish (Costa Rica)
+Name: es-CU-BelkysNeural
+  Gender: Female
+  Locale: es-CU
+  Full Name: Microsoft Belkys Online (Natural) - Spanish (Cuba)
+Name: es-CU-ManuelNeural
+  Gender: Male
+  Locale: es-CU
+  Full Name: Microsoft Manuel Online (Natural) - Spanish (Cuba)
+Name: es-DO-EmilioNeural
+  Gender: Male
+  Locale: es-DO
+  Full Name: Microsoft Emilio Online (Natural) - Spanish (Dominican Republic)
+Name: es-DO-RamonaNeural
+  Gender: Female
+  Locale: es-DO
+  Full Name: Microsoft Ramona Online (Natural) - Spanish (Dominican Republic)
+Name: es-EC-AndreaNeural
+  Gender: Female
+  Locale: es-EC
+  Full Name: Microsoft Andrea Online (Natural) - Spanish (Ecuador)
+Name: es-EC-LuisNeural
+  Gender: Male
+  Locale: es-EC
+  Full Name: Microsoft Luis Online (Natural) - Spanish (Ecuador)
+Name: es-SV-LorenaNeural
+  Gender: Female
+  Locale: es-SV
+  Full Name: Microsoft Lorena Online (Natural) - Spanish (El Salvador)
+Name: es-SV-RodrigoNeural
+  Gender: Male
+  Locale: es-SV
+  Full Name: Microsoft Rodrigo Online (Natural) - Spanish (El Salvador)
+Name: es-GQ-JavierNeural
+  Gender: Male
+  Locale: es-GQ
+  Full Name: Microsoft Javier Online (Natural) - Spanish (Equatorial Guinea)
+Name: es-GQ-TeresaNeural
+  Gender: Female
+  Locale: es-GQ
+  Full Name: Microsoft Teresa Online (Natural) - Spanish (Equatorial Guinea)
+Name: es-GT-AndresNeural
+  Gender: Male
+  Locale: es-GT
+  Full Name: Microsoft Andres Online (Natural) - Spanish (Guatemala)
+Name: es-GT-MartaNeural
+  Gender: Female
+  Locale: es-GT
+  Full Name: Microsoft Marta Online (Natural) - Spanish (Guatemala)
+Name: es-HN-CarlosNeural
+  Gender: Male
+  Locale: es-HN
+  Full Name: Microsoft Carlos Online (Natural) - Spanish (Honduras)
+Name: es-HN-KarlaNeural
+  Gender: Female
+  Locale: es-HN
+  Full Name: Microsoft Karla Online (Natural) - Spanish (Honduras)
+Name: es-MX-DaliaNeural
+  Gender: Female
+  Locale: es-MX
+  Full Name: Microsoft Dalia Online (Natural) - Spanish (Mexico)
+Name: es-MX-JorgeNeural
+  Gender: Male
+  Locale: es-MX
+  Full Name: Microsoft Jorge Online (Natural) - Spanish (Mexico)
+Name: es-NI-FedericoNeural
+  Gender: Male
+  Locale: es-NI
+  Full Name: Microsoft Federico Online (Natural) - Spanish (Nicaragua)
+Name: es-NI-YolandaNeural
+  Gender: Female
+  Locale: es-NI
+  Full Name: Microsoft Yolanda Online (Natural) - Spanish (Nicaragua)
+Name: es-PA-MargaritaNeural
+  Gender: Female
+  Locale: es-PA
+  Full Name: Microsoft Margarita Online (Natural) - Spanish (Panama)
+Name: es-PA-RobertoNeural
+  Gender: Male
+  Locale: es-PA
+  Full Name: Microsoft Roberto Online (Natural) - Spanish (Panama)
+Name: es-PY-MarioNeural
+  Gender: Male
+  Locale: es-PY
+  Full Name: Microsoft Mario Online (Natural) - Spanish (Paraguay)
+Name: es-PY-TaniaNeural
+  Gender: Female
+  Locale: es-PY
+  Full Name: Microsoft Tania Online (Natural) - Spanish (Paraguay)
+Name: es-PE-AlexNeural
+  Gender: Male
+  Locale: es-PE
+  Full Name: Microsoft Alex Online (Natural) - Spanish (Peru)
+Name: es-PE-CamilaNeural
+  Gender: Female
+  Locale: es-PE
+  Full Name: Microsoft Camila Online (Natural) - Spanish (Peru)
+Name: es-PR-KarinaNeural
+  Gender: Female
+  Locale: es-PR
+  Full Name: Microsoft Karina Online (Natural) - Spanish (Puerto Rico)
+Name: es-PR-VictorNeural
+  Gender: Male
+  Locale: es-PR
+  Full Name: Microsoft Victor Online (Natural) - Spanish (Puerto Rico)
+Name: es-ES-AlvaroNeural
+  Gender: Male
+  Locale: es-ES
+  Full Name: Microsoft Alvaro Online (Natural) - Spanish (Spain)
+Name: es-ES-ElviraNeural
+  Gender: Female
+  Locale: es-ES
+  Full Name: Microsoft Elvira Online (Natural) - Spanish (Spain)
+Name: es-US-AlonsoNeural
+  Gender: Male
+  Locale: es-US
+  Full Name: Microsoft Alonso Online (Natural) - Spanish (United States)
+Name: es-US-PalomaNeural
+  Gender: Female
+  Locale: es-US
+  Full Name: Microsoft Paloma Online (Natural) - Spanish (United States)
+Name: es-UY-MateoNeural
+  Gender: Male
+  Locale: es-UY
+  Full Name: Microsoft Mateo Online (Natural) - Spanish (Uruguay)
+Name: es-UY-ValentinaNeural
+  Gender: Female
+  Locale: es-UY
+  Full Name: Microsoft Valentina Online (Natural) - Spanish (Uruguay)
+Name: es-VE-PaolaNeural
+  Gender: Female
+  Locale: es-VE
+  Full Name: Microsoft Paola Online (Natural) - Spanish (Venezuela)
+Name: es-VE-SebastianNeural
+  Gender: Male
+  Locale: es-VE
+  Full Name: Microsoft Sebastian Online (Natural) - Spanish (Venezuela)
+Name: su-ID-JajangNeural
+  Gender: Male
+  Locale: su-ID
+  Full Name: Microsoft Jajang Online (Natural) - Sundanese (Indonesia)
+Name: su-ID-TutiNeural
+  Gender: Female
+  Locale: su-ID
+  Full Name: Microsoft Tuti Online (Natural) - Sundanese (Indonesia)
+Name: sw-KE-RafikiNeural
+  Gender: Male
+  Locale: sw-KE
+  Full Name: Microsoft Rafiki Online (Natural) - Swahili (Kenya)
+Name: sw-KE-ZuriNeural
+  Gender: Female
+  Locale: sw-KE
+  Full Name: Microsoft Zuri Online (Natural) - Swahili (Kenya)
+Name: sw-TZ-DaudiNeural
+  Gender: Male
+  Locale: sw-TZ
+  Full Name: Microsoft Daudi Online (Natural) - Swahili (Tanzania)
+Name: sw-TZ-RehemaNeural
+  Gender: Female
+  Locale: sw-TZ
+  Full Name: Microsoft Rehema Online (Natural) - Swahili (Tanzania)
+Name: sv-SE-MattiasNeural
+  Gender: Male
+  Locale: sv-SE
+  Full Name: Microsoft Mattias Online (Natural) - Swedish (Sweden)
+Name: sv-SE-SofieNeural
+  Gender: Female
+  Locale: sv-SE
+  Full Name: Microsoft Sofie Online (Natural) - Swedish (Sweden)
+Name: ta-IN-PallaviNeural
+  Gender: Female
+  Locale: ta-IN
+  Full Name: Microsoft Pallavi Online (Natural) - Tamil (India)
+Name: ta-IN-ValluvarNeural
+  Gender: Male
+  Locale: ta-IN
+  Full Name: Microsoft Valluvar Online (Natural) - Tamil (India)
+Name: ta-MY-KaniNeural
+  Gender: Female
+  Locale: ta-MY
+  Full Name: Microsoft Kani Online (Natural) - Tamil (Malaysia)
+Name: ta-MY-SuryaNeural
+  Gender: Male
+  Locale: ta-MY
+  Full Name: Microsoft Surya Online (Natural) - Tamil (Malaysia)
+Name: ta-SG-AnbuNeural
+  Gender: Male
+  Locale: ta-SG
+  Full Name: Microsoft Anbu Online (Natural) - Tamil (Singapore)
+Name: ta-SG-VenbaNeural
+  Gender: Female
+  Locale: ta-SG
+  Full Name: Microsoft Venba Online (Natural) - Tamil (Singapore)
+Name: ta-LK-KumarNeural
+  Gender: Male
+  Locale: ta-LK
+  Full Name: Microsoft Kumar Online (Natural) - Tamil (Sri Lanka)
+Name: ta-LK-SaranyaNeural
+  Gender: Female
+  Locale: ta-LK
+  Full Name: Microsoft Saranya Online (Natural) - Tamil (Sri Lanka)
+Name: te-IN-MohanNeural
+  Gender: Male
+  Locale: te-IN
+  Full Name: Microsoft Mohan Online (Natural) - Telugu (India)
+Name: te-IN-ShrutiNeural
+  Gender: Female
+  Locale: te-IN
+  Full Name: Microsoft Shruti Online (Natural) - Telugu (India)
+Name: th-TH-NiwatNeural
+  Gender: Male
+  Locale: th-TH
+  Full Name: Microsoft Niwat Online (Natural) - Thai (Thailand)
+Name: th-TH-PremwadeeNeural
+  Gender: Female
+  Locale: th-TH
+  Full Name: Microsoft Premwadee Online (Natural) - Thai (Thailand)
+Name: tr-TR-EmelNeural
+  Gender: Female
+  Locale: tr-TR
+  Full Name: Microsoft Emel Online (Natural) - Turkish (Turkey)
+Name: tr-TR-AhmetNeural
+  Gender: Male
+  Locale: tr-TR
+  Full Name: Microsoft Ahmet Online (Natural) - Turkish (Türkiye)
+Name: uk-UA-OstapNeural
+  Gender: Male
+  Locale: uk-UA
+  Full Name: Microsoft Ostap Online (Natural) - Ukrainian (Ukraine)
+Name: uk-UA-PolinaNeural
+  Gender: Female
+  Locale: uk-UA
+  Full Name: Microsoft Polina Online (Natural) - Ukrainian (Ukraine)
+Name: ur-IN-GulNeural
+  Gender: Female
+  Locale: ur-IN
+  Full Name: Microsoft Gul Online (Natural) - Urdu (India)
+Name: ur-IN-SalmanNeural
+  Gender: Male
+  Locale: ur-IN
+  Full Name: Microsoft Salman Online (Natural) - Urdu (India)
+Name: ur-PK-AsadNeural
+  Gender: Male
+  Locale: ur-PK
+  Full Name: Microsoft Asad Online (Natural) - Urdu (Pakistan)
+Name: ur-PK-UzmaNeural
+  Gender: Female
+  Locale: ur-PK
+  Full Name: Microsoft Uzma Online (Natural) - Urdu (Pakistan)
+Name: uz-UZ-MadinaNeural
+  Gender: Female
+  Locale: uz-UZ
+  Full Name: Microsoft Madina Online (Natural) - Uzbek (Uzbekistan)
+Name: uz-UZ-SardorNeural
+  Gender: Male
+  Locale: uz-UZ
+  Full Name: Microsoft Sardor Online (Natural) - Uzbek (Uzbekistan)
+Name: vi-VN-HoaiMyNeural
+  Gender: Female
+  Locale: vi-VN
+  Full Name: Microsoft HoaiMy Online (Natural) - Vietnamese (Vietnam)
+Name: vi-VN-NamMinhNeural
+  Gender: Male
+  Locale: vi-VN
+  Full Name: Microsoft NamMinh Online (Natural) - Vietnamese (Vietnam)
+Name: cy-GB-AledNeural
+  Gender: Male
+  Locale: cy-GB
+  Gender: Male
+  Locale: vi-VN
+  Full Name: Microsoft NamMinh Online (Natural) - Vietnamese (Vietnam)
+Name: cy-GB-AledNeural
+  Gender: Male
+  Locale: cy-GB
+  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
+Name: cy-GB-NiaNeural
+  Gender: Female
+  Locale: cy-GB
+  Full Name: Microsoft NamMinh Online (Natural) - Vietnamese (Vietnam)
+Name: cy-GB-AledNeural
+  Gender: Male
+  Locale: cy-GB
+  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
+Name: cy-GB-NiaNeural
+  Gender: Female
+  Locale: cy-GB
+  Gender: Male
+  Locale: cy-GB
+  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
+Name: cy-GB-NiaNeural
+  Gender: Female
+  Locale: cy-GB
+  Locale: cy-GB
+  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
+Name: cy-GB-NiaNeural
+  Gender: Female
+  Locale: cy-GB
+  Full Name: Microsoft Aled Online (Natural) - Welsh (United Kingdom)
+Name: cy-GB-NiaNeural
+  Gender: Female
+  Locale: cy-GB
+  Full Name: Microsoft Nia Online (Natural) - Welsh (United Kingdom)
+Name: zu-ZA-ThandoNeural
+  Gender: Female
+  Locale: cy-GB
+  Full Name: Microsoft Nia Online (Natural) - Welsh (United Kingdom)
+Name: zu-ZA-ThandoNeural
+  Full Name: Microsoft Nia Online (Natural) - Welsh (United Kingdom)
+Name: zu-ZA-ThandoNeural
+Name: zu-ZA-ThandoNeural
+  Gender: Female
+  Locale: zu-ZA
+  Gender: Female
+  Locale: zu-ZA
+  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
+Name: zu-ZA-ThembaNeural
+  Gender: Male
+  Locale: zu-ZA
+  Full Name: Microsoft Themba Online (Natural) - Zulu (South Africa)
+  Gender: Female
+  Locale: zu-ZA
+  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
+Name: zu-ZA-ThembaNeural
+  Gender: Male
+  Locale: zu-ZA
+  Gender: Female
+  Locale: zu-ZA
+  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
+Name: zu-ZA-ThembaNeural
+  Gender: Male
+  Gender: Female
+  Locale: zu-ZA
+  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
+Name: zu-ZA-ThembaNeural
+  Gender: Female
+  Locale: zu-ZA
+  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
+  Gender: Female
+  Locale: zu-ZA
+  Gender: Female
+  Gender: Female
+  Locale: zu-ZA
+  Full Name: Microsoft Thando Online (Natural) - Zulu (South Africa)
+Name: zu-ZA-ThembaNeural
+  Gender: Male
+  Locale: zu-ZA
+  Full Name: Microsoft Themba Online (Natural) - Zulu (South Africa)

@@ -6,14 +6,13 @@ import asqlite
 import twitchio
 from twitchio.ext import commands
 from twitchio import eventsub
-import gtts
-from gtts import gTTS
 import time
 import pygame
 import winsound
 import threading
 import edge_tts
 import asyncio
+import tkinter as tk
 
 from sharkai import SharkAI
 
@@ -198,8 +197,7 @@ class MyComponent(commands.Component):
         await ctx.send(profile)
 
     async def make_tts(self, text, file_name):
-        tts = edge_tts.Communicate(text, "vi-VN-HoaiMyNeural")
-        print('fff', edge_tts.list_voices())
+        tts = edge_tts.Communicate(text, "fr-FR-DeniseNeural")
         await tts.save(file_name)
 
     def play_sound(self, file_name):
@@ -207,17 +205,25 @@ class MyComponent(commands.Component):
         sound = pygame.mixer.Sound(file_name)
         duration = int(sound.get_length() * 1000)
         sound.set_volume(0.5)
+        sound.play()
 
+        root = tk.Tk()
+        root.title("Sound Player")
         def play_and_cleanup():
-            sound.play()
-            pygame.time.wait(duration)
-            try:
-                os.remove("tts.mp3")
-            except FileNotFoundError:
-                print("File not found.")
+            root.destroy()
+            os.remove('tts.mp3')
+        #     sound.play()
+        #     pygame.time.wait(duration)
+        #     try:
+        #         os.remove("tts.mp3")
+        #     except FileNotFoundError:
+        #         print("File not found.")
 
         # Run the sound playback and file deletion in a separate thread
-        threading.Thread(target=play_and_cleanup, daemon=True).start()
+        # threading.Thread(target=play_and_cleanup, daemon=True).start()
+        
+        root.after(duration, play_and_cleanup)
+        root.mainloop()
 
 
 def start_bot() -> None:
