@@ -195,7 +195,7 @@ class MyComponent(commands.Component):
         await ctx.send(profile)
 
     async def make_tts(self, text):
-        tts = edge_tts.Communicate(text, 'ja-JP-NanamiNeural')
+        tts = edge_tts.Communicate(text, 'da-DK-JeppeNeural')
         await tts.save('tts.mp3')
 
     def play_sound(self, file_name):
