@@ -26,8 +26,9 @@ CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("BOT_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 
-pob = 'https://pobb.in/SC7dZcWiNJBC'
-profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
+pob = os.environ.get("POB")
+profile = os.environ.get("PROFILE")
+ign = os.environ.get("IGN")
 
 
 class Bot(commands.Bot):
@@ -148,7 +149,7 @@ class MyComponent(commands.Component):
 
     @commands.group(invoke_fallback=True)
     async def ign(self, ctx: commands.Context) -> None:
-        await ctx.send(f"{ctx.chatter.mention} " + "MildlyErectBaguette")
+        await ctx.send(f"{ctx.chatter.mention} " + ign)
 
     @socials.command(name="discord")
     async def socials_discord(self, ctx: commands.Context) -> None:
