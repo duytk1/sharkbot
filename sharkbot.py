@@ -29,6 +29,7 @@ OWNER_ID = os.environ.get("OWNER_ID")
 pob = os.environ.get("POB")
 profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
+build = os.environ.get("BUILD")
 
 
 class Bot(commands.Bot):
@@ -194,9 +195,13 @@ class MyComponent(commands.Component):
     @commands.command()
     async def profile(self, ctx: commands.Context,) -> None:
         await ctx.send(profile)
+        
+    @commands.command()
+    async def build(self, ctx: commands.Context,) -> None:
+        await ctx.send(build)
 
     async def make_tts(self, text):
-        tts = edge_tts.Communicate(text, 'da-DK-JeppeNeural')
+        tts = edge_tts.Communicate(text, 'ja-JP-NanamiNeural')
         await tts.save('tts.mp3')
 
     def play_sound(self, file_name):
