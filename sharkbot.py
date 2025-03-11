@@ -216,7 +216,7 @@ class MyComponent(commands.Component):
         chatter_name = payload.chatter.name
         streamer_name = payload.broadcaster.name
         message = payload.text
-        if 'sharko' == message.split(' ', 1)[0] or '@sharkothehuman' == message.split(' ', 1)[0]:
+        if message.split(' ', 1)[0] == streamer_name or message.split(' ', 1)[0] == '@sharkothehuman':
             if payload.chatter.name != 'sharkothehuman':
                 ctx = self.bot.get_context(payload)
                 response = SharkAI.chat_with_openai(
@@ -229,8 +229,8 @@ class MyComponent(commands.Component):
                 else:
                     await ctx.send(response)
 
-                await self.make_tts(response)
-
+                tts_text = f'{chatter_name} asked me: '
+                await self.make_tts(tts_text)
                 self.play_sound('tts.mp3')
 
 
