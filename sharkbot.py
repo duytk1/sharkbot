@@ -107,7 +107,10 @@ class MyComponent(commands.Component):
     # We use a listener in our Component to display the messages received.
     @commands.Component.listener()
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
-        print(f"[{payload.chatter.name}] - {payload.broadcaster.name}: {payload.text}")
+        print(
+            f"[{payload.chatter.name}] - {payload.broadcaster.name}: {payload.text}")
+        if payload.chatter.name != 'sharkothehuman':
+            winsound.PlaySound("*", winsound.SND_ALIAS)
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
@@ -213,8 +216,6 @@ class MyComponent(commands.Component):
         chatter_name = payload.chatter.name
         streamer_name = payload.broadcaster.name
         message = payload.text
-        if payload.chatter.name != 'sharkothehuman':
-            winsound.PlaySound("*", winsound.SND_ALIAS)
         if 'sharko' == message.split(' ', 1)[0] or '@sharkothehuman' == message.split(' ', 1)[0]:
             if payload.chatter.name != 'sharkothehuman':
                 ctx = self.bot.get_context(payload)
