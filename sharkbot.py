@@ -107,10 +107,32 @@ class MyComponent(commands.Component):
     # We use a listener in our Component to display the messages received.
     @commands.Component.listener()
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
+        chatter_name = payload.chatter.name
+        streamer_name = payload.broadcaster.name
+        message = payload.text
         print(
-            f"[{payload.chatter.name}] - {payload.broadcaster.name}: {payload.text}")
-        if payload.chatter.name != 'sharkothehuman':
+            f"[{chatter_name}] - {streamer_name}: {message}")
+        if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
             winsound.PlaySound("*", winsound.SND_ALIAS)
+
+        if message.split(' ', 1)[0] == streamer_name or message.split(' ', 1)[0] == '@sharkothehuman':
+            if payload.chatter.name != 'sharkothehuman':
+                ctx = self.bot.get_context(payload)
+                response = SharkAI.chat_with_openai(
+                    " ".join(message.split()[1:]))
+                if len(response) > 900:
+                    await ctx.reply('Message is too long.')
+                elif len(response) >= 500:
+                    await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
+                    await ctx.reply(response[450:])
+                else:
+                    await ctx.send(response)
+
+                tts_text = f'{chatter_name} asked me:' + message.removeprefix('@sharkothehuman') + '. ' + response
+                print(tts_text)
+                
+                await self.make_tts(tts_text)
+                self.play_sound('tts.mp3')
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
@@ -182,7 +204,7 @@ class MyComponent(commands.Component):
         await ctx.send(build)
 
     async def make_tts(self, text):
-        tts = edge_tts.Communicate(text, 'ja-JP-NanamiNeural')
+        tts = edge_tts.Communicate(text, 'en-IE-ConnorNeural')
         await tts.save('tts.mp3')
 
     def play_sound(self, file_name):
@@ -210,28 +232,6 @@ class MyComponent(commands.Component):
 
         root.after(duration, play_and_cleanup)
         root.mainloop()
-
-    @commands.Component.listener()
-    async def check_ask_bot(self, payload: twitchio.ChatMessage) -> None:
-        chatter_name = payload.chatter.name
-        streamer_name = payload.broadcaster.name
-        message = payload.text
-        if message.split(' ', 1)[0] == streamer_name or message.split(' ', 1)[0] == '@sharkothehuman':
-            if payload.chatter.name != 'sharkothehuman':
-                ctx = self.bot.get_context(payload)
-                response = SharkAI.chat_with_openai(
-                    " ".join(message.split()[1:]))
-                if len(response) > 900:
-                    await ctx.reply('Message is too long.')
-                elif len(response) >= 500:
-                    await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
-                    await ctx.reply(response[450:])
-                else:
-                    await ctx.send(response)
-
-                tts_text = f'{chatter_name} asked me: '
-                await self.make_tts(tts_text)
-                self.play_sound('tts.mp3')
 
 
 def start_bot() -> None:
