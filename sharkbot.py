@@ -30,6 +30,7 @@ pob = os.environ.get("POB")
 profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
+bot_languague = 'fr-BE-CharlineNeural'
 
 
 class Bot(commands.Bot):
@@ -176,7 +177,7 @@ class MyComponent(commands.Component):
         await ctx.send(build)
 
     async def make_tts(self, text):
-        tts = edge_tts.Communicate(text, 'en-IE-ConnorNeural')
+        tts = edge_tts.Communicate(text, bot_languague)
         await tts.save('tts.mp3')
 
     def play_sound(self, file_name):
