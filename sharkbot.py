@@ -128,7 +128,6 @@ class MyComponent(commands.Component):
 
                 tts_text = f'{chatter_name} asked me:' + \
                     message.removeprefix('@sharkothehuman') + '. ' + response
-                print(tts_text)
 
                 await self.make_tts(tts_text)
                 self.play_sound('tts.mp3')
@@ -149,10 +148,7 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_stream_online(self, payload: twitchio.StreamOnline) -> None:
-        # Event dispatched when a user goes live from the subscription we made above...
-
-        # Keep in mind we are assuming this is for ourselves
-        # others may not want your bot randomly sending messages...
+        # Event dispatched when we go live
         await payload.broadcaster.send_message(
             sender=self.bot.bot_id,
             message=f"Hi... {payload.broadcaster}! You are live!",
@@ -164,7 +160,8 @@ class MyComponent(commands.Component):
 
         !hi, !hello, !howdy, !hey
         """
-        await ctx.reply(f"Hello {ctx.chatter.mention}!")
+        message = SharkAI.chat_with_openai(f"say hi to {ctx.chatter}")
+        await ctx.reply(f"{ctx.chatter.mention} " + message)
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
