@@ -115,7 +115,7 @@ class MyComponent(commands.Component):
         if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
             winsound.PlaySound("*", winsound.SND_ALIAS)
 
-        if message.split(' ', 1)[0] == streamer_name or message.split(' ', 1)[0] == '@sharkothehuman':
+        if message.split(' ', 1)[0] == 'sharko' or message.split(' ', 1)[0] == '@sharkothehuman':
             if payload.chatter.name != 'sharkothehuman':
                 ctx = self.bot.get_context(payload)
                 response = SharkAI.chat_with_openai(
