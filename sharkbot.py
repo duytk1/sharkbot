@@ -193,16 +193,6 @@ class MyComponent(commands.Component):
         def play_and_cleanup():
             root.destroy()
             os.remove(file_name)
-        #     sound.play()
-        #     pygame.time.wait(duration)
-        #     try:
-        #         os.remove("tts.mp3")
-        #     except FileNotFoundError:
-        #         print("File not found.")
-
-        # Run the sound playback and file deletion in a separate thread
-        # threading.Thread(target=play_and_cleanup, daemon=True).start()
-
         root.after(duration, play_and_cleanup)
         root.mainloop()
 
