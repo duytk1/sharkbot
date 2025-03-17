@@ -100,8 +100,6 @@ class Bot(commands.Bot):
 
 class MyComponent(commands.Component):
     def __init__(self, bot: Bot):
-        # Passing args is not required...
-        # We pass bot here as an example...
         self.bot = bot
 
     # We use a listener in our Component to display the messages received.
@@ -128,45 +126,22 @@ class MyComponent(commands.Component):
                 else:
                     await ctx.send(response)
 
-                tts_text = f'{chatter_name} asked me:' + message.removeprefix('@sharkothehuman') + '. ' + response
+                tts_text = f'{chatter_name} asked me:' + \
+                    message.removeprefix('@sharkothehuman') + '. ' + response
                 print(tts_text)
-                
+
                 await self.make_tts(tts_text)
                 self.play_sound('tts.mp3')
-
-    @commands.command(aliases=["hello", "howdy", "hey"])
-    async def hi(self, ctx: commands.Context) -> None:
-        """Simple command that says hello!
-
-        !hi, !hello, !howdy, !hey
-        """
-        await ctx.reply(f"Hello {ctx.chatter.mention}!")
-
-    @commands.group(invoke_fallback=True)
-    async def socials(self, ctx: commands.Context) -> None:
-        """Group command for our social links.
-
-        !socials
-        """
-        await ctx.send("discord.gg/..., youtube.com/..., twitch.tv/...")\
-
 
     @commands.group(invoke_fallback=True)
     async def ign(self, ctx: commands.Context) -> None:
         await ctx.send(f"{ctx.chatter.mention} " + ign)
 
-    @socials.command(name="discord")
-    async def socials_discord(self, ctx: commands.Context) -> None:
-        """Sub command of socials that sends only our discord invite.
-
-        !socials discord
-        """
-        await ctx.send("discord.gg/...")
-
     @commands.command(aliases=["repeat"])
     async def say(self, ctx: commands.Context, *, content: str) -> None:
         """
-        !say hello world
+        !say {message}
+        This triggers TTS bot to say the message
         """
         await self.make_tts(content)
         self.play_sound('tts.mp3')
