@@ -30,6 +30,7 @@ pob = os.environ.get("POB")
 profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
+discord = os.environ.get("DISCORD")
 bot_languague = 'en-AU-NatashaNeural'
 
 
@@ -180,6 +181,10 @@ class MyComponent(commands.Component):
     @commands.command()
     async def build(self, ctx: commands.Context,) -> None:
         await ctx.send(build)
+        
+    @commands.command()
+    async def discord(self, ctx: commands.Context,) -> None:
+        await ctx.send(discord)
 
     async def make_tts(self, text):
         tts = edge_tts.Communicate(text, bot_languague)
