@@ -158,16 +158,18 @@ class MyComponent(commands.Component):
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
-        message = SharkAI.chat_with_openai(f'tell a fun fact and mention that ad break is about to begin in {payload.duration}, thank the viewer for their patience.')
+        message = SharkAI.chat_with_openai(
+            f'tell a fun fact and mention that ad break is about to begin in {payload.duration}, thank the viewer for their patience.')
         ctx = self.bot.get_context(payload)
         ctx.reply(message)
-        
+
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
-        message = SharkAI.chat_with_openai(f'{payload.from_broadcaster.name} is raiding, thank them')
+        message = SharkAI.chat_with_openai(
+            f'{payload.from_broadcaster.name} is raiding, thank them')
         ctx = self.bot.get_context(payload)
         ctx.reply(message)
-        
+
     async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
         print('automodded message')
@@ -191,14 +193,15 @@ class MyComponent(commands.Component):
     @commands.command()
     async def build(self, ctx: commands.Context) -> None:
         await ctx.send(build)
-        
+
     @commands.command()
     async def discord(self, ctx: commands.Context) -> None:
         await ctx.send(discord)
-        
+
     @commands.command()
     async def lurk(self, ctx: commands.Context) -> None:
-        message = SharkAI.chat_with_openai(f'{ctx.chatter.name} is lurking, tell them a joke and thank for lurking')
+        message = SharkAI.chat_with_openai(
+            f'{ctx.chatter.name} is lurking, tell them a joke and thank for lurking')
         await ctx.send(f'{ctx.chatter.mention} ' + message)
 
     async def make_tts(self, text):
