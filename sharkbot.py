@@ -171,10 +171,17 @@ class MyComponent(commands.Component):
         ctx.reply(message)
         
     @commands.Component.listener()
-    async def event_raid(self, payload: twitchio.ChannelSubscribe) -> None:
-        subscription_tier = str(int(payload.tier) / 1000)
+    async def event_subscription(self, payload: twitchio.ChannelSubscribe) -> None:
+        subscription_tier = int(payload.tier) / 1000
         message = SharkAI.chat_with_openai(
             f'{payload.user} just subscribed with tier {subscription_tier}, thank them')
+        ctx = self.bot.get_context(payload)
+        ctx.reply(message)
+        
+    @commands.Component.listener()
+    async def event_subscription_gift(self, payload: twitchio.ChannelSubscriptionGift) -> None:
+        message = SharkAI.chat_with_openai(
+            f'{payload.user} just gifted {payload.total} subs, thank them')
         ctx = self.bot.get_context(payload)
         ctx.reply(message)
 
