@@ -162,6 +162,12 @@ class MyComponent(commands.Component):
         ctx = self.bot.get_context(payload)
         ctx.reply(message)
         
+    @commands.Component.listener()
+    async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
+        message = SharkAI.chat_with_openai(f'{payload.from_broadcaster.name} is raiding, thank them')
+        ctx = self.bot.get_context(payload)
+        ctx.reply(message)
+        
     async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
         print('automodded message')
