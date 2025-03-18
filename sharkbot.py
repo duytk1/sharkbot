@@ -30,7 +30,7 @@ pob = os.environ.get("POB")
 profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
-bot_languague = 'fr-BE-CharlineNeural'
+bot_languague = 'en-AU-NatashaNeural'
 
 
 class Bot(commands.Bot):
@@ -103,7 +103,6 @@ class MyComponent(commands.Component):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    # We use a listener in our Component to display the messages received.
     @commands.Component.listener()
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
         chatter_name = payload.chatter.name
@@ -152,13 +151,19 @@ class MyComponent(commands.Component):
         # Event dispatched when we go live
         await payload.broadcaster.send_message(
             sender=self.bot.bot_id,
-            message=f"Hi... {payload.broadcaster}! You are live!",
+            message=f"{payload.broadcaster} is alive!",
         )
+
+    @commands.Component.listener()
+    async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
+        winsound.PlaySound("*", winsound.SND_ALIAS)
+        ad_break_message = SharkAI.chat_with_openai('tell a fun fact and mention that ad break is about to begin, thank the viewer for their patience.')
+        ctx = self.bot.get_context(payload)
+        ctx.reply(ad_break_message)
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
-        """Simple command that says hello!
-
+        """
         !hi, !hello, !howdy, !hey
         """
         message = SharkAI.chat_with_openai(f"say hi to {ctx.chatter}")
