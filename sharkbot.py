@@ -161,6 +161,10 @@ class MyComponent(commands.Component):
         ad_break_message = SharkAI.chat_with_openai('tell a fun fact and mention that ad break is about to begin, thank the viewer for their patience.')
         ctx = self.bot.get_context(payload)
         ctx.reply(ad_break_message)
+        
+    async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
+        winsound.PlaySound("*", winsound.SND_ALIAS)
+        print('automodded message')
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
