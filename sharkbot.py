@@ -172,7 +172,7 @@ class MyComponent(commands.Component):
 
     async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
-        print('automodded message')
+        print('automodded message: ' + payload.text)
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
