@@ -31,7 +31,7 @@ profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
 discord = os.environ.get("DISCORD")
-bot_languague = 'en-AU-NatashaNeural'
+bot_languague = 'ro-RO-AlinaNeural'
 
 
 class Bot(commands.Bot):
@@ -169,7 +169,14 @@ class MyComponent(commands.Component):
             f'{payload.from_broadcaster.name} is raiding, thank them')
         ctx = self.bot.get_context(payload)
         ctx.reply(message)
-        
+
+    @commands.Component.listener()
+    async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
+        message = SharkAI.chat_with_openai(
+            f'{payload.user} followed, thank them')
+        ctx = self.bot.get_context(payload)
+        ctx.reply(message)
+
     @commands.Component.listener()
     async def event_subscription(self, payload: twitchio.ChannelSubscribe) -> None:
         subscription_tier = int(payload.tier) / 1000
@@ -177,7 +184,7 @@ class MyComponent(commands.Component):
             f'{payload.user} just subscribed with tier {subscription_tier}, thank them')
         ctx = self.bot.get_context(payload)
         ctx.reply(message)
-        
+
     @commands.Component.listener()
     async def event_subscription_gift(self, payload: twitchio.ChannelSubscriptionGift) -> None:
         message = SharkAI.chat_with_openai(
@@ -194,7 +201,7 @@ class MyComponent(commands.Component):
         """
         !hi, !hello, !howdy, !hey
         """
-        message = SharkAI.chat_with_openai(f"say hi to {ctx.chatter}")
+        message = SharkAI.chat_with_openai(f"just say hi to {ctx.chatter}")
         await ctx.reply(f"{ctx.chatter.mention} " + message)
 
     @commands.command()
