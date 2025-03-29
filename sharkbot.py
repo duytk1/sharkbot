@@ -161,6 +161,7 @@ class MyComponent(commands.Component):
         message = SharkAI.chat_with_openai(
             f'tell a fun fact and mention that ad break is about to begin in {payload.duration}, thank the viewer for their patience.')
         ctx = self.bot.get_context(payload)
+        print('ad break')
         ctx.reply(message)
 
     @commands.Component.listener()

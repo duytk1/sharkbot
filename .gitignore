@@ -5,4 +5,4 @@ tokens.db-shm
 tokens.db-wal
 .tio.tokens.json
 text.txt
-oauth
+oauth.py
