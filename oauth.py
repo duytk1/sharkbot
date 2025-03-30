@@ -58,7 +58,15 @@ scope_str = "+".join(scopes)
 
 oauth_url = f"https://id.twitch.tv/oauth2/authorize?client_id={CLIENT_ID}&redirect_uri={redirect_uri}&response_type=token&scope={scope_str}"
 
+refresh_url = (
+    f'https://id.twitch.tv/oauth2/authorize?response_type=code'
+    f'&client_id={CLIENT_ID}&redirect_uri={redirect_uri}&scope={scope_str}'
+)
+
+webbrowser.open(refresh_url)
+
 webbrowser.open(oauth_url)
 
-print(
-    f"Open this URL in your browser if it doesn't open automatically:\n{oauth_url}")
+print('token: ' + oauth_url)
+
+print('\nrefresh: ' + refresh_url)

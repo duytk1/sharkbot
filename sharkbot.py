@@ -25,6 +25,8 @@ CLIENT_ID: str = os.environ.get("CLIENT_ID")
 CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("BOT_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
+TOKEN_BOT = os.environ.get("TOKEN_BOT")
+REFRESH_TOKEN = os.environ.get("REFRESH_TOKEN")
 
 pob = os.environ.get("POB")
 profile = os.environ.get("PROFILE")
@@ -46,40 +48,49 @@ class Bot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        # Add our component which contains our commands...
         await self.add_component(MyComponent(self))
 
-        # Subscribe to read chat (event_message) from our channel as the bot...
-        # This creates and opens a websocket to Twitch EventSub...
         subscription = eventsub.ChatMessageSubscription(
             broadcaster_user_id=OWNER_ID, user_id=BOT_ID)
         await self.subscribe_websocket(payload=subscription)
 
-        # Subscribe and listen to when a stream goes live..
-        # For this example listen to our own stream...
         subscription = eventsub.StreamOnlineSubscription(
             broadcaster_user_id=OWNER_ID)
         await self.subscribe_websocket(payload=subscription)
 
-    async def add_token(self, token: str, refresh: str) -> twitchio.authentication.ValidateTokenPayload:
-        # Make sure to call super() as it will add the tokens interally and return us some data...
-        resp: twitchio.authentication.ValidateTokenPayload = await super().add_token(token, refresh)
+        # subscription = eventsub.AdBreakBeginSubscription(
+        #     broadcaster_user_id=OWNER_ID)
+        # await self.subscribe_websocket(payload=subscription)
 
-        # Store our tokens in a simple SQLite Database when they are authorized...
+        # subscription = eventsub.ChannelRaidSubscription(
+        #     to_broadcaster_user_id=OWNER_ID)
+        # await self.subscribe_websocket(payload=subscription)
+
+        subscription = eventsub.ChannelFollowSubscription(
+            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
+        await self.subscribe_websocket(payload=subscription)
+
+        # subscription = eventsub.ChannelSubscriptionGiftSubscription(
+        #     broadcaster_user_id=OWNER_ID)
+        # await self.subscribe_websocket(payload=subscription)
+
+        subscription = eventsub.AutomodMessageHoldSubscription(
+            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
+        await self.subscribe_websocket(payload=subscription)
+
+    async def add_token(self, token: str, refresh: str) -> None:
+        resp = await super().add_token(token, refresh)
         query = """
-        INSERT INTO tokens (user_id, token, refresh)
-        VALUES (?, ?, ?)
-        ON CONFLICT(user_id)
-        DO UPDATE SET
-            token = excluded.token,
-            refresh = excluded.refresh;
+            INSERT INTO tokens (user_id, token, refresh)
+            VALUES (?, ?, ?)
+            ON CONFLICT(user_id)
+            DO UPDATE SET
+                token = excluded.token,
+                refresh = excluded.refresh;
         """
-
         async with self.token_database.acquire() as connection:
             await connection.execute(query, (resp.user_id, token, refresh))
-
         LOGGER.info("Added token to the database for user: %s", resp.user_id)
-        return resp
 
     async def load_tokens(self, path: str | None = None) -> None:
         # We don't need to call this manually, it is called in .login() from .start() internally...
@@ -173,6 +184,9 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
+        print('follow')
+        print(payload)
+        print(payload.user)
         message = SharkAI.chat_with_openai(
             f'{payload.user} followed, thank them')
         ctx = self.bot.get_context(payload)
