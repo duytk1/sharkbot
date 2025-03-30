@@ -6,10 +6,8 @@ import asqlite
 import twitchio
 from twitchio.ext import commands
 from twitchio import eventsub
-import time
 import pygame
 import winsound
-import threading
 import edge_tts
 import asyncio
 import tkinter as tk
@@ -25,8 +23,6 @@ CLIENT_ID: str = os.environ.get("CLIENT_ID")
 CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("BOT_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
-TOKEN_BOT = os.environ.get("TOKEN_BOT")
-REFRESH_TOKEN = os.environ.get("REFRESH_TOKEN")
 
 pob = os.environ.get("POB")
 profile = os.environ.get("PROFILE")
@@ -93,8 +89,6 @@ class Bot(commands.Bot):
         LOGGER.info("Added token to the database for user: %s", resp.user_id)
 
     async def load_tokens(self, path: str | None = None) -> None:
-        # We don't need to call this manually, it is called in .login() from .start() internally...
-
         async with self.token_database.acquire() as connection:
             rows: list[sqlite3.Row] = await connection.fetchall("""SELECT * from tokens""")
 
