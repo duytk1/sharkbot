@@ -29,7 +29,7 @@ profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
 discord = os.environ.get("DISCORD")
-bot_languague = 'ro-RO-AlinaNeural'
+bot_languague = 'en-GB-RyanNeural'
 
 
 class Bot(commands.Bot):
