@@ -183,8 +183,13 @@ class MyComponent(commands.Component):
         print(payload.user)
         message = SharkAI.chat_with_openai(
             f'{payload.user} followed, thank them')
-        ctx = self.bot.get_context(payload)
-        ctx.reply(message)
+        channel = self.bot.connected_channels[0]
+        print('sending follow')
+        await channel.send(message)
+        await self.make_tts(message)
+        self.play_sound('tts.mp3')
+        # ctx = self.bot.get_context(payload)
+        # ctx.reply(message)
 
     @commands.Component.listener()
     async def event_subscription(self, payload: twitchio.ChannelSubscribe) -> None:
