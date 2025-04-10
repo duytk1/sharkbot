@@ -55,7 +55,7 @@ class Bot(commands.Bot):
         await self.subscribe_websocket(payload=subscription)
 
         # subscription = eventsub.AdBreakBeginSubscription(
-        #     broadcaster_user_id=OWNER_ID)
+        #     broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
         # await self.subscribe_websocket(payload=subscription)
 
         # subscription = eventsub.ChannelRaidSubscription(
@@ -178,14 +178,10 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
-        print('follow')
-        print(payload)
-        print(payload.user)
         message = SharkAI.chat_with_openai(
             f'{payload.user} followed, thank them')
-        channel = self.bot.connected_channels[0]
-        print('sending follow')
-        await channel.send(message)
+        # channel = self.bot.connected_channels[0]
+        # await channel.send(message)
         await self.make_tts(message)
         self.play_sound('tts.mp3')
         # ctx = self.bot.get_context(payload)
