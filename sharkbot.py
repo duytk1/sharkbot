@@ -58,21 +58,21 @@ class Bot(commands.Bot):
             broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
         await self.subscribe_websocket(payload=subscription)
 
-        # subscription = eventsub.ChannelRaidSubscription(
-        #     to_broadcaster_user_id=OWNER_ID)
-        # await self.subscribe_websocket(payload=subscription)
+        subscription = eventsub.ChannelRaidSubscription(
+            to_broadcaster_user_id=OWNER_ID)
+        await self.subscribe_websocket(payload=subscription)
 
-        # subscription = eventsub.ChannelFollowSubscription(
-        #     broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
-        # await self.subscribe_websocket(payload=subscription)
+        subscription = eventsub.ChannelFollowSubscription(
+            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
+        await self.subscribe_websocket(payload=subscription)
 
-        # subscription = eventsub.ChannelSubscriptionGiftSubscription(
-        #     broadcaster_user_id=OWNER_ID)
-        # await self.subscribe_websocket(payload=subscription)
+        subscription = eventsub.ChannelSubscriptionGiftSubscription(
+            broadcaster_user_id=OWNER_ID)
+        await self.subscribe_websocket(payload=subscription)
 
-        # subscription = eventsub.AutomodMessageHoldSubscription(
-        #     broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
-        # await self.subscribe_websocket(payload=subscription)
+        subscription = eventsub.AutomodMessageHoldSubscription(
+            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
+        await self.subscribe_websocket(payload=subscription)
 
     async def add_token(self, token: str, refresh: str) -> None:
         resp = await super().add_token(token, refresh)
