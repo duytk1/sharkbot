@@ -119,18 +119,17 @@ class MyComponent(commands.Component):
         if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
             winsound.PlaySound("*", winsound.SND_ALIAS)
 
-        if message.split(' ', 1)[0] == 'sharko' or message.split(' ', 1)[0] == '@sharkothehuman':
+        if message.split(' ', 1)[0] == 'sharko' or message.split(' ', 1)[0] == '@sharko51':
             if payload.chatter.name != 'sharkothehuman':
-                ctx = self.bot.get_context(payload)
                 response = SharkAI.chat_with_openai(
                     " ".join(message.split()[1:]))
                 if len(response) > 900:
-                    await ctx.reply('Message is too long.')
+                    await self.send_message(payload, 'Message is too long.')
                 elif len(response) >= 500:
-                    await ctx.reply(f"{ctx.chatter.mention} " + response[:450])
-                    await ctx.reply(response[450:])
+                    await self.send_message(payload, response[:450])
+                    await self.send_message(payload, response[450:])
                 else:
-                    await ctx.send(response)
+                    await self.send_message(payload, response)
 
                 tts_text = f'{chatter_name} asked me:' + \
                     message.removeprefix('@sharkothehuman') + '. ' + response
@@ -256,6 +255,12 @@ class MyComponent(commands.Component):
             os.remove(file_name)
         root.after(duration, play_and_cleanup)
         root.mainloop()
+
+    async def send_message(self, payload, message):
+        await payload.broadcaster.send_message(
+            sender=self.bot.bot_id,
+            message=message,
+        )
 
 
 def start_bot() -> None:
