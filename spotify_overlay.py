@@ -15,10 +15,10 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
 
 def get_current_song():
     current = sp.current_playback()
-    if current and current.get("item"):
+    if current and current.get("is_playing") and current.get("item"):
         name = current["item"]["name"]
         artist = current["item"]["artists"][0]["name"]
-        return f"🎵 Now Playing: {name} - {artist}"
+        return f"♫ {name} - {artist}"
     else:
         return "No music playing"
 
@@ -26,4 +26,4 @@ while True:
     song = get_current_song()
     with open("spotify_now_playing.txt", "w", encoding="utf-8") as f:
         f.write(song)
-    time.sleep(5)
+    time.sleep(10)
