@@ -163,15 +163,14 @@ class MyComponent(commands.Component):
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
         message = SharkAI.chat_with_openai(
-            f'tell a fun fact and mention that ad break is about to begin in {payload.duration}, thank the viewer for their patience.')
+            f'tell a fun fact and mention that ad break is about to begin in {payload.duration}, tell a joke and thank the viewer for their patience.')
         await self.send_message(payload, message)
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
         message = SharkAI.chat_with_openai(
             f'{payload.from_broadcaster.name} is raiding, thank them')
-        ctx = self.bot.get_context(payload)
-        ctx.reply(message)
+        await self.send_message(payload, message)
 
     @commands.Component.listener()
     async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
