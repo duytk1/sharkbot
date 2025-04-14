@@ -11,6 +11,8 @@ import winsound
 import edge_tts
 import asyncio
 import tkinter as tk
+import threading
+import spotify_overlay
 
 from sharkai import SharkAI
 
@@ -261,6 +263,9 @@ def start_bot() -> None:
         async with asqlite.create_pool("tokens.db") as tdb, Bot(token_database=tdb) as bot:
             await bot.setup_database()
             await bot.start()
+            
+    thread = threading.Thread(target=spotify_overlay.main, daemon=True)
+    thread.start()
 
     try:
         asyncio.run(runner())
