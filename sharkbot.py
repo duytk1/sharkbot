@@ -164,10 +164,7 @@ class MyComponent(commands.Component):
         winsound.PlaySound("*", winsound.SND_ALIAS)
         message = SharkAI.chat_with_openai(
             f'tell a fun fact and mention that ad break is about to begin in {payload.duration}, thank the viewer for their patience.')
-        await payload.broadcaster.send_message(
-            sender=self.bot.bot_id,
-            message=message,
-        )
+        await self.send_message(payload, message)
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
@@ -180,27 +177,22 @@ class MyComponent(commands.Component):
     async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
         message = SharkAI.chat_with_openai(
             f'{payload.user} followed, thank them')
-        # channel = self.bot.connected_channels[0]
-        # await channel.send(message)
         await self.make_tts(message)
         self.play_sound('tts.mp3')
-        # ctx = self.bot.get_context(payload)
-        # ctx.reply(message)
+        await self.send_message(payload, message)
 
     @commands.Component.listener()
     async def event_subscription(self, payload: twitchio.ChannelSubscribe) -> None:
         subscription_tier = int(payload.tier) / 1000
         message = SharkAI.chat_with_openai(
             f'{payload.user} just subscribed with tier {subscription_tier}, thank them')
-        ctx = self.bot.get_context(payload)
-        ctx.reply(message)
+        await self.send_message(payload, message)
 
     @commands.Component.listener()
     async def event_subscription_gift(self, payload: twitchio.ChannelSubscriptionGift) -> None:
         message = SharkAI.chat_with_openai(
             f'{payload.user} just gifted {payload.total} subs, thank them')
-        ctx = self.bot.get_context(payload)
-        ctx.reply(message)
+        await self.send_message(payload, message)
 
     async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
