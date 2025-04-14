@@ -21,7 +21,7 @@ LOGGER: logging.Logger = logging.getLogger("Bot")
 
 CLIENT_ID: str = os.environ.get("CLIENT_ID")
 CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
-BOT_ID = os.environ.get("BOT_ID")
+BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 
 pob = os.environ.get("POB")
@@ -54,25 +54,25 @@ class Bot(commands.Bot):
             broadcaster_user_id=OWNER_ID)
         await self.subscribe_websocket(payload=subscription)
 
-        # subscription = eventsub.AdBreakBeginSubscription(
-        #     broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
-        # await self.subscribe_websocket(payload=subscription)
+        subscription = eventsub.AdBreakBeginSubscription(
+            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
+        await self.subscribe_websocket(payload=subscription)
 
         # subscription = eventsub.ChannelRaidSubscription(
         #     to_broadcaster_user_id=OWNER_ID)
         # await self.subscribe_websocket(payload=subscription)
 
-        subscription = eventsub.ChannelFollowSubscription(
-            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
-        await self.subscribe_websocket(payload=subscription)
+        # subscription = eventsub.ChannelFollowSubscription(
+        #     broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
+        # await self.subscribe_websocket(payload=subscription)
 
         # subscription = eventsub.ChannelSubscriptionGiftSubscription(
         #     broadcaster_user_id=OWNER_ID)
         # await self.subscribe_websocket(payload=subscription)
 
-        subscription = eventsub.AutomodMessageHoldSubscription(
-            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
-        await self.subscribe_websocket(payload=subscription)
+        # subscription = eventsub.AutomodMessageHoldSubscription(
+        #     broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
+        # await self.subscribe_websocket(payload=subscription)
 
     async def add_token(self, token: str, refresh: str) -> None:
         resp = await super().add_token(token, refresh)
@@ -165,9 +165,10 @@ class MyComponent(commands.Component):
         winsound.PlaySound("*", winsound.SND_ALIAS)
         message = SharkAI.chat_with_openai(
             f'tell a fun fact and mention that ad break is about to begin in {payload.duration}, thank the viewer for their patience.')
-        ctx = self.bot.get_context(payload)
-        print('ad break')
-        ctx.reply(message)
+        await payload.broadcaster.send_message(
+            sender=self.bot.bot_id,
+            message=message,
+        )
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
