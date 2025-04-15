@@ -11,8 +11,6 @@ import winsound
 import edge_tts
 import asyncio
 import tkinter as tk
-import threading
-import spotify_overlay
 
 from sharkai import SharkAI
 
@@ -165,7 +163,7 @@ class MyComponent(commands.Component):
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
         message = SharkAI.chat_with_openai(
-            f'tell a fun fact and mention that ad break is about to begin in {payload.duration}, tell a joke and thank the viewer for their patience.')
+            f'an ad break has begun for {payload.duration}, thank the viewer for their patience.')
         await self.send_message(payload, message)
 
     @commands.Component.listener()
@@ -205,23 +203,27 @@ class MyComponent(commands.Component):
         !hi, !hello, !howdy, !hey
         """
         message = SharkAI.chat_with_openai(f"just say hi to {ctx.chatter}")
-        await ctx.reply(f"{ctx.chatter.mention} " + message)
+        await ctx.reply(f'{ctx.chatter.mention} ' + message)
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
-        await ctx.send(pob)
+        await ctx.send(f'{ctx.chatter.mention} ' + pob)
 
     @commands.command()
     async def profile(self, ctx: commands.Context) -> None:
-        await ctx.send(profile)
+        await ctx.send(f'{ctx.chatter.mention} ' + profile)
 
     @commands.command()
     async def build(self, ctx: commands.Context) -> None:
-        await ctx.send(build)
+        await ctx.send(f'{ctx.chatter.mention} ' + build)
 
     @commands.command()
     async def discord(self, ctx: commands.Context) -> None:
-        await ctx.send(discord)
+        await ctx.send(f'{ctx.chatter.mention} ' + discord)
+
+    @commands.command()
+    async def ign(self, ctx: commands.Context) -> None:
+        await ctx.send(f'{ctx.chatter.mention} ' + ign)
 
     @commands.command()
     async def lurk(self, ctx: commands.Context) -> None:
@@ -263,9 +265,6 @@ def start_bot() -> None:
         async with asqlite.create_pool("tokens.db") as tdb, Bot(token_database=tdb) as bot:
             await bot.setup_database()
             await bot.start()
-            
-    thread = threading.Thread(target=spotify_overlay.main, daemon=True)
-    thread.start()
 
     try:
         asyncio.run(runner())

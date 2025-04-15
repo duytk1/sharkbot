@@ -22,12 +22,8 @@ def get_current_song():
     else:
         return "No music playing"
 
-def main():
-    while True:
-        song = get_current_song()
-        with open("spotify_now_playing.txt", "w", encoding="utf-8") as f:
-            f.write(song)
-        time.sleep(5)
-
-if __name__ == "__main__":
-    main()
+while True:
+    song = get_current_song()
+    with open("spotify_now_playing.txt", "w", encoding="utf-8") as f:
+        f.write(song)
+    time.sleep(5)
