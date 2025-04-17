@@ -11,6 +11,7 @@ import winsound
 import edge_tts
 import asyncio
 import tkinter as tk
+import database
 
 from sharkai import SharkAI
 
@@ -114,6 +115,33 @@ class MyComponent(commands.Component):
         chatter_name = payload.chatter.name
         streamer_name = payload.broadcaster.name
         message = payload.text
+
+        conn = sqlite3.connect(os.environ.get("SQL_CONNECT"))
+        cursor = conn.cursor()
+
+        # Create table if not exists (safe to keep here for first-time setup)
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            from_user TEXT NOT NULL,
+            message TEXT NOT NULL
+        )
+        ''')
+
+        # Limit to 30 messages
+        cursor.execute("SELECT COUNT(*) FROM messages")
+        count = cursor.fetchone()[0]
+
+        if count >= 30:
+            cursor.execute(
+                "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
+
+        cursor.execute(
+            "INSERT INTO messages (from_user, message) VALUES (?, ?)", (chatter_name, message))
+
+        conn.commit()
+        conn.close()
+
         print(
             f"[{chatter_name}] - {streamer_name}: {message}")
         if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
