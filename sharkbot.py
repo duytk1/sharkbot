@@ -22,7 +22,7 @@ LOGGER: logging.Logger = logging.getLogger("Bot")
 
 CLIENT_ID: str = os.environ.get("CLIENT_ID")
 CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
-BOT_ID = os.environ.get("OWNER_ID")
+BOT_ID = os.environ.get("BOT_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 
 pob = os.environ.get("POB")
@@ -56,7 +56,7 @@ class Bot(commands.Bot):
         await self.subscribe_websocket(payload=subscription)
 
         subscription = eventsub.AdBreakBeginSubscription(
-            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
+            broadcaster_user_id=OWNER_ID, moderator_user_id=OWNER_ID)
         await self.subscribe_websocket(payload=subscription)
 
         subscription = eventsub.ChannelRaidSubscription(
@@ -71,7 +71,7 @@ class Bot(commands.Bot):
             broadcaster_user_id=OWNER_ID)
         await self.subscribe_websocket(payload=subscription)
 
-        subscription = eventsub.AutomodMessageHoldSubscription(
+        subscription = eventsub.AutomodMessageHoldV2Subscription(
             broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
         await self.subscribe_websocket(payload=subscription)
 
@@ -193,10 +193,10 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
-        winsound.PlaySound("*", winsound.SND_ALIAS)
         message = SharkAI.chat_with_openai(
             f'an ad break has begun for {payload.duration}, thank the viewer for their patience.')
         await self.send_message(payload, message)
+        winsound.PlaySound("*", winsound.SND_ALIAS)
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
