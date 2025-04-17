@@ -75,6 +75,10 @@ class Bot(commands.Bot):
             broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
         await self.subscribe_websocket(payload=subscription)
 
+        subscription = eventsub.ChannelBanSubscription(
+            broadcaster_user_id=OWNER_ID)
+        await self.subscribe_websocket(payload=subscription)
+
     async def add_token(self, token: str, refresh: str) -> None:
         resp = await super().add_token(token, refresh)
         query = """
@@ -224,6 +228,9 @@ class MyComponent(commands.Component):
     async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
         print('automodded message: ' + payload.text)
+        
+    async def event_ban(self, payload: twitchio.ChannelBan) -> None:
+        self.send_message(payload, 'RIPBOZO')
 
     @commands.command(aliases=["hello", "howdy", "hey"])
     async def hi(self, ctx: commands.Context) -> None:
