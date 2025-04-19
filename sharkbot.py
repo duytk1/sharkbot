@@ -22,7 +22,7 @@ LOGGER: logging.Logger = logging.getLogger("Bot")
 
 CLIENT_ID: str = os.environ.get("CLIENT_ID")
 CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
-BOT_ID = os.environ.get("BOT_ID")
+BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 
 pob = os.environ.get("POB")
@@ -218,17 +218,21 @@ class MyComponent(commands.Component):
         message = SharkAI.chat_with_openai(
             f'{payload.user} just subscribed with tier {subscription_tier}, thank them')
         await self.send_message(payload, message)
+        await self.make_tts(message)
+        self.play_sound('tts.mp3')
 
     @commands.Component.listener()
     async def event_subscription_gift(self, payload: twitchio.ChannelSubscriptionGift) -> None:
         message = SharkAI.chat_with_openai(
             f'{payload.user} just gifted {payload.total} subs, thank them')
         await self.send_message(payload, message)
+        await self.make_tts(message)
+        self.play_sound('tts.mp3')
 
     async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
         print('automodded message: ' + payload.text)
-        
+
     async def event_ban(self, payload: twitchio.ChannelBan) -> None:
         self.send_message(payload, 'RIPBOZO')
 
