@@ -194,7 +194,7 @@ class MyComponent(commands.Component):
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         message = SharkAI.chat_with_openai(
-            f'an ad break has begun for {payload.duration}, thank the viewer for their patience.')
+            f'an ad break has begun for {payload.duration}, thank the viewer for their patience and recap the chat.')
         await self.send_message(payload, message)
         winsound.PlaySound("*", winsound.SND_ALIAS)
 
@@ -208,9 +208,9 @@ class MyComponent(commands.Component):
     async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
         message = SharkAI.chat_with_openai(
             f'{payload.user} followed, thank them')
+        await self.send_message(payload, message)
         await self.make_tts(message)
         self.play_sound('tts.mp3')
-        await self.send_message(payload, message)
 
     @commands.Component.listener()
     async def event_subscription(self, payload: twitchio.ChannelSubscribe) -> None:
