@@ -132,19 +132,20 @@ class MyComponent(commands.Component):
         )
         ''')
 
+        if chatter_name != streamer_name:
         # Limit to 30 messages
-        cursor.execute("SELECT COUNT(*) FROM messages")
-        count = cursor.fetchone()[0]
-
-        if count >= 30:
+            cursor.execute("SELECT COUNT(*) FROM messages")
+            count = cursor.fetchone()[0]
+            if count >= 30:
+                cursor.execute("SELECT COUNT(*) FROM messages")
+                count = cursor.fetchone()[0]
+                cursor.execute(
+                    "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
+                
             cursor.execute(
-                "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
-
-        cursor.execute(
-            "INSERT INTO messages (from_user, message) VALUES (?, ?)", (chatter_name, message))
-
-        conn.commit()
-        conn.close()
+                    "INSERT INTO messages (from_user, message) VALUES (?, ?)", (chatter_name, message))
+            conn.commit()
+            conn.close()
 
         print(
             f"[{chatter_name}] - {streamer_name}: {message}")
@@ -194,9 +195,13 @@ class MyComponent(commands.Component):
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         message = SharkAI.chat_with_openai(
-            f'an ad break has begun for {payload.duration}, thank the viewer for their patience and recap the chat.')
+            f'an ad break has begun for {payload.duration}, thank the viewer for their patience and recap the chat and mention them by name.')
+        conn = sqlite3.connect('messages.db')
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM messages;")
+        conn.commit()
+        conn.close()
         await self.send_message(payload, message)
-        winsound.PlaySound("*", winsound.SND_ALIAS)
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
