@@ -30,7 +30,8 @@ profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
 discord = os.environ.get("DISCORD")
-bot_languague = 'en-GB-RyanNeural'
+private_league_join=os.environ.get("PRIVATE_LEAGUE_JOIN")
+bot_languague = 'en-AU-NatashaNeural'
 
 
 class Bot(commands.Bot):
@@ -124,16 +125,16 @@ class MyComponent(commands.Component):
         cursor = conn.cursor()
 
         # Create table if not exists (safe to keep here for first-time setup)
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            from_user TEXT NOT NULL,
-            message TEXT NOT NULL
-        )
-        ''')
+        # cursor.execute('''
+        # CREATE TABLE IF NOT EXISTS messages (
+        #     id INTEGER PRIMARY KEY AUTOINCREMENT,
+        #     from_user TEXT NOT NULL,
+        #     message TEXT NOT NULL
+        # )
+        # ''')
 
         if chatter_name != streamer_name:
-        # Limit to 30 messages
+            # Limit to 30 messages
             cursor.execute("SELECT COUNT(*) FROM messages")
             count = cursor.fetchone()[0]
             if count >= 30:
@@ -141,9 +142,9 @@ class MyComponent(commands.Component):
                 count = cursor.fetchone()[0]
                 cursor.execute(
                     "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
-                
+
             cursor.execute(
-                    "INSERT INTO messages (from_user, message) VALUES (?, ?)", (chatter_name, message))
+                "INSERT INTO messages (from_user, message) VALUES (?, ?)", (chatter_name, message))
             conn.commit()
             conn.close()
 
@@ -151,24 +152,21 @@ class MyComponent(commands.Component):
             f"[{chatter_name}] - {streamer_name}: {message}")
         if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
             winsound.PlaySound("*", winsound.SND_ALIAS)
-
         if message.split(' ', 1)[0] == 'sharko' or message.split(' ', 1)[0] == '@sharko51':
-            if payload.chatter.name != 'sharkothehuman':
-                response = SharkAI.chat_with_openai(
-                    " ".join(message.split()[1:]))
-                if len(response) > 900:
-                    await self.send_message(payload, 'Message is too long.')
-                elif len(response) >= 500:
-                    await self.send_message(payload, response[:450])
-                    await self.send_message(payload, response[450:])
-                else:
-                    await self.send_message(payload, response)
+            response = SharkAI.chat_with_openai(f"new message from {chatter_name}: {message}, response")
+            if len(response) > 900:
+                await self.send_message(payload, 'Message is too long.')
+            elif len(response) >= 500:
+                await self.send_message(payload, response[:450])
+                await self.send_message(payload, response[450:])
+            else:
+                await self.send_message(payload, response)
 
-                tts_text = f'{chatter_name} asked me:' + \
-                    message.removeprefix('@sharkothehuman') + '. ' + response
+            tts_text = f'{chatter_name} asked me:' + \
+                message.removeprefix('@sharkothehuman') + '. ' + response
 
-                await self.make_tts(tts_text)
-                self.play_sound('tts.mp3')
+            await self.make_tts(tts_text)
+            self.play_sound('tts.mp3')
 
     @commands.group(invoke_fallback=True)
     async def ign(self, ctx: commands.Context) -> None:
@@ -189,7 +187,7 @@ class MyComponent(commands.Component):
         # Event dispatched when we go live
         await payload.broadcaster.send_message(
             sender=self.bot.bot_id,
-            message=f"{payload.broadcaster} is alive!",
+            message=f"{payload.broadcaster} is yapping again!",
         )
 
     @commands.Component.listener()
@@ -274,6 +272,10 @@ class MyComponent(commands.Component):
         message = SharkAI.chat_with_openai(
             f'{ctx.chatter.name} is lurking, tell them a joke and thank for lurking')
         await ctx.send(f'{ctx.chatter.mention} ' + message)
+
+    @commands.command()
+    async def join(self, ctx: commands.Context) -> None:
+        await ctx.send(f'{ctx.chatter.mention} ' + private_league_join)
 
     async def make_tts(self, text):
         tts = edge_tts.Communicate(text, bot_languague)
