@@ -30,7 +30,7 @@ profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
 discord = os.environ.get("DISCORD")
-private_league_join=os.environ.get("PRIVATE_LEAGUE_JOIN")
+private_league_join = os.environ.get("PRIVATE_LEAGUE_JOIN")
 bot_languague = 'en-AU-NatashaNeural'
 
 
@@ -124,6 +124,11 @@ class MyComponent(commands.Component):
         conn = sqlite3.connect(os.environ.get("SQL_CONNECT"))
         cursor = conn.cursor()
 
+        if message.split(' ', 1)[0] == 'clear' and chatter_name == 'sharko51':
+            cursor.execute("DELETE FROM messages;")
+            conn.commit()
+            conn.close()
+
         # Create table if not exists (safe to keep here for first-time setup)
         # cursor.execute('''
         # CREATE TABLE IF NOT EXISTS messages (
@@ -153,12 +158,13 @@ class MyComponent(commands.Component):
         if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
             winsound.PlaySound("*", winsound.SND_ALIAS)
         if message.split(' ', 1)[0] == 'sharko' or message.split(' ', 1)[0] == '@sharko51':
-            response = SharkAI.chat_with_openai(f"new message from {chatter_name}: {message}, response")
+            response = SharkAI.chat_with_openai(
+                f"new message from {chatter_name}: {message}, response")
             if len(response) > 900:
                 await self.send_message(payload, 'Message is too long.')
             elif len(response) >= 500:
-                await self.send_message(payload, response[:450])
-                await self.send_message(payload, response[450:])
+                await self.send_message(payload, response[:490])
+                await self.send_message(payload, response[491:990])
             else:
                 await self.send_message(payload, response)
 
@@ -194,6 +200,7 @@ class MyComponent(commands.Component):
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         message = SharkAI.chat_with_openai(
             f'an ad break has begun for {payload.duration}, thank the viewer for their patience. recap the chat and mention the chatters by name only if there were previous messages.')
+
         conn = sqlite3.connect('messages.db')
         cursor = conn.cursor()
         cursor.execute("DELETE FROM messages;")
@@ -298,10 +305,27 @@ class MyComponent(commands.Component):
         root.mainloop()
 
     async def send_message(self, payload, message):
-        await payload.broadcaster.send_message(
-            sender=self.bot.bot_id,
-            message=message,
-        )
+        if len(message) > 900:
+            await payload.broadcaster.send_message(
+                sender=self.bot.bot_id,
+                message='Message is too long.',
+            )
+        elif len(message) >= 500:
+            await self.send_message(payload, message[:480])
+            await self.send_message(payload, message[481:990])
+            await payload.broadcaster.send_message(
+                sender=self.bot.bot_id,
+                message=message[:480],
+            )
+            await payload.broadcaster.send_message(
+                sender=self.bot.bot_id,
+                message=message[481:990],
+            )
+        else:
+            await payload.broadcaster.send_message(
+                sender=self.bot.bot_id,
+                message=message,
+            )
 
 
 def start_bot() -> None:
