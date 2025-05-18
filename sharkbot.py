@@ -197,7 +197,11 @@ class MyComponent(commands.Component):
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         message = SharkAI.chat_with_openai(
-            f'an ad break has begun for {payload.duration}, thank the viewer for their patience. recap the chat and mention the chatters by name only if there were previous messages.')
+            f'an ad break has begun for {payload.duration}, thank the viewer for their patience.')
+        cursor.execute("SELECT COUNT(*) FROM messages")
+        count = cursor.fetchone()[0]
+        if count > 0:
+            message += 'recap the chat and mention the chatters by name'
 
         conn = sqlite3.connect('messages.db')
         cursor = conn.cursor()
