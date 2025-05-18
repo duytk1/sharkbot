@@ -143,8 +143,6 @@ class MyComponent(commands.Component):
             cursor.execute("SELECT COUNT(*) FROM messages")
             count = cursor.fetchone()[0]
             if count >= 30:
-                cursor.execute("SELECT COUNT(*) FROM messages")
-                count = cursor.fetchone()[0]
                 cursor.execute(
                     "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
 
