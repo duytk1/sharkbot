@@ -312,15 +312,13 @@ class MyComponent(commands.Component):
                 message='Message is too long.',
             )
         elif len(message) >= 500:
-            await self.send_message(payload, message[:480])
-            await self.send_message(payload, message[481:990])
             await payload.broadcaster.send_message(
                 sender=self.bot.bot_id,
                 message=message[:480],
             )
             await payload.broadcaster.send_message(
                 sender=self.bot.bot_id,
-                message=message[481:990],
+                message=message[480:990],
             )
         else:
             await payload.broadcaster.send_message(
