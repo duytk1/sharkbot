@@ -12,3 +12,4 @@ spotify_now_playing.txt
 __pycache__/
 .cache
 messages.db
+t.py

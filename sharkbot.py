@@ -201,10 +201,12 @@ class MyComponent(commands.Component):
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM messages")
         count = cursor.fetchone()[0]
+        print('count for ad break: ' + str(count))
         if count > 0:
             prompt += ' recap the chat and mention the chatters by .'
 
         await self.send_message(payload, SharkAI.chat_with_openai(prompt))
+        cursor = conn.cursor()
         cursor.execute("DELETE FROM messages;")
         conn.commit()
         conn.close()
