@@ -196,7 +196,7 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
-        prompt = f'an ad break has begun for {payload.duration}, thank the viewers for their patience.'
+        prompt = f'an ad break has begun for {payload.duration}, thank the viewers for their patience. from then on treat the chat room as a clean new one.'
         conn = sqlite3.connect('messages.db')
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM messages")

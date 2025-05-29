@@ -25,9 +25,7 @@ class SharkAI:
         conn = sqlite3.connect(os.environ.get("SQL_CONNECT"))
         cursor = conn.cursor()
         cursor.execute("SELECT from_user, message FROM messages ORDER BY id ASC")
-        t = []
         messages = cursor.fetchall()
-        print(messages)
         message_history = 'this is the previous chat messages: '
         for msg in messages:
             message_history += msg[0] + ': ' + msg[1] + '\n'
