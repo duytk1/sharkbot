@@ -129,15 +129,6 @@ class MyComponent(commands.Component):
             conn.commit()
             conn.close()
 
-        # Create table if not exists (safe to keep here for first-time setup)
-        # cursor.execute('''
-        # CREATE TABLE IF NOT EXISTS messages (
-        #     id INTEGER PRIMARY KEY AUTOINCREMENT,
-        #     from_user TEXT NOT NULL,
-        #     message TEXT NOT NULL
-        # )
-        # ''')
-
         if chatter_name != streamer_name:
             # Limit to 30 messages
             cursor.execute("SELECT COUNT(*) FROM messages")

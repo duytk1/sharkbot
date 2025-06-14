@@ -5,6 +5,7 @@ tokens.db-shm
 tokens.db-wal
 .tio.tokens.json
 text.txt
+text2.txt
 oauth.py
 test.txt
 tts.mp3
