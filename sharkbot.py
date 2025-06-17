@@ -102,7 +102,6 @@ class Bot(commands.Bot):
             await self.add_token(row["token"], row["refresh"])
 
     async def setup_database(self) -> None:
-        # Create our token table, if it doesn't exist..
         query = """CREATE TABLE IF NOT EXISTS tokens(user_id TEXT PRIMARY KEY, token TEXT NOT NULL, refresh TEXT NOT NULL)"""
         async with self.token_database.acquire() as connection:
             await connection.execute(query)
