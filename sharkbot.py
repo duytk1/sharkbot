@@ -181,7 +181,7 @@ class MyComponent(commands.Component):
         # Event dispatched when we go live
         await payload.broadcaster.send_message(
             sender=self.bot.bot_id,
-            message=f"{payload.broadcaster} is yapping again!",
+            message=f"{payload.broadcaster} is yapping again",
         )
 
     @commands.Component.listener()
