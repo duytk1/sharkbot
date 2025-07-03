@@ -276,6 +276,10 @@ class MyComponent(commands.Component):
     @commands.command()
     async def join(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention} ' + private_league_join)
+        
+    @commands.command()
+    async def mb(self, ctx: commands.Context) -> None:
+        await ctx.send(f'{ctx.chatter.mention} ' + 'https://www.twitch.tv/sharko51/clip/ConsiderateProudCrabsM4xHeh-_BMzslePN11lJsY3')
 
     async def make_tts(self, text):
         tts = edge_tts.Communicate(text, bot_languague)

@@ -36,7 +36,7 @@ class SharkAI:
             chat_completion = client.chat.completions.create(
                 messages=history,
                 # model="gpt-4.5-preview",
-                model="gpt-4o",
+                model="gpt-4o-mini",
             )
             return chat_completion.choices[0].message.content
         except Exception as e:
