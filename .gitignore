@@ -1,3 +1,4 @@
+messages.db
 env/
 .env
 tokens.db
@@ -12,5 +13,4 @@ tts.mp3
 spotify_now_playing.txt
 __pycache__/
 .cache
-messages.db
 t.py
