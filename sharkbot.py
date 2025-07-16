@@ -29,7 +29,6 @@ pob = os.environ.get("POB")
 profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
-discord = os.environ.get("DISCORD")
 bot_languague = 'en-AU-NatashaNeural'
 
 
@@ -260,7 +259,7 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def discord(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + discord)
+        await ctx.send(f'{ctx.chatter.mention} ' + 'https://discord.com/invite/ZyDXVXdHWM')
 
     @commands.command()
     async def ign(self, ctx: commands.Context) -> None:
