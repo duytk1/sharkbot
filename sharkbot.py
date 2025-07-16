@@ -30,7 +30,6 @@ profile = os.environ.get("PROFILE")
 ign = os.environ.get("IGN")
 build = os.environ.get("BUILD")
 discord = os.environ.get("DISCORD")
-private_league_join = os.environ.get("PRIVATE_LEAGUE_JOIN")
 bot_languague = 'en-AU-NatashaNeural'
 
 
@@ -272,10 +271,6 @@ class MyComponent(commands.Component):
         message = SharkAI.chat_with_openai(
             f'{ctx.chatter.name} is lurking, tell them a joke and thank for lurking')
         await ctx.send(f'{ctx.chatter.mention} ' + message)
-
-    @commands.command()
-    async def join(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + private_league_join)
         
     @commands.command()
     async def mb(self, ctx: commands.Context) -> None:
