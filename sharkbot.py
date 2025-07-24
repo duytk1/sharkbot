@@ -208,7 +208,7 @@ class MyComponent(commands.Component):
     @commands.Component.listener()
     async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
         message = SharkAI.chat_with_openai(
-            f'{payload.user} followed, thank them')
+            f'{payload.user} followed, thank them properly')
         await self.send_message(payload, message)
         await self.make_tts(message)
         self.play_sound('tts.mp3')
