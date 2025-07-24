@@ -25,10 +25,10 @@ CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 
-pob = os.environ.get("POB")
-profile = os.environ.get("PROFILE")
-ign = os.environ.get("IGN")
-build = os.environ.get("BUILD")
+pob = 'https://pobb.in/indY_JIB6nnx'
+profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
+ign = 'sharko_not_bait'
+build = 'https://www.youtube.com/watch?v=-3RaNWRxJ_c'
 bot_languague = 'en-AU-NatashaNeural'
 
 
