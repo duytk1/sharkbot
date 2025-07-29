@@ -29,6 +29,7 @@ pob = 'https://pobb.in/kMLRouFf-pEh'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_not_bait'
 build = 'https://www.youtube.com/watch?v=-3RaNWRxJ_c'
+vid = 'https://www.youtube.com/watch?v=pT0XNtv8wzw'
 bot_languague = 'en-AU-NatashaNeural'
 
 
@@ -256,6 +257,10 @@ class MyComponent(commands.Component):
     @commands.command()
     async def build(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention} ' + build)
+        
+    @commands.command()
+    async def vid(self, ctx: commands.Context) -> None:
+        await ctx.send(f'{ctx.chatter.mention} ' + vid)
 
     @commands.command()
     async def discord(self, ctx: commands.Context) -> None:
