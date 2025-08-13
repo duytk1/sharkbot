@@ -259,7 +259,7 @@ class MyComponent(commands.Component):
         await ctx.send(f'{ctx.chatter.mention} ' + build)
         
     @commands.command()
-    async def vid(self, ctx: commands.Context) -> None:
+    async def video(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention} ' + vid)
 
     @commands.command()

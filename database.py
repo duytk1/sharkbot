@@ -59,4 +59,6 @@ if __name__ == "__main__":
     messages = cursor.fetchall()
     # add_message('test', '1')
     for msg in messages:
-        print(msg)
+        print('msg: ', msg)
+    cursor.close()
+    conn.close()
