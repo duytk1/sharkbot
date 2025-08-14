@@ -1,5 +1,6 @@
 import asyncio
 import threading
+import sqlite3
 
 from sharkai import SharkAI
 from sharkbot import start_bot
@@ -14,6 +15,12 @@ bot_thread = threading.Thread(target=run_bot, daemon=True)
 bot_thread.start()
 
 if __name__ == "__main__":
+    conn = sqlite3.connect('messages.db')
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM messages;")
+    conn.commit()
+    cursor.close()
+    conn.close()
     while True:
         # user_input = input("Enter your text: ")
         # if user_input.lower() == "exit":

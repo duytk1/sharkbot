@@ -25,7 +25,7 @@ CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 
-pob = 'https://pobb.in/kMLRouFf-pEh'
+pob = 'https://pobb.in/FrsoS-Eb00yV'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_not_bait'
 build = 'https://www.youtube.com/watch?v=-3RaNWRxJ_c'
@@ -76,6 +76,10 @@ class Bot(commands.Bot):
         await self.subscribe_websocket(payload=subscription)
 
         subscription = eventsub.ChannelBanSubscription(
+            broadcaster_user_id=OWNER_ID)
+        await self.subscribe_websocket(payload=subscription)
+        
+        subscription = eventsub.ChannelSubscribeSubscription(
             broadcaster_user_id=OWNER_ID)
         await self.subscribe_websocket(payload=subscription)
 
