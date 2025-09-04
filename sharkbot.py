@@ -29,7 +29,7 @@ pob = 'https://pobb.in/FrsoS-Eb00yV'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_not_bait'
 build = 'https://www.youtube.com/watch?v=-3RaNWRxJ_c'
-vid = 'https://www.youtube.com/watch?v=pT0XNtv8wzw'
+vid = 'https://www.youtube.com/watch?v=upJPSSFeIqs'
 bot_languague = 'en-AU-NatashaNeural'
 
 
