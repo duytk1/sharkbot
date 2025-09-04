@@ -284,6 +284,10 @@ class MyComponent(commands.Component):
     async def mb(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention} ' + 'https://www.twitch.tv/sharko51/clip/ConsiderateProudCrabsM4xHeh-_BMzslePN11lJsY3')
 
+    @commands.command()
+    async def search(self, ctx: commands.Context) -> None:
+        await ctx.send(f'{ctx.chatter.mention}' + SharkAI.search_open_ai(ctx.message))
+    
     async def make_tts(self, text):
         tts = edge_tts.Communicate(text, bot_languague)
         await tts.save('tts.mp3')

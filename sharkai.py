@@ -42,3 +42,10 @@ class SharkAI:
             return chat_completion.choices[0].message.content
         except Exception as e:
             return f"Error: {e}"
+
+    def search_open_ai(prompt):
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            tools=[{"type": "web_search"}],
+            input=prompt)
+        return response

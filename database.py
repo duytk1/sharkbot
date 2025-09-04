@@ -54,7 +54,7 @@ if __name__ == "__main__":
     conn = sqlite3.connect('messages.db')
     cursor = conn.cursor()
     cursor.execute("SELECT from_user, message FROM messages ORDER BY id ASC")
-    # cursor.execute("DELETE FROM messages;")
+    cursor.execute("DELETE FROM messages;")
     conn.commit()
     messages = cursor.fetchall()
     # add_message('test', '1')
