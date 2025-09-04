@@ -25,7 +25,7 @@ CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 
-pob = 'https://pobb.in/FrsoS-Eb00yV'
+pob = 'https://pobb.in/XmoeJA5c37u2'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_not_bait'
 build = 'https://www.youtube.com/watch?v=-3RaNWRxJ_c'
