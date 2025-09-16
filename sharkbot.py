@@ -25,10 +25,10 @@ CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 
-pob = 'https://pobb.in/XmoeJA5c37u2'
+pob = 'https://pobb.in/aal6ivegdR-e'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_not_bait'
-build = 'https://www.youtube.com/watch?v=-3RaNWRxJ_c'
+build = 'https://www.youtube.com/watch?v=upJPSSFeIqs'
 vid = 'https://www.youtube.com/watch?v=upJPSSFeIqs'
 bot_languague = 'en-AU-NatashaNeural'
 
@@ -148,7 +148,7 @@ class MyComponent(commands.Component):
             f"[{chatter_name}] - {streamer_name}: {message}")
         if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
             winsound.PlaySound("*", winsound.SND_ALIAS)
-        if message.split(' ', 1)[0] == 'sharko' or message.split(' ', 1)[0] == '@sharko51':
+        if message.split(' ', 1)[0].lower() == 'sharko' or message.split(' ', 1)[0].lower() == '@sharko51':
             response = SharkAI.chat_with_openai(
                 f"new message from {chatter_name}: {message}, response")
             if len(response) > 900:
@@ -284,6 +284,10 @@ class MyComponent(commands.Component):
     async def mb(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention} ' + 'https://www.twitch.tv/sharko51/clip/ConsiderateProudCrabsM4xHeh-_BMzslePN11lJsY3')
 
+    @commands.command()
+    async def search(self, ctx: commands.Context) -> None:
+        await ctx.send(f'{ctx.chatter.mention}' + SharkAI.search_open_ai(ctx.message))
+        
     @commands.command()
     async def search(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention}' + SharkAI.search_open_ai(ctx.message))
