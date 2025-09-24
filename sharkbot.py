@@ -27,8 +27,8 @@ OWNER_ID = os.environ.get("OWNER_ID")
 
 pob = 'https://pobb.in/aal6ivegdR-e'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
-ign = 'sharko_not_bait'
-build = 'https://www.youtube.com/watch?v=upJPSSFeIqs'
+ign = 'sharko_can_coom'
+build = 'https://www.youtube.com/watch?v=Ha51BZgYTUs'
 vid = 'https://www.youtube.com/watch?v=upJPSSFeIqs'
 bot_languague = 'en-AU-NatashaNeural'
 
@@ -268,7 +268,7 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def discord(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + 'https://discord.com/invite/ZyDXVXdHWM')
+        await ctx.send(f'{ctx.chatter.mention} ' + ' https://discord.com/invite/ZyDXVXdHWM')
 
     @commands.command()
     async def ign(self, ctx: commands.Context) -> None:
@@ -282,7 +282,7 @@ class MyComponent(commands.Component):
         
     @commands.command()
     async def mb(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + 'https://www.twitch.tv/sharko51/clip/ConsiderateProudCrabsM4xHeh-_BMzslePN11lJsY3')
+        await ctx.send(f'{ctx.chatter.mention} ' + ' https://www.twitch.tv/sharko51/clip/ConsiderateProudCrabsM4xHeh-_BMzslePN11lJsY3')
 
     @commands.command()
     async def search(self, ctx: commands.Context) -> None:
@@ -290,7 +290,7 @@ class MyComponent(commands.Component):
     
     @commands.command()
     async def trick(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention}' + 'https://www.twitch.tv/sharko51/clip/ElegantPeacefulRaccoonAllenHuhu-4SNxLLMor3NV6m11')
+        await ctx.send(f'{ctx.chatter.mention}' + ' https://www.twitch.tv/sharko51/clip/ElegantPeacefulRaccoonAllenHuhu-4SNxLLMor3NV6m11')
 
     async def make_tts(self, text):
         tts = edge_tts.Communicate(text, bot_languague)
