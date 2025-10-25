@@ -242,13 +242,13 @@ class MyComponent(commands.Component):
     async def event_ban(self, payload: twitchio.ChannelBan) -> None:
         self.send_message(payload, 'RIPBOZO')
 
-    @commands.command(aliases=["hello", "howdy", "hey"])
-    async def hi(self, ctx: commands.Context) -> None:
-        """
-        !hi, !hello, !howdy, !hey
-        """
-        message = SharkAI.chat_with_openai(f"just say hi to {ctx.chatter}")
-        await ctx.reply(f'{ctx.chatter.mention} ' + message)
+    # @commands.command(aliases=["hello", "howdy", "hey"])
+    # async def hi(self, ctx: commands.Context) -> None:
+    #     """
+    #     !hi, !hello, !howdy, !hey
+    #     """
+    #     message = SharkAI.chat_with_openai(f"just say hi to {ctx.chatter}")
+    #     await ctx.reply(f'{ctx.chatter.mention} ' + message)
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
