@@ -28,8 +28,8 @@ OWNER_ID = os.environ.get("OWNER_ID")
 pob = 'https://pobb.in/aal6ivegdR-e'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_can_coom'
-build = 'https://www.youtube.com/watch?v=Ha51BZgYTUs'
-vid = 'https://www.youtube.com/watch?v=upJPSSFeIqs'
+build = 'https://www.youtube.com/watch?v=AKhJSbioDsM'
+vid = 'https://www.twitch.tv/sharko51/clip/DifficultModernBaconWutFace-naKL2LtInsBwEO3v'
 bot_languague = 'en-AU-NatashaNeural'
 
 
@@ -263,7 +263,7 @@ class MyComponent(commands.Component):
         await ctx.send(f'{ctx.chatter.mention} ' + build)
         
     @commands.command()
-    async def video(self, ctx: commands.Context) -> None:
+    async def vid(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention} ' + vid)
 
     @commands.command()
