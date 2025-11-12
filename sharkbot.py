@@ -2,6 +2,7 @@ import asyncio
 import logging
 import sqlite3
 import os
+import threading
 import asqlite
 import twitchio
 from twitchio.ext import commands
@@ -9,8 +10,6 @@ from twitchio import eventsub
 import pygame
 import winsound
 import edge_tts
-import asyncio
-import tkinter as tk
 import database
 
 from sharkai import SharkAI
@@ -27,10 +26,10 @@ OWNER_ID = os.environ.get("OWNER_ID")
 
 pob = 'https://pobb.in/aal6ivegdR-e'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
-ign = 'sharko_can_coom'
-build = 'https://www.youtube.com/watch?v=AKhJSbioDsM'
+ign = 'sharko_can_breed'
+build = 'https://www.youtube.com/watch?v=gUk5LNaunAY'
 vid = 'https://www.twitch.tv/sharko51/clip/DifficultModernBaconWutFace-naKL2LtInsBwEO3v'
-bot_languague = 'en-AU-NatashaNeural'
+bot_language = 'en-AU-NatashaNeural'
 
 
 class Bot(commands.Bot):
@@ -123,32 +122,37 @@ class MyComponent(commands.Component):
         streamer_name = payload.broadcaster.name
         message = payload.text
 
-        conn = sqlite3.connect(os.environ.get("SQL_CONNECT"))
-        cursor = conn.cursor()
+        conn = None
+        try:
+            conn = sqlite3.connect(os.environ.get("SQL_CONNECT"))
+            cursor = conn.cursor()
 
-        if message.split(' ', 1)[0] == 'clear' and chatter_name == 'sharko51':
-            cursor.execute("DELETE FROM messages;")
-            conn.commit()
-            conn.close()
+            if message and message.split(' ', 1)[0] == 'clear' and chatter_name == 'sharko51':
+                cursor.execute("DELETE FROM messages;")
+                conn.commit()
 
-        if chatter_name != streamer_name:
-            # Limit to 30 messages
-            cursor.execute("SELECT COUNT(*) FROM messages")
-            count = cursor.fetchone()[0]
-            if count >= 30:
+            if chatter_name != streamer_name:
+                # Limit to 30 messages
+                cursor.execute("SELECT COUNT(*) FROM messages")
+                count = cursor.fetchone()[0]
+                if count >= 30:
+                    cursor.execute(
+                        "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
+
                 cursor.execute(
-                    "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
-
-            cursor.execute(
-                "INSERT INTO messages (from_user, message) VALUES (?, ?)", (chatter_name, message))
-            conn.commit()
-            conn.close()
+                    "INSERT INTO messages (from_user, message) VALUES (?, ?)", (chatter_name, message))
+                conn.commit()
+        except Exception as e:
+            LOGGER.error(f"Database error in event_message: {e}")
+        finally:
+            if conn:
+                conn.close()
 
         print(
             f"[{chatter_name}] - {streamer_name}: {message}")
         if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
             winsound.PlaySound("*", winsound.SND_ALIAS)
-        if message.split(' ', 1)[0].lower() == 'sharko' or message.split(' ', 1)[0].lower() == '@sharko51':
+        if message and (message.split(' ', 1)[0].lower() == 'sharko' or message.split(' ', 1)[0].lower() == '@sharko51'):
             response = SharkAI.chat_with_openai(
                 f"new message from {chatter_name}: {message}, response")
             if len(response) > 900:
@@ -164,10 +168,6 @@ class MyComponent(commands.Component):
 
             await self.make_tts(tts_text)
             self.play_sound('tts.mp3')
-
-    @commands.group(invoke_fallback=True)
-    async def ign(self, ctx: commands.Context) -> None:
-        await ctx.send(f"{ctx.chatter.mention} " + ign)
 
     @commands.command(aliases=["repeat"])
     async def say(self, ctx: commands.Context, *, content: str) -> None:
@@ -190,19 +190,24 @@ class MyComponent(commands.Component):
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         prompt = f'an ad break has begun for {payload.duration}, thank the viewers for their patience. from then on treat the chat room as a clean new one.'
-        conn = sqlite3.connect('messages.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM messages")
-        count = cursor.fetchone()[0]
-        print('count for ad break: ' + str(count))
-        if count > 0:
-            prompt += ' recap the chat and mention the chatters by .'
+        conn = None
+        try:
+            conn = sqlite3.connect(os.environ.get("SQL_CONNECT", "messages.db"))
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM messages")
+            count = cursor.fetchone()[0]
+            print('count for ad break: ' + str(count))
+            if count > 0:
+                prompt += ' recap the chat and mention the chatters by .'
 
-        await self.send_message(payload, SharkAI.chat_with_openai(prompt))
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM messages;")
-        conn.commit()
-        conn.close()
+            await self.send_message(payload, SharkAI.chat_with_openai(prompt))
+            cursor.execute("DELETE FROM messages;")
+            conn.commit()
+        except Exception as e:
+            LOGGER.error(f"Database error in event_ad_break: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
@@ -240,7 +245,7 @@ class MyComponent(commands.Component):
         print('automodded message: ' + payload.text)
 
     async def event_ban(self, payload: twitchio.ChannelBan) -> None:
-        self.send_message(payload, 'RIPBOZO')
+        await self.send_message(payload, 'RIPBOZO')
 
     # @commands.command(aliases=["hello", "howdy", "hey"])
     # async def hi(self, ctx: commands.Context) -> None:
@@ -293,7 +298,7 @@ class MyComponent(commands.Component):
         await ctx.send(f'{ctx.chatter.mention}' + ' https://www.twitch.tv/sharko51/clip/ElegantPeacefulRaccoonAllenHuhu-4SNxLLMor3NV6m11')
 
     async def make_tts(self, text):
-        tts = edge_tts.Communicate(text, bot_languague)
+        tts = edge_tts.Communicate(text, bot_language)
         await tts.save('tts.mp3')
 
     def play_sound(self, file_name):
@@ -303,14 +308,17 @@ class MyComponent(commands.Component):
         sound.set_volume(0.5)
         sound.play()
 
-        root = tk.Tk()
-        root.title("Sound Player")
-
-        def play_and_cleanup():
-            root.destroy()
-            os.remove(file_name)
-        root.after(duration, play_and_cleanup)
-        root.mainloop()
+        # Use threading to avoid blocking the async event loop
+        def cleanup_after_duration():
+            import time
+            time.sleep(duration / 1000.0)
+            try:
+                os.remove(file_name)
+            except Exception as e:
+                LOGGER.error(f"Error removing TTS file: {e}")
+        
+        cleanup_thread = threading.Thread(target=cleanup_after_duration, daemon=True)
+        cleanup_thread.start()
 
     async def send_message(self, payload, message):
         if len(message) > 900:
