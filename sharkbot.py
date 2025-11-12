@@ -3,6 +3,7 @@ import logging
 import sqlite3
 import os
 import threading
+import time
 import asqlite
 import twitchio
 from twitchio.ext import commands
@@ -10,6 +11,7 @@ from twitchio import eventsub
 import pygame
 import winsound
 import edge_tts
+from contextlib import contextmanager
 
 from sharkai import SharkAI
 
@@ -18,17 +20,33 @@ load_dotenv()
 
 LOGGER: logging.Logger = logging.getLogger("Bot")
 
+# Configuration
 CLIENT_ID: str = os.environ.get("CLIENT_ID")
 CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
+SQL_DB_PATH = os.environ.get("SQL_CONNECT", "messages.db")
 
+# Constants
+MAX_MESSAGE_HISTORY = 30
+MAX_MESSAGE_LENGTH = 900
+LONG_MESSAGE_THRESHOLD = 500
+FIRST_MESSAGE_CHUNK = 480
+SECOND_MESSAGE_CHUNK = 990
+TTS_FILE = 'tts.mp3'
+STREAMER_NAME = 'sharko51'
+BOT_NAME = 'sharkothehuman'
+
+# Links
 pob = 'https://pobb.in/aal6ivegdR-e'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_can_breed'
 build = 'https://www.youtube.com/watch?v=gUk5LNaunAY'
 vid = 'https://www.twitch.tv/sharko51/clip/DifficultModernBaconWutFace-naKL2LtInsBwEO3v'
 bot_language = 'en-AU-NatashaNeural'
+
+# Initialize pygame mixer once
+pygame.mixer.init()
 
 
 class Bot(commands.Bot):
@@ -45,41 +63,31 @@ class Bot(commands.Bot):
     async def setup_hook(self) -> None:
         await self.add_component(MyComponent(self))
 
-        subscription = eventsub.ChatMessageSubscription(
-            broadcaster_user_id=OWNER_ID, user_id=BOT_ID)
-        await self.subscribe_websocket(payload=subscription)
-
-        subscription = eventsub.StreamOnlineSubscription(
-            broadcaster_user_id=OWNER_ID)
-        await self.subscribe_websocket(payload=subscription)
-
-        subscription = eventsub.AdBreakBeginSubscription(
-            broadcaster_user_id=OWNER_ID, moderator_user_id=OWNER_ID)
-        await self.subscribe_websocket(payload=subscription)
-
-        subscription = eventsub.ChannelRaidSubscription(
-            to_broadcaster_user_id=OWNER_ID)
-        await self.subscribe_websocket(payload=subscription)
-
-        subscription = eventsub.ChannelFollowSubscription(
-            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
-        await self.subscribe_websocket(payload=subscription)
-
-        subscription = eventsub.ChannelSubscriptionGiftSubscription(
-            broadcaster_user_id=OWNER_ID)
-        await self.subscribe_websocket(payload=subscription)
-
-        subscription = eventsub.AutomodMessageHoldV2Subscription(
-            broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID)
-        await self.subscribe_websocket(payload=subscription)
-
-        subscription = eventsub.ChannelBanSubscription(
-            broadcaster_user_id=OWNER_ID)
-        await self.subscribe_websocket(payload=subscription)
+        # Define all subscriptions in a list for cleaner code
+        subscriptions = [
+            eventsub.ChatMessageSubscription(
+                broadcaster_user_id=OWNER_ID, user_id=BOT_ID),
+            eventsub.StreamOnlineSubscription(
+                broadcaster_user_id=OWNER_ID),
+            eventsub.AdBreakBeginSubscription(
+                broadcaster_user_id=OWNER_ID, moderator_user_id=OWNER_ID),
+            eventsub.ChannelRaidSubscription(
+                to_broadcaster_user_id=OWNER_ID),
+            eventsub.ChannelFollowSubscription(
+                broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID),
+            eventsub.ChannelSubscriptionGiftSubscription(
+                broadcaster_user_id=OWNER_ID),
+            eventsub.AutomodMessageHoldV2Subscription(
+                broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID),
+            eventsub.ChannelBanSubscription(
+                broadcaster_user_id=OWNER_ID),
+            eventsub.ChannelSubscribeSubscription(
+                broadcaster_user_id=OWNER_ID),
+        ]
         
-        subscription = eventsub.ChannelSubscribeSubscription(
-            broadcaster_user_id=OWNER_ID)
-        await self.subscribe_websocket(payload=subscription)
+        # Subscribe to all events
+        for subscription in subscriptions:
+            await self.subscribe_websocket(payload=subscription)
 
     async def add_token(self, token: str, refresh: str) -> None:
         resp = await super().add_token(token, refresh)
@@ -114,6 +122,24 @@ class Bot(commands.Bot):
 class MyComponent(commands.Component):
     def __init__(self, bot: Bot):
         self.bot = bot
+        self._db_path = SQL_DB_PATH
+    
+    @contextmanager
+    def _get_db_connection(self):
+        """Context manager for database connections."""
+        conn = None
+        try:
+            conn = sqlite3.connect(self._db_path)
+            yield conn
+            conn.commit()
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            LOGGER.error(f"Database error: {e}")
+            raise
+        finally:
+            if conn:
+                conn.close()
 
     @commands.Component.listener()
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
@@ -121,52 +147,53 @@ class MyComponent(commands.Component):
         streamer_name = payload.broadcaster.name
         message = payload.text
 
-        conn = None
+        if not message:
+            return
+
+        # Optimize: get first word once
+        first_word = message.split(' ', 1)[0].lower()
+        is_clear_command = first_word == 'clear' and chatter_name == STREAMER_NAME
+        is_mention = first_word in ('sharko', '@sharko51')
+        is_chatter = chatter_name != streamer_name
+
+        # Database operations
         try:
-            conn = sqlite3.connect(os.environ.get("SQL_CONNECT", "messages.db"))
-            cursor = conn.cursor()
-
-            if message and message.split(' ', 1)[0] == 'clear' and chatter_name == 'sharko51':
-                cursor.execute("DELETE FROM messages;")
-                conn.commit()
-
-            if chatter_name != streamer_name:
-                # Limit to 30 messages
-                cursor.execute("SELECT COUNT(*) FROM messages")
-                count = cursor.fetchone()[0]
-                if count >= 30:
+            with self._get_db_connection() as conn:
+                cursor = conn.cursor()
+                
+                if is_clear_command:
+                    cursor.execute("DELETE FROM messages;")
+                elif is_chatter:
+                    # Optimize: combine count check and delete in one query if needed
+                    cursor.execute("SELECT COUNT(*) FROM messages")
+                    count = cursor.fetchone()[0]
+                    if count >= MAX_MESSAGE_HISTORY:
+                        cursor.execute(
+                            "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
                     cursor.execute(
-                        "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
-
-                cursor.execute(
-                    "INSERT INTO messages (from_user, message) VALUES (?, ?)", (chatter_name, message))
-                conn.commit()
+                        "INSERT INTO messages (from_user, message) VALUES (?, ?)", 
+                        (chatter_name, message))
         except Exception as e:
             LOGGER.error(f"Database error in event_message: {e}")
-        finally:
-            if conn:
-                conn.close()
 
-        print(
-            f"[{chatter_name}] - {streamer_name}: {message}")
-        if chatter_name != streamer_name and chatter_name != 'sharkothehuman':
+        print(f"[{chatter_name}] - {streamer_name}: {message}")
+        
+        if is_chatter and chatter_name != BOT_NAME:
             winsound.PlaySound("*", winsound.SND_ALIAS)
-        if message and (message.split(' ', 1)[0].lower() == 'sharko' or message.split(' ', 1)[0].lower() == '@sharko51'):
+        
+        if is_mention:
             response = SharkAI.chat_with_openai(
                 f"new message from {chatter_name}: {message}, response")
-            if len(response) > 900:
-                await self.send_message(payload, 'Message is too long.')
-            elif len(response) >= 500:
-                await self.send_message(payload, response[:490])
-                await self.send_message(payload, response[490:990])
-            else:
-                await self.send_message(payload, response)
+            
+            # Send response in chunks if needed
+            await self.send_message(payload, response)
 
-            tts_text = f'{chatter_name} asked me:' + \
-                message.removeprefix('@sharko51').removeprefix('sharko') + '. ' + response
+            # Create TTS text
+            cleaned_message = message.removeprefix('@sharko51').removeprefix('sharko')
+            tts_text = f'{chatter_name} asked me: {cleaned_message}. {response}'
 
             await self.make_tts(tts_text)
-            self.play_sound('tts.mp3')
+            self.play_sound(TTS_FILE)
 
     @commands.command(aliases=["repeat"])
     async def say(self, ctx: commands.Context, *, content: str) -> None:
@@ -175,7 +202,7 @@ class MyComponent(commands.Component):
         This triggers TTS bot to say the message
         """
         await self.make_tts(content)
-        self.play_sound('tts.mp3')
+        self.play_sound(TTS_FILE)
         await ctx.send(content)
 
     @commands.Component.listener()
@@ -189,24 +216,20 @@ class MyComponent(commands.Component):
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
         prompt = f'an ad break has begun for {payload.duration}, thank the viewers for their patience. from then on treat the chat room as a clean new one.'
-        conn = None
+        
         try:
-            conn = sqlite3.connect(os.environ.get("SQL_CONNECT", "messages.db"))
-            cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM messages")
-            count = cursor.fetchone()[0]
-            print('count for ad break: ' + str(count))
-            if count > 0:
-                prompt += ' recap the chat and mention the chatters by .'
-
-            await self.send_message(payload, SharkAI.chat_with_openai(prompt))
-            cursor.execute("DELETE FROM messages;")
-            conn.commit()
+            with self._get_db_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM messages")
+                count = cursor.fetchone()[0]
+                LOGGER.info(f'Message count for ad break: {count}')
+                if count > 0:
+                    prompt += ' recap the chat and mention the chatters by .'
+                
+                await self.send_message(payload, SharkAI.chat_with_openai(prompt))
+                cursor.execute("DELETE FROM messages;")
         except Exception as e:
             LOGGER.error(f"Database error in event_ad_break: {e}")
-        finally:
-            if conn:
-                conn.close()
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
@@ -220,7 +243,7 @@ class MyComponent(commands.Component):
             f'{payload.user} followed, thank them properly')
         await self.send_message(payload, message)
         await self.make_tts(message)
-        self.play_sound('tts.mp3')
+        self.play_sound(TTS_FILE)
 
     @commands.Component.listener()
     async def event_subscription(self, payload: twitchio.ChannelSubscribe) -> None:
@@ -229,7 +252,7 @@ class MyComponent(commands.Component):
             f'{payload.user} just subscribed with tier {subscription_tier}, thank them')
         await self.send_message(payload, message)
         await self.make_tts(message)
-        self.play_sound('tts.mp3')
+        self.play_sound(TTS_FILE)
 
     @commands.Component.listener()
     async def event_subscription_gift(self, payload: twitchio.ChannelSubscriptionGift) -> None:
@@ -237,13 +260,14 @@ class MyComponent(commands.Component):
             f'{payload.user} just gifted {payload.total} subs, thank them')
         await self.send_message(payload, message)
         await self.make_tts(message)
-        self.play_sound('tts.mp3')
+        self.play_sound(TTS_FILE)
 
     @commands.Component.listener()
     async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
         print('automodded message: ' + payload.text)
 
+    @commands.Component.listener()
     async def event_ban(self, payload: twitchio.ChannelBan) -> None:
         await self.send_message(payload, 'RIPBOZO')
 
@@ -307,43 +331,50 @@ class MyComponent(commands.Component):
     async def trick(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention}' + ' https://www.twitch.tv/sharko51/clip/ElegantPeacefulRaccoonAllenHuhu-4SNxLLMor3NV6m11')
 
-    async def make_tts(self, text):
+    async def make_tts(self, text: str) -> None:
+        """Generate TTS audio file."""
         tts = edge_tts.Communicate(text, bot_language)
-        await tts.save('tts.mp3')
+        await tts.save(TTS_FILE)
 
-    def play_sound(self, file_name):
-        pygame.mixer.init()
-        sound = pygame.mixer.Sound(file_name)
-        duration = int(sound.get_length() * 1000)
-        sound.set_volume(0.5)
-        sound.play()
+    def play_sound(self, file_name: str) -> None:
+        """Play sound file and cleanup after duration."""
+        try:
+            sound = pygame.mixer.Sound(file_name)
+            duration_ms = int(sound.get_length() * 1000)
+            sound.set_volume(0.5)
+            sound.play()
 
-        # Use threading to avoid blocking the async event loop
-        def cleanup_after_duration():
-            import time
-            time.sleep(duration / 1000.0)
-            try:
-                os.remove(file_name)
-            except Exception as e:
-                LOGGER.error(f"Error removing TTS file: {e}")
+            # Use threading to avoid blocking the async event loop
+            def cleanup_after_duration():
+                time.sleep(duration_ms / 1000.0)
+                try:
+                    os.remove(file_name)
+                except Exception as e:
+                    LOGGER.error(f"Error removing TTS file: {e}")
+            
+            cleanup_thread = threading.Thread(target=cleanup_after_duration, daemon=True)
+            cleanup_thread.start()
+        except Exception as e:
+            LOGGER.error(f"Error playing sound: {e}")
+
+    async def send_message(self, payload, message: str) -> None:
+        """Send message, splitting into chunks if necessary."""
+        message_len = len(message)
         
-        cleanup_thread = threading.Thread(target=cleanup_after_duration, daemon=True)
-        cleanup_thread.start()
-
-    async def send_message(self, payload, message):
-        if len(message) > 900:
+        if message_len > MAX_MESSAGE_LENGTH:
             await payload.broadcaster.send_message(
                 sender=self.bot.bot_id,
                 message='Message is too long.',
             )
-        elif len(message) >= 500:
+        elif message_len >= LONG_MESSAGE_THRESHOLD:
+            # Split into two messages
             await payload.broadcaster.send_message(
                 sender=self.bot.bot_id,
-                message=message[:480],
+                message=message[:FIRST_MESSAGE_CHUNK],
             )
             await payload.broadcaster.send_message(
                 sender=self.bot.bot_id,
-                message=message[480:990],
+                message=message[FIRST_MESSAGE_CHUNK:SECOND_MESSAGE_CHUNK],
             )
         else:
             await payload.broadcaster.send_message(

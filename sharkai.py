@@ -22,14 +22,17 @@ class SharkAI:
         """Send a text prompt to OpenAI API and get the response."""
         conn = None
         try:
-            conn = sqlite3.connect(os.environ.get("SQL_CONNECT"))
+            conn = sqlite3.connect(os.environ.get("SQL_CONNECT", "messages.db"))
             cursor = conn.cursor()
             cursor.execute(
                 "SELECT from_user, message FROM messages ORDER BY id ASC")
             messages = cursor.fetchall()
-            message_history = 'this is the previous chat messages: '
-            for msg in messages:
-                message_history += msg[0] + ': ' + msg[1] + '\n'
+            # Optimize: use list comprehension and join instead of string concatenation
+            if messages:
+                message_history = 'this is the previous chat messages: ' + '\n'.join(
+                    f'{msg[0]}: {msg[1]}' for msg in messages) + '\n'
+            else:
+                message_history = 'this is the previous chat messages: '
             
             # Build conversation history with system prompt
             conversation_history = [{"role": "user", "content": prompt}]
