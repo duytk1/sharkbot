@@ -10,7 +10,6 @@ from twitchio import eventsub
 import pygame
 import winsound
 import edge_tts
-import database
 
 from sharkai import SharkAI
 
@@ -124,7 +123,7 @@ class MyComponent(commands.Component):
 
         conn = None
         try:
-            conn = sqlite3.connect(os.environ.get("SQL_CONNECT"))
+            conn = sqlite3.connect(os.environ.get("SQL_CONNECT", "messages.db"))
             cursor = conn.cursor()
 
             if message and message.split(' ', 1)[0] == 'clear' and chatter_name == 'sharko51':
@@ -159,12 +158,12 @@ class MyComponent(commands.Component):
                 await self.send_message(payload, 'Message is too long.')
             elif len(response) >= 500:
                 await self.send_message(payload, response[:490])
-                await self.send_message(payload, response[491:990])
+                await self.send_message(payload, response[490:990])
             else:
                 await self.send_message(payload, response)
 
             tts_text = f'{chatter_name} asked me:' + \
-                message.removeprefix('@sharkothehuman') + '. ' + response
+                message.removeprefix('@sharko51').removeprefix('sharko') + '. ' + response
 
             await self.make_tts(tts_text)
             self.play_sound('tts.mp3')
@@ -240,6 +239,7 @@ class MyComponent(commands.Component):
         await self.make_tts(message)
         self.play_sound('tts.mp3')
 
+    @commands.Component.listener()
     async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
         print('automodded message: ' + payload.text)
@@ -290,8 +290,18 @@ class MyComponent(commands.Component):
         await ctx.send(f'{ctx.chatter.mention} ' + ' https://www.twitch.tv/sharko51/clip/ConsiderateProudCrabsM4xHeh-_BMzslePN11lJsY3')
 
     @commands.command()
-    async def search(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention}' + SharkAI.search_open_ai(ctx.message))
+    async def search(self, ctx: commands.Context, *, query: str) -> None:
+        try:
+            result = SharkAI.search_open_ai(query)
+            # Extract the response content from the OpenAI response object
+            if hasattr(result, 'choices') and len(result.choices) > 0:
+                response_text = result.choices[0].message.content if hasattr(result.choices[0].message, 'content') else str(result)
+            else:
+                response_text = str(result)
+            await ctx.send(f'{ctx.chatter.mention} {response_text}')
+        except Exception as e:
+            LOGGER.error(f"Search error: {e}")
+            await ctx.send(f'{ctx.chatter.mention} Error performing search.')
     
     @commands.command()
     async def trick(self, ctx: commands.Context) -> None:

@@ -72,8 +72,11 @@ class SharkAI:
                 conn.close()
 
     def search_open_ai(prompt):
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            tools=[{"type": "web_search"}],
-            input=prompt)
-        return response
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                tools=[{"type": "web_search"}])
+            return response
+        except Exception as e:
+            return f"Error: {e}"
