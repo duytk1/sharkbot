@@ -20,12 +20,20 @@ load_dotenv()
 
 LOGGER: logging.Logger = logging.getLogger("Bot")
 
+try:
+    import pytchat
+    YOUTUBE_CHAT_AVAILABLE = True
+except ImportError:
+    YOUTUBE_CHAT_AVAILABLE = False
+    LOGGER.warning("pytchat not installed. YouTube chat functionality will be disabled.")
+
 # Configuration
 CLIENT_ID: str = os.environ.get("CLIENT_ID")
 CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 SQL_DB_PATH = os.environ.get("SQL_CONNECT", "messages.db")
+YOUTUBE_VIDEO_ID = os.environ.get("YOUTUBE_VIDEO_ID", "")  # YouTube live stream video ID
 
 # Constants
 MAX_MESSAGE_HISTORY = 30
@@ -34,15 +42,14 @@ LONG_MESSAGE_THRESHOLD = 500
 FIRST_MESSAGE_CHUNK = 480
 SECOND_MESSAGE_CHUNK = 990
 TTS_FILE = 'tts.mp3'
-STREAMER_NAME = 'sharko51'
 BOT_NAME = 'sharkothehuman'
 
 # Links
 pob = 'https://pobb.in/aal6ivegdR-e'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_can_breed'
-build = 'https://www.youtube.com/watch?v=gUk5LNaunAY'
-vid = 'https://www.twitch.tv/sharko51/clip/DifficultModernBaconWutFace-naKL2LtInsBwEO3v'
+build = 'https://www.youtube.com/watch?v=nAQ1Y-Jz888&t'
+vid = 'https://www.twitch.tv/sharko51/clip/PeppyCooperativeLasagnaRiPepperonis-TqCjkjPL7Pegl2LB'
 bot_language = 'en-AU-NatashaNeural'
 
 # Initialize pygame mixer once
@@ -61,7 +68,12 @@ class Bot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        await self.add_component(MyComponent(self))
+        component = MyComponent(self)
+        await self.add_component(component)
+        
+        # Start YouTube chat monitoring if configured
+        if YOUTUBE_CHAT_AVAILABLE and YOUTUBE_VIDEO_ID:
+            await component.start_youtube_chat()
 
         # Define all subscriptions in a list for cleaner code
         subscriptions = [
@@ -123,6 +135,7 @@ class MyComponent(commands.Component):
     def __init__(self, bot: Bot):
         self.bot = bot
         self._db_path = SQL_DB_PATH
+        self._youtube_chat_task = None
     
     @contextmanager
     def _get_db_connection(self):
@@ -152,7 +165,7 @@ class MyComponent(commands.Component):
 
         # Optimize: get first word once
         first_word = message.split(' ', 1)[0].lower()
-        is_clear_command = first_word == 'clear' and chatter_name == STREAMER_NAME
+        is_clear_command = first_word == 'clear' and chatter_name == streamer_name
         is_mention = first_word in ('sharko', '@sharko51')
         is_chatter = chatter_name != streamer_name
 
@@ -176,7 +189,7 @@ class MyComponent(commands.Component):
         except Exception as e:
             LOGGER.error(f"Database error in event_message: {e}")
 
-        print(f"[{chatter_name}] - {streamer_name}: {message}")
+        print(f"[TWITCH] [{chatter_name}]: {message}")
         
         if is_chatter and chatter_name != BOT_NAME:
             winsound.PlaySound("*", winsound.SND_ALIAS)
@@ -308,10 +321,6 @@ class MyComponent(commands.Component):
         message = SharkAI.chat_with_openai(
             f'{ctx.chatter.name} is lurking, tell them a joke and thank for lurking')
         await ctx.send(f'{ctx.chatter.mention} ' + message)
-        
-    @commands.command()
-    async def mb(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + ' https://www.twitch.tv/sharko51/clip/ConsiderateProudCrabsM4xHeh-_BMzslePN11lJsY3')
 
     @commands.command()
     async def search(self, ctx: commands.Context, *, query: str) -> None:
@@ -330,6 +339,107 @@ class MyComponent(commands.Component):
     @commands.command()
     async def trick(self, ctx: commands.Context) -> None:
         await ctx.send(f'{ctx.chatter.mention}' + ' https://www.twitch.tv/sharko51/clip/ElegantPeacefulRaccoonAllenHuhu-4SNxLLMor3NV6m11')
+
+    async def process_chat_message(self, chatter_name: str, message: str, platform: str = "twitch") -> None:
+        """Process chat messages from any platform (Twitch/YouTube)."""
+        if not message:
+            return
+
+        # Optimize: get first word once
+        first_word = message.split(' ', 1)[0].lower()
+        is_clear_command = first_word == 'clear' and chatter_name == STREAMER_NAME
+        is_mention = first_word in ('sharko', '@sharko51')
+        is_chatter = chatter_name != STREAMER_NAME
+
+        # Database operations
+        try:
+            with self._get_db_connection() as conn:
+                cursor = conn.cursor()
+                
+                if is_clear_command:
+                    cursor.execute("DELETE FROM messages;")
+                elif is_chatter:
+                    # Optimize: combine count check and delete in one query if needed
+                    cursor.execute("SELECT COUNT(*) FROM messages")
+                    count = cursor.fetchone()[0]
+                    if count >= MAX_MESSAGE_HISTORY:
+                        cursor.execute(
+                            "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
+                    cursor.execute(
+                        "INSERT INTO messages (from_user, message) VALUES (?, ?)", 
+                        (chatter_name, message))
+        except Exception as e:
+            LOGGER.error(f"Database error in process_chat_message: {e}")
+
+        print(f"[{platform.upper()}] [{chatter_name}]: {message}")
+        
+        if is_chatter and chatter_name != BOT_NAME:
+            winsound.PlaySound("*", winsound.SND_ALIAS)
+        
+        if is_mention:
+            response = SharkAI.chat_with_openai(
+                f"new message from {chatter_name} on {platform}: {message}, response")
+            
+            # For YouTube, we can't send messages back directly, but we can log it
+            if platform == "youtube":
+                LOGGER.info(f"AI Response to {chatter_name}: {response}")
+            else:
+                # For Twitch, we need the payload to send messages
+                # This will be handled in event_message
+                pass
+
+            # Create TTS text
+            cleaned_message = message.removeprefix('@sharko51').removeprefix('sharko')
+            tts_text = f'{chatter_name} asked me on {platform}: {cleaned_message}. {response}'
+
+            await self.make_tts(tts_text)
+            self.play_sound(TTS_FILE)
+
+    async def start_youtube_chat(self) -> None:
+        """Start monitoring YouTube live chat."""
+        if not YOUTUBE_CHAT_AVAILABLE:
+            LOGGER.warning("pytchat not available. YouTube chat monitoring disabled.")
+            return
+        
+        if not YOUTUBE_VIDEO_ID:
+            LOGGER.info("YOUTUBE_VIDEO_ID not set. YouTube chat monitoring disabled.")
+            return
+
+        LOGGER.info(f"Starting YouTube chat monitoring for video: {YOUTUBE_VIDEO_ID}")
+        self._youtube_chat_task = asyncio.create_task(self._monitor_youtube_chat())
+
+    async def _monitor_youtube_chat(self) -> None:
+        """Monitor YouTube live chat in a background task."""
+        try:
+            chat = pytchat.create(video_id=YOUTUBE_VIDEO_ID)
+            print('chat')
+            while chat.is_alive():
+                print('chat is alive')
+                try:
+                    for c in chat.get().sync_items():
+                        chatter_name = c.author.name
+                        message = c.message
+                        timestamp = c.datetime
+
+                        # Output the raw YouTube message so we can see it immediately
+                        LOGGER.info(f"[YOUTUBE CHAT] {timestamp} | {chatter_name}: {message}")
+                        print(f"[YOUTUBE CHAT] {timestamp} | {chatter_name}: {message}")
+                        
+                        # Process the YouTube chat message
+                        await self.process_chat_message(chatter_name, message, platform="youtube")
+                        
+                        # Small delay to prevent overwhelming the system
+                        await asyncio.sleep(0.1)
+                    
+                    await asyncio.sleep(1)  # Poll every second
+                except Exception as e:
+                    LOGGER.error(f"Error processing YouTube chat message: {e}")
+                    await asyncio.sleep(5)  # Wait longer on error
+                    
+        except Exception as e:
+            LOGGER.error(f"YouTube chat monitoring error: {e}")
+        finally:
+            LOGGER.info("YouTube chat monitoring stopped")
 
     async def make_tts(self, text: str) -> None:
         """Generate TTS audio file."""

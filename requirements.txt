@@ -4,3 +4,4 @@ gTTS==2.5.4
 playsound==1.2.2
 pygame==2.6.1
 spotipy==2.25.1
+pytchat==0.6.1
