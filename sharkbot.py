@@ -12,6 +12,7 @@ import pygame
 import winsound
 import edge_tts
 from contextlib import contextmanager
+from urllib.parse import urlparse, parse_qs
 
 from sharkai import SharkAI
 
@@ -33,7 +34,44 @@ CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 SQL_DB_PATH = os.environ.get("SQL_CONNECT", "messages.db")
-YOUTUBE_VIDEO_ID = os.environ.get("YOUTUBE_VIDEO_ID", "")  # YouTube live stream video ID
+
+def _extract_youtube_video_id(raw_value: str | None) -> str:
+    """Allow users to paste a whole YouTube URL or just the video ID."""
+    if not raw_value:
+        return ""
+
+    value = raw_value.strip()
+    if not value:
+        return ""
+
+    lowered = value.lower()
+    if "youtube.com" in lowered or "youtu.be" in lowered:
+        parsed = urlparse(value)
+
+        if parsed.netloc.endswith("youtu.be"):
+            candidate = parsed.path.lstrip("/").split("/")[0]
+            return candidate or ""
+
+        query_params = parse_qs(parsed.query)
+        if "v" in query_params and query_params["v"]:
+            return query_params["v"][0]
+
+        # Handle /live/<video_id> paths
+        if "/live/" in parsed.path:
+            return parsed.path.split("/live/")[1].split("/")[0]
+
+        # As fallback, take last path segment
+        segments = [segment for segment in parsed.path.split("/") if segment]
+        if segments:
+            return segments[-1]
+
+        return ""
+
+    # Already an ID – trim query fragments
+    return value.split("&")[0].split("?")[0]
+
+
+YOUTUBE_VIDEO_ID = _extract_youtube_video_id(os.environ.get("YOUTUBE_VIDEO_ID"))  # YouTube live stream video ID
 
 # Constants
 MAX_MESSAGE_HISTORY = 30
@@ -45,7 +83,7 @@ TTS_FILE = 'tts.mp3'
 BOT_NAME = 'sharkothehuman'
 
 # Links
-pob = 'https://pobb.in/aal6ivegdR-e'
+pob = 'https://pobb.in/V3nQhzR2IxTl'
 profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
 ign = 'sharko_can_breed'
 build = 'https://www.youtube.com/watch?v=nAQ1Y-Jz888&t'
