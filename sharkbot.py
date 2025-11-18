@@ -81,6 +81,7 @@ FIRST_MESSAGE_CHUNK = 480
 SECOND_MESSAGE_CHUNK = 990
 TTS_FILE = 'tts.mp3'
 BOT_NAME = 'sharkothehuman'
+STREAMER_NAME = os.environ.get("STREAMER_NAME", "sharko51")
 
 # Links
 pob = 'https://pobb.in/V3nQhzR2IxTl'
@@ -352,7 +353,7 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def ign(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + ign)
+        await ctx.send(f'{ctx.chatter.mention}  ' + ign)
 
     @commands.command()
     async def lurk(self, ctx: commands.Context) -> None:
@@ -385,9 +386,11 @@ class MyComponent(commands.Component):
 
         # Optimize: get first word once
         first_word = message.split(' ', 1)[0].lower()
-        is_clear_command = first_word == 'clear' and chatter_name == STREAMER_NAME
+        chatter_lower = chatter_name.lower()
+        streamer_lower = STREAMER_NAME.lower()
+        is_clear_command = first_word == 'clear' and chatter_lower == streamer_lower
         is_mention = first_word in ('sharko', '@sharko51')
-        is_chatter = chatter_name != STREAMER_NAME
+        is_chatter = chatter_lower != streamer_lower
 
         # Database operations
         try:
@@ -485,12 +488,14 @@ class MyComponent(commands.Component):
         await tts.save(TTS_FILE)
 
     def play_sound(self, file_name: str) -> None:
-        """Play sound file and cleanup after duration."""
+        """Play sound file in a media player window and cleanup after duration."""
         try:
+            # Get duration using pygame for cleanup timing
             sound = pygame.mixer.Sound(file_name)
             duration_ms = int(sound.get_length() * 1000)
-            sound.set_volume(0.5)
-            sound.play()
+            
+            # Open the file in default media player (opens in a window on Windows)
+            os.startfile(file_name)
 
             # Use threading to avoid blocking the async event loop
             def cleanup_after_duration():
