@@ -5,3 +5,5 @@ playsound==1.2.2
 pygame==2.6.1
 spotipy==2.25.1
 pytchat==0.5.5
+flask==3.0.0
+flask-cors==4.0.0

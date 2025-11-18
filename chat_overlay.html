@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Overlay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            overflow: hidden;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Debug: Show border when no messages (remove in production) */
+        body:has(#chat-container:empty) {
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        #chat-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            gap: 8px;
+        }
+
+        .chat-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.3s ease-out;
+            max-width: 600px;
+            word-wrap: break-word;
+            border-left: 3px solid;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .chat-message.fade-out {
+            opacity: 0;
+        }
+
+        .chat-message.twitch {
+            border-left-color: #9146ff;
+        }
+
+        .chat-message.youtube {
+            border-left-color: #ff0000;
+        }
+
+        .platform-badge {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .platform-badge.twitch {
+            background: #9146ff;
+            color: white;
+        }
+
+        .platform-badge.youtube {
+            background: #ff0000;
+            color: white;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #fff;
+            margin-right: 8px;
+        }
+
+        .user-name.twitch {
+            color: #9146ff;
+        }
+
+        .user-name.youtube {
+            color: #ff0000;
+        }
+
+        .message-text {
+            flex: 1;
+            color: #e0e0e0;
+            line-height: 1.4;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Scrollbar styling */
+        #chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #chat-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/messages';
+        const MAX_MESSAGES = 20; // Maximum messages to display
+        const POLL_INTERVAL = 3000; // Poll every 3 seconds (reasonable for chat overlay)
+        const MESSAGE_TIMEOUT = 30000; // Remove message after 30 seconds
+
+        let lastMessageId = 0;
+        let messageElements = new Map();
+        let isInitialLoad = true; // Track if this is the first load
+
+        function createMessageElement(message) {
+            const container = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${message.platform}`;
+            messageDiv.id = `msg-${message.id}`;
+            messageDiv.dataset.timestamp = Date.now();
+
+            const badge = document.createElement('span');
+            badge.className = `platform-badge ${message.platform}`;
+            badge.textContent = message.platform === 'youtube' ? 'YT' : 'TW';
+
+            const userName = document.createElement('span');
+            userName.className = `user-name ${message.platform}`;
+            userName.textContent = message.user + ': ';
+
+            const messageText = document.createElement('span');
+            messageText.className = 'message-text';
+            messageText.textContent = message.message;
+
+            messageDiv.appendChild(badge);
+            messageDiv.appendChild(userName);
+            messageDiv.appendChild(messageText);
+
+            return messageDiv;
+        }
+
+        function addMessage(message) {
+            // Skip if we already have this message
+            if (messageElements.has(message.id)) {
+                return;
+            }
+
+            const messageDiv = createMessageElement(message);
+            const container = document.getElementById('chat-container');
+            
+            container.appendChild(messageDiv);
+            messageElements.set(message.id, messageDiv);
+
+            // Remove oldest messages if we exceed max
+            while (messageElements.size > MAX_MESSAGES) {
+                const oldestId = messageElements.keys().next().value;
+                const oldestElement = messageElements.get(oldestId);
+                oldestElement.classList.add('fade-out');
+                setTimeout(() => {
+                    if (oldestElement.parentNode) {
+                        oldestElement.remove();
+                    }
+                    messageElements.delete(oldestId);
+                }, 500);
+            }
+
+            // Auto-remove message after timeout
+            setTimeout(() => {
+                if (messageElements.has(message.id)) {
+                    const element = messageElements.get(message.id);
+                    element.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (element.parentNode) {
+                            element.remove();
+                        }
+                        messageElements.delete(message.id);
+                    }, 500);
+                }
+            }, MESSAGE_TIMEOUT);
+        }
+
+        async function fetchMessages() {
+            try {
+                const response = await fetch(API_URL);
+                const messages = await response.json();
+
+                // Debug: Log if we got messages
+                if (messages.length > 0) {
+                    console.log(`Fetched ${messages.length} messages, last ID: ${lastMessageId}`);
+                }
+
+                // On initial load, show all existing messages
+                if (isInitialLoad && messages.length > 0) {
+                    messages.forEach(message => {
+                        addMessage(message);
+                        lastMessageId = Math.max(lastMessageId, message.id);
+                    });
+                    isInitialLoad = false;
+                    console.log(`Initial load: Displayed ${messages.length} existing messages, last ID: ${lastMessageId}`);
+                } else {
+                    // After initial load, only show new messages
+                    let newMessagesCount = 0;
+                    messages.forEach(message => {
+                        if (message.id > lastMessageId) {
+                            addMessage(message);
+                            lastMessageId = Math.max(lastMessageId, message.id);
+                            newMessagesCount++;
+                        }
+                    });
+                    
+                    if (newMessagesCount > 0) {
+                        console.log(`Added ${newMessagesCount} new message(s), last ID now: ${lastMessageId}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+                // Show error on screen for debugging
+                const container = document.getElementById('chat-container');
+                if (container && container.children.length === 0) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'color: red; padding: 20px; background: rgba(0,0,0,0.8);';
+                    errorDiv.textContent = `Error: ${error.message}. Check console.`;
+                    container.appendChild(errorDiv);
+                }
+            }
+        }
+
+        // Initial fetch
+        fetchMessages();
+
+        // Poll for new messages
+        setInterval(fetchMessages, POLL_INTERVAL);
+    </script>
+</body>
+</html>
+

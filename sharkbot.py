@@ -219,7 +219,15 @@ class MyComponent(commands.Component):
                 
                 if is_clear_command:
                     cursor.execute("DELETE FROM messages;")
-                elif is_chatter:
+                else:
+                    # Store all messages (including streamer) for overlay display
+                    # Ensure platform column exists (for overlay support)
+                    try:
+                        cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
+                        conn.commit()
+                    except sqlite3.OperationalError:
+                        pass  # Column already exists
+                    
                     # Optimize: combine count check and delete in one query if needed
                     cursor.execute("SELECT COUNT(*) FROM messages")
                     count = cursor.fetchone()[0]
@@ -227,8 +235,8 @@ class MyComponent(commands.Component):
                         cursor.execute(
                             "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
                     cursor.execute(
-                        "INSERT INTO messages (from_user, message) VALUES (?, ?)", 
-                        (chatter_name, message))
+                        "INSERT INTO messages (from_user, message, platform) VALUES (?, ?, ?)", 
+                        (chatter_name, message, "twitch"))
         except Exception as e:
             LOGGER.error(f"Database error in event_message: {e}")
 
@@ -402,7 +410,15 @@ class MyComponent(commands.Component):
                 
                 if is_clear_command:
                     cursor.execute("DELETE FROM messages;")
-                elif is_chatter:
+                else:
+                    # Store all messages (including streamer) for overlay display
+                    # Ensure platform column exists (for overlay support)
+                    try:
+                        cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
+                        conn.commit()
+                    except sqlite3.OperationalError:
+                        pass  # Column already exists
+                    
                     # Optimize: combine count check and delete in one query if needed
                     cursor.execute("SELECT COUNT(*) FROM messages")
                     count = cursor.fetchone()[0]
@@ -410,8 +426,8 @@ class MyComponent(commands.Component):
                         cursor.execute(
                             "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
                     cursor.execute(
-                        "INSERT INTO messages (from_user, message) VALUES (?, ?)", 
-                        (chatter_name, message))
+                        "INSERT INTO messages (from_user, message, platform) VALUES (?, ?, ?)", 
+                        (chatter_name, message, platform))
         except Exception as e:
             LOGGER.error(f"Database error in process_chat_message: {e}")
 
