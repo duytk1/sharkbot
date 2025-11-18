@@ -4,6 +4,7 @@ import sqlite3
 import os
 import threading
 import time
+import queue
 import asqlite
 import twitchio
 from twitchio.ext import commands
@@ -175,6 +176,9 @@ class MyComponent(commands.Component):
         self.bot = bot
         self._db_path = SQL_DB_PATH
         self._youtube_chat_task = None
+        self._youtube_chat_thread = None
+        self._youtube_chat_queue = None
+        self._youtube_chat_stop_event = None
     
     @contextmanager
     def _get_db_connection(self):
@@ -391,7 +395,6 @@ class MyComponent(commands.Component):
         is_clear_command = first_word == 'clear' and chatter_lower == streamer_lower
         is_mention = first_word in ('sharko', '@sharko51')
         is_chatter = chatter_lower != streamer_lower
-
         # Database operations
         try:
             with self._get_db_connection() as conn:
@@ -447,40 +450,130 @@ class MyComponent(commands.Component):
             return
 
         LOGGER.info(f"Starting YouTube chat monitoring for video: {YOUTUBE_VIDEO_ID}")
-        self._youtube_chat_task = asyncio.create_task(self._monitor_youtube_chat())
+        
+        # Create queue and stop event for thread communication
+        self._youtube_chat_queue = queue.Queue()
+        self._youtube_chat_stop_event = threading.Event()
+        
+        # Start the monitoring thread (runs pytchat in a separate thread to avoid signal handler issues)
+        self._youtube_chat_thread = threading.Thread(
+            target=self._youtube_chat_thread_worker,
+            daemon=True,
+            args=(YOUTUBE_VIDEO_ID, self._youtube_chat_queue, self._youtube_chat_stop_event)
+        )
+        self._youtube_chat_thread.start()
+        
+        # Start async task to process messages from the queue
+        self._youtube_chat_task = asyncio.create_task(self._process_youtube_chat_queue())
 
-    async def _monitor_youtube_chat(self) -> None:
-        """Monitor YouTube live chat in a background task."""
+    def _youtube_chat_thread_worker(self, video_id: str, msg_queue: queue.Queue, stop_event: threading.Event) -> None:
+        """Worker thread that runs pytchat (must be in a thread to avoid signal handler issues)."""
+        chat = None
+        # Polling configuration: start with 5 seconds, increase on errors (exponential backoff)
+        poll_interval = 10.0  # 10 seconds is a reasonable default for live chat
+        max_poll_interval = 30.0  # Cap at 30 seconds max
+        error_count = 0
+        
         try:
-            chat = pytchat.create(video_id=YOUTUBE_VIDEO_ID)
-            print('chat')
-            while chat.is_alive():
-                print('chat is alive')
+            # Create chat object with interruptable=False to disable signal handlers
+            # This allows it to work in non-main threads
+            chat = pytchat.create(video_id=video_id, interruptable=False)
+            LOGGER.info("YouTube chat thread started")
+            
+            while not stop_event.is_set():
                 try:
-                    for c in chat.get().sync_items():
-                        chatter_name = c.author.name
-                        message = c.message
-                        timestamp = c.datetime
-
-                        # Output the raw YouTube message so we can see it immediately
-                        LOGGER.info(f"[YOUTUBE CHAT] {timestamp} | {chatter_name}: {message}")
-                        print(f"[YOUTUBE CHAT] {timestamp} | {chatter_name}: {message}")
-                        
-                        # Process the YouTube chat message
-                        await self.process_chat_message(chatter_name, message, platform="youtube")
-                        
-                        # Small delay to prevent overwhelming the system
-                        await asyncio.sleep(0.1)
+                    if not chat.is_alive():
+                        LOGGER.warning("YouTube chat is no longer alive")
+                        break
                     
-                    await asyncio.sleep(1)  # Poll every second
+                    # Get chat items (blocking operation)
+                    message_count = 0
+                    for c in chat.get().sync_items():
+                        if stop_event.is_set():
+                            break
+                        
+                        # Put message data in queue for async processing
+                        msg_queue.put({
+                            'chatter_name': c.author.name,
+                            'message': c.message,
+                            'timestamp': c.datetime
+                        })
+                        message_count += 1
+                    
+                    # Reset error count and poll interval on successful poll
+                    if error_count > 0:
+                        error_count = 0
+                        poll_interval = 5.0  # Reset to default
+                    
+                    # Poll every N seconds (5s default, longer if there were recent errors)
+                    # This reduces API requests and respects rate limits
+                    time.sleep(poll_interval)
+                    
                 except Exception as e:
-                    LOGGER.error(f"Error processing YouTube chat message: {e}")
-                    await asyncio.sleep(5)  # Wait longer on error
+                    error_count += 1
+                    LOGGER.error(f"Error in YouTube chat thread: {e}")
+                    
+                    if stop_event.is_set():
+                        break
+                    
+                    # Exponential backoff: increase wait time on consecutive errors
+                    # This helps avoid overwhelming the API during issues
+                    poll_interval = min(poll_interval * 1.5, max_poll_interval)
+                    LOGGER.info(f"Backing off: waiting {poll_interval:.1f}s before retry (error count: {error_count})")
+                    time.sleep(poll_interval)
                     
         except Exception as e:
-            LOGGER.error(f"YouTube chat monitoring error: {e}")
+            LOGGER.error(f"YouTube chat thread error: {e}")
         finally:
-            LOGGER.info("YouTube chat monitoring stopped")
+            if chat:
+                try:
+                    if hasattr(chat, 'terminate'):
+                        chat.terminate()
+                except Exception as e:
+                    LOGGER.debug(f"Error cleaning up chat: {e}")
+            LOGGER.info("YouTube chat thread stopped")
+
+    async def _process_youtube_chat_queue(self) -> None:
+        """Process messages from the YouTube chat queue in the async event loop."""
+        loop = asyncio.get_event_loop()
+        
+        def get_from_queue(q: queue.Queue, timeout: float):
+            """Helper function to get from queue with timeout."""
+            return q.get(timeout=timeout)
+        
+        try:
+            while True:
+                try:
+                    # Wait for message from queue (with timeout to allow checking if thread is alive)
+                    try:
+                        message_data = await loop.run_in_executor(
+                            None,
+                            get_from_queue,
+                            self._youtube_chat_queue,
+                            1.0
+                        )
+                    except queue.Empty:
+                        # Check if thread is still alive
+                        if self._youtube_chat_thread and not self._youtube_chat_thread.is_alive():
+                            LOGGER.warning("YouTube chat thread has stopped")
+                            break
+                        continue
+                    
+                    chatter_name = message_data['chatter_name']
+                    message = message_data['message']
+                    timestamp = message_data['timestamp']
+                    
+                    # Process the YouTube chat message (this will print the message once)
+                    await self.process_chat_message(chatter_name, message, platform="youtube")
+                    
+                except Exception as e:
+                    LOGGER.error(f"Error processing YouTube chat message from queue: {e}")
+                    await asyncio.sleep(1)
+                    
+        except Exception as e:
+            LOGGER.error(f"YouTube chat queue processing error: {e}")
+        finally:
+            LOGGER.info("YouTube chat queue processing stopped")
 
     async def make_tts(self, text: str) -> None:
         """Generate TTS audio file."""
