@@ -36,6 +36,7 @@ dist/
 *.log
 *.tmp
 .cache/
+.cache
 *.mp3
 
 # Project-specific files
