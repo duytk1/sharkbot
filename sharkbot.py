@@ -597,18 +597,21 @@ class MyComponent(commands.Component):
         await tts.save(TTS_FILE)
 
     def play_sound(self, file_name: str) -> None:
-        """Play sound file in a media player window and cleanup after duration."""
+        """Play sound file. File is served via overlay for OBS capture."""
         try:
             # Get duration using pygame for cleanup timing
             sound = pygame.mixer.Sound(file_name)
             duration_ms = int(sound.get_length() * 1000)
             
-            # Open the file in default media player (opens in a window on Windows)
-            os.startfile(file_name)
+            # Note: Audio is now played through the overlay (OBS Browser Source)
+            # The overlay polls for new TTS files and plays them automatically
+            # We keep the file longer to ensure overlay can play it
+            LOGGER.info(f"TTS file generated: {file_name} (duration: {duration_ms}ms)")
 
             # Use threading to avoid blocking the async event loop
+            # Keep file for duration + 5 seconds to ensure overlay can play it
             def cleanup_after_duration():
-                time.sleep(duration_ms / 1000.0)
+                time.sleep((duration_ms / 1000.0) + 5.0)  # Duration + 5 second buffer
                 try:
                     os.remove(file_name)
                 except Exception as e:

@@ -134,16 +134,23 @@
 </head>
 <body>
     <div id="chat-container"></div>
+    
+    <!-- Hidden audio element for TTS playback -->
+    <audio id="tts-audio" preload="auto" style="display: none;"></audio>
 
     <script>
         const API_URL = 'http://localhost:5000/api/messages';
+        const TTS_API_URL = 'http://localhost:5000/api/tts';
         const MAX_MESSAGES = 20; // Maximum messages to display
         const POLL_INTERVAL = 3000; // Poll every 3 seconds (reasonable for chat overlay)
+        const TTS_POLL_INTERVAL = 500; // Poll for TTS every 0.5 seconds (more frequent for responsiveness)
         const MESSAGE_TIMEOUT = 30000; // Remove message after 30 seconds
 
         let lastMessageId = 0;
         let messageElements = new Map();
         let isInitialLoad = true; // Track if this is the first load
+        let lastTtsTimestamp = 0; // Track last TTS file timestamp
+        const ttsAudio = document.getElementById('tts-audio');
 
         function createMessageElement(message) {
             const container = document.getElementById('chat-container');
@@ -265,11 +272,51 @@
             }
         }
 
+        // TTS audio playback function
+        async function checkAndPlayTTS() {
+            try {
+                const response = await fetch(TTS_API_URL);
+                const ttsInfo = await response.json();
+                
+                if (ttsInfo.exists && ttsInfo.timestamp > lastTtsTimestamp) {
+                    // New TTS file detected
+                    lastTtsTimestamp = ttsInfo.timestamp;
+                    ttsAudio.src = ttsInfo.url + '?t=' + ttsInfo.timestamp; // Add timestamp to prevent caching
+                    
+                    // Play the audio
+                    try {
+                        await ttsAudio.play();
+                        console.log('Playing TTS audio');
+                    } catch (error) {
+                        console.error('Error playing TTS:', error);
+                        // Some browsers require user interaction first
+                        // Try again after a short delay
+                        setTimeout(async () => {
+                            try {
+                                await ttsAudio.play();
+                            } catch (e) {
+                                console.error('Retry failed:', e);
+                            }
+                        }, 100);
+                    }
+                }
+            } catch (error) {
+                // Silently fail - TTS might not be available
+                console.debug('TTS check error:', error);
+            }
+        }
+
         // Initial fetch
         fetchMessages();
 
         // Poll for new messages
         setInterval(fetchMessages, POLL_INTERVAL);
+        
+        // Poll for TTS audio (more frequent for better responsiveness)
+        setInterval(checkAndPlayTTS, TTS_POLL_INTERVAL);
+        
+        // Initial TTS check
+        checkAndPlayTTS();
     </script>
 </body>
 </html>

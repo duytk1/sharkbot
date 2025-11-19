@@ -62,6 +62,23 @@ def get_messages():
     messages = get_recent_messages(limit=50)
     return jsonify(messages)
 
+@app.route('/api/tts')
+def get_tts():
+    """API endpoint to check if TTS file exists and get its timestamp."""
+    tts_file = 'tts.mp3'
+    if os.path.exists(tts_file):
+        return jsonify({
+            'exists': True,
+            'url': '/tts.mp3',
+            'timestamp': os.path.getmtime(tts_file)
+        })
+    return jsonify({'exists': False})
+
+@app.route('/tts.mp3')
+def serve_tts():
+    """Serve the TTS audio file."""
+    return send_from_directory('.', 'tts.mp3', mimetype='audio/mpeg')
+
 @app.route('/')
 def index():
     """Serve the overlay HTML page."""
