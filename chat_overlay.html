@@ -22,11 +22,6 @@
         
         /* Debug: Uncomment the line below to see if overlay is loading in OBS */
         /* body { background: rgba(255, 0, 0, 0.2) !important; } */
-        
-        /* Debug: Show border when no messages (remove in production) */
-        body:has(#chat-container:empty) {
-            background: rgba(255, 0, 0, 0.1);
-        }
 
         #chat-container {
             width: 100vw;
@@ -34,24 +29,24 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 20px; /* Change this to adjust distance from edges */
-            gap: 8px; /* Change this to adjust spacing between messages */
+            padding: 30px; /* Increased padding for better visibility */
+            gap: 12px; /* Increased gap between messages */
         }
 
         .chat-message {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
-            padding: 8px 12px;
+            gap: 12px;
+            padding: 14px 18px; /* Increased padding for bigger boxes */
             background: rgba(0, 0, 0, 0.6); /* Change this to adjust message box background color */
-            border-radius: 8px;
+            border-radius: 10px;
             backdrop-filter: blur(10px);
             animation: slideIn 0.3s ease-out;
-            max-width: 600px; /* Change this to adjust message box width */
+            max-width: 900px; /* Increased width for bigger overlay */
             word-wrap: break-word;
-            border-left: 3px solid;
+            border-left: 4px solid; /* Thicker border for visibility */
             transition: opacity 0.5s ease-out;
-            font-size: 16px; /* Change this to adjust text size */
+            font-size: 24px; /* Large font size for good visibility */
         }
 
         .chat-message.fade-out {
@@ -89,7 +84,8 @@
         .user-name {
             font-weight: bold;
             color: #fff;
-            margin-right: 8px;
+            margin-right: 10px;
+            font-size: 24px; /* Match message font size */
         }
 
         .user-name.twitch {
@@ -103,7 +99,8 @@
         .message-text {
             flex: 1;
             color: #e0e0e0;
-            line-height: 1.4;
+            line-height: 1.5; /* Slightly increased line height for readability */
+            font-size: 24px; /* Match overall font size */
         }
 
         @keyframes slideIn {
@@ -143,14 +140,24 @@
         const TTS_API_URL = 'http://localhost:5000/api/tts';
         const MAX_MESSAGES = 20; // Maximum messages to display
         const POLL_INTERVAL = 3000; // Poll every 3 seconds (reasonable for chat overlay)
-        const TTS_POLL_INTERVAL = 500; // Poll for TTS every 0.5 seconds (more frequent for responsiveness)
+        const TTS_POLL_INTERVAL = 3000; // Poll for TTS every 3 seconds (reduced to prevent spam)
         const MESSAGE_TIMEOUT = 30000; // Remove message after 30 seconds
 
         let lastMessageId = 0;
         let messageElements = new Map();
         let isInitialLoad = true; // Track if this is the first load
         let lastTtsTimestamp = 0; // Track last TTS file timestamp
+        let isPlayingTTS = false; // Track if TTS is currently playing
         const ttsAudio = document.getElementById('tts-audio');
+        
+        // Prevent multiple plays of the same audio
+        ttsAudio.addEventListener('ended', () => {
+            isPlayingTTS = false;
+        });
+        
+        ttsAudio.addEventListener('error', () => {
+            isPlayingTTS = false;
+        });
 
         function createMessageElement(message) {
             const container = document.getElementById('chat-container');
@@ -158,6 +165,7 @@
             messageDiv.className = `chat-message ${message.platform}`;
             messageDiv.id = `msg-${message.id}`;
             messageDiv.dataset.timestamp = Date.now();
+            messageDiv.dataset.createdAt = Date.now(); // Track when message was created for timeout
 
             const badge = document.createElement('span');
             badge.className = `platform-badge ${message.platform}`;
@@ -203,8 +211,8 @@
                 }, 500);
             }
 
-            // Auto-remove message after timeout
-            setTimeout(() => {
+            // Auto-remove message after timeout (30 seconds)
+            const timeoutId = setTimeout(() => {
                 if (messageElements.has(message.id)) {
                     const element = messageElements.get(message.id);
                     element.classList.add('fade-out');
@@ -216,6 +224,9 @@
                     }, 500);
                 }
             }, MESSAGE_TIMEOUT);
+            
+            // Store timeout ID in case we need to cancel it
+            messageDiv.dataset.timeoutId = timeoutId;
         }
 
         async function fetchMessages() {
@@ -274,6 +285,18 @@
 
         // TTS audio playback function
         async function checkAndPlayTTS() {
+            // Don't check for new TTS if we're already playing one
+            if (isPlayingTTS || !ttsAudio.paused) {
+                return;
+            }
+            
+            // Skip if we just checked recently (debounce)
+            const now = Date.now();
+            if (window.lastTtsCheck && (now - window.lastTtsCheck) < 1500) {
+                return; // Don't check more than once per 1.5 seconds
+            }
+            window.lastTtsCheck = now;
+            
             try {
                 const response = await fetch(TTS_API_URL);
                 const ttsInfo = await response.json();
@@ -281,7 +304,11 @@
                 if (ttsInfo.exists && ttsInfo.timestamp > lastTtsTimestamp) {
                     // New TTS file detected
                     lastTtsTimestamp = ttsInfo.timestamp;
+                    isPlayingTTS = true; // Set flag to prevent multiple plays
                     ttsAudio.src = ttsInfo.url + '?t=' + ttsInfo.timestamp; // Add timestamp to prevent caching
+                    
+                    // Wait for audio to load
+                    ttsAudio.load();
                     
                     // Play the audio
                     try {
@@ -289,13 +316,16 @@
                         console.log('Playing TTS audio');
                     } catch (error) {
                         console.error('Error playing TTS:', error);
+                        isPlayingTTS = false; // Reset flag on error
                         // Some browsers require user interaction first
                         // Try again after a short delay
                         setTimeout(async () => {
                             try {
                                 await ttsAudio.play();
+                                isPlayingTTS = true;
                             } catch (e) {
                                 console.error('Retry failed:', e);
+                                isPlayingTTS = false;
                             }
                         }, 100);
                     }
