@@ -37,16 +37,15 @@
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            padding: 14px 18px; /* Increased padding for bigger boxes */
+            padding: 16px 20px; /* Increased padding for bigger boxes and larger font */
             background: rgba(0, 0, 0, 0.6); /* Change this to adjust message box background color */
             border-radius: 10px;
             backdrop-filter: blur(10px);
             animation: slideIn 0.3s ease-out;
-            max-width: 900px; /* Increased width for bigger overlay */
+            max-width: 1100px; /* Increased width for bigger overlay and larger font */
             word-wrap: break-word;
             border-left: 4px solid; /* Thicker border for visibility */
             transition: opacity 0.5s ease-out;
-            font-size: 24px; /* Large font size for good visibility */
         }
 
         .chat-message.fade-out {
@@ -62,7 +61,7 @@
         }
 
         .platform-badge {
-            font-size: 10px; /* Change this to adjust badge size */
+            font-size: 50px; /* Increased badge size to match larger font */
             font-weight: bold;
             padding: 2px 6px;
             border-radius: 4px;
@@ -85,7 +84,7 @@
             font-weight: bold;
             color: #fff;
             margin-right: 10px;
-            font-size: 24px; /* Match message font size */
+            font-size: 75px; /* Change this value to adjust username font size */
         }
 
         .user-name.twitch {
@@ -100,7 +99,7 @@
             flex: 1;
             color: #e0e0e0;
             line-height: 1.5; /* Slightly increased line height for readability */
-            font-size: 24px; /* Match overall font size */
+            font-size: 75px; /* Change this value to adjust message text font size */
         }
 
         @keyframes slideIn {
