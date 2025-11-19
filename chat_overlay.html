@@ -20,6 +20,9 @@
             padding: 0;
         }
         
+        /* Debug: Uncomment the line below to see if overlay is loading in OBS */
+        /* body { background: rgba(255, 0, 0, 0.2) !important; } */
+        
         /* Debug: Show border when no messages (remove in production) */
         body:has(#chat-container:empty) {
             background: rgba(255, 0, 0, 0.1);
@@ -40,7 +43,7 @@
             align-items: flex-start;
             gap: 10px;
             padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.6); /* Change this to adjust message box background color */
             border-radius: 8px;
             backdrop-filter: blur(10px);
             animation: slideIn 0.3s ease-out;
@@ -216,6 +219,14 @@
                 // Debug: Log if we got messages
                 if (messages.length > 0) {
                     console.log(`Fetched ${messages.length} messages, last ID: ${lastMessageId}`);
+                }
+                
+                // Debug: Show indicator if no messages (helps identify if API is working)
+                const container = document.getElementById('chat-container');
+                if (messages.length === 0 && container && container.children.length === 0) {
+                    // Remove any existing debug message
+                    const existingDebug = document.getElementById('debug-no-messages');
+                    if (existingDebug) existingDebug.remove();
                 }
 
                 // On initial load, show all existing messages
