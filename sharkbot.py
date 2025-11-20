@@ -84,13 +84,76 @@ TTS_FILE = 'tts.mp3'
 BOT_NAME = 'sharkothehuman'
 STREAMER_NAME = os.environ.get("STREAMER_NAME", "sharko51")
 
-# Links
-pob = 'https://pobb.in/V3nQhzR2IxTl'
-profile = 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters'
-ign = 'sharko_can_breed'
-build = 'https://www.youtube.com/watch?v=nAQ1Y-Jz888&t'
-vid = 'https://www.twitch.tv/sharko51/clip/PeppyCooperativeLasagnaRiPepperonis-TqCjkjPL7Pegl2LB'
+# Default links (fallback if not in database)
+DEFAULT_LINKS = {
+    'pob': 'https://pobb.in/V3nQhzR2IxTl',
+    'profile': 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters',
+    'ign': 'sharko_can_breed',
+    'build': 'https://www.youtube.com/watch?v=nAQ1Y-Jz888&t',
+    'vid': 'https://www.twitch.tv/sharko51/clip/PeppyCooperativeLasagnaRiPepperonis-TqCjkjPL7Pegl2LB',
+    'mb': ''
+}
 bot_language = 'en-AU-NatashaNeural'
+
+def init_links_database():
+    """Initialize links database with default values if empty."""
+    try:
+        conn = sqlite3.connect(SQL_DB_PATH)
+        cursor = conn.cursor()
+        # Ensure links table exists
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS links (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            )
+        ''')
+        # Check if table is empty
+        cursor.execute("SELECT COUNT(*) FROM links")
+        count = cursor.fetchone()[0]
+        
+        # If empty, populate with defaults
+        if count == 0:
+            for key, value in DEFAULT_LINKS.items():
+                if value:  # Only insert non-empty defaults
+                    cursor.execute('''
+                        INSERT OR IGNORE INTO links (key, value)
+                        VALUES (?, ?)
+                    ''', (key, value))
+            conn.commit()
+            LOGGER.info("Initialized links database with default values")
+        
+        conn.close()
+    except Exception as e:
+        LOGGER.warning(f"Error initializing links database: {e}")
+
+def get_link_from_db(key: str) -> str:
+    """Get a link from the database, with fallback to default."""
+    try:
+        conn = sqlite3.connect(SQL_DB_PATH)
+        cursor = conn.cursor()
+        # Ensure links table exists
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS links (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            )
+        ''')
+        cursor.execute("SELECT value FROM links WHERE key = ?", (key,))
+        result = cursor.fetchone()
+        conn.close()
+        if result and result[0]:
+            LOGGER.debug(f"Retrieved link {key} from database: {result[0]}")
+            return result[0]
+        else:
+            LOGGER.debug(f"Link {key} not found in database, using default")
+    except Exception as e:
+        LOGGER.error(f"Error getting link {key} from database: {e}", exc_info=True)
+    
+    # Fallback to default
+    default_value = DEFAULT_LINKS.get(key, '')
+    if default_value:
+        LOGGER.debug(f"Using default value for {key}: {default_value}")
+    return default_value
 
 # Initialize pygame mixer once
 pygame.mixer.init()
@@ -206,10 +269,46 @@ class MyComponent(commands.Component):
         if not message:
             return
 
+        # Check if message is a command (starts with !)
+        # With EventSub, commands need to be manually processed
+        if message.startswith('!'):
+            command_name = message.split()[0][1:].lower()  # Remove ! and get command name
+            LOGGER.info(f"Command detected: !{command_name} from {chatter_name}")
+            
+            # Try to manually invoke the command method from this component
+            try:
+                # Check if this component has the command method
+                if hasattr(self, command_name):
+                    command_method = getattr(self, command_name)
+                    LOGGER.info(f"Found command method: {command_name}, invoking...")
+                    
+                    # Create a simple context object that mimics commands.Context
+                    component_ref = self  # Capture self for use in the class
+                    payload_ref = payload  # Capture payload for use in the class
+                    
+                    class SimpleContext:
+                        def __init__(self):
+                            self.chatter = payload_ref.chatter
+                            self.author = payload_ref.chatter
+                            self.message = payload_ref
+                        
+                        async def send(self, content):
+                            await component_ref.send_message(payload_ref, content)
+                    
+                    ctx = SimpleContext()
+                    # Invoke the command
+                    await command_method(ctx)
+                    LOGGER.info(f"Command !{command_name} executed successfully")
+                    return  # Don't process as regular message if it's a command
+                else:
+                    LOGGER.debug(f"Command method {command_name} not found in component")
+            except Exception as e:
+                LOGGER.error(f"Error processing command !{command_name}: {e}", exc_info=True)
+
         # Optimize: get first word once
         first_word = message.split(' ', 1)[0].lower()
         is_clear_command = first_word == 'clear' and chatter_name == streamer_name
-        is_mention = first_word in ('sharko', '@sharko51')
+        is_mention = first_word in ('sharko')
         is_chatter = chatter_name != streamer_name
 
         # Database operations
@@ -253,7 +352,7 @@ class MyComponent(commands.Component):
             await self.send_message(payload, response)
 
             # Create TTS text
-            cleaned_message = message.removeprefix('@sharko51').removeprefix('sharko')
+            cleaned_message = message.removeprefix('sharko')
             tts_text = f'{chatter_name} asked me: {cleaned_message}. {response}'
 
             await self.make_tts(tts_text)
@@ -345,19 +444,52 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + pob)
+        try:
+            print('here')
+            link = get_link_from_db('pob')
+            LOGGER.info(f"!pob command called by {ctx.chatter.name}, retrieved link: '{link}' (length: {len(link) if link else 0})")
+            if link and link.strip():
+                await ctx.send(f'{ctx.chatter.mention} {link}')
+            else:
+                LOGGER.warning(f"POB link is empty or whitespace. Default fallback: '{DEFAULT_LINKS.get('pob', 'N/A')}'")
+                # Try default as last resort
+                default_link = DEFAULT_LINKS.get('pob', '')
+                if default_link:
+                    await ctx.send(f'{ctx.chatter.mention} {default_link}')
+                else:
+                    await ctx.send(f'{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it.')
+        except Exception as e:
+            LOGGER.error(f"Error in !pob command: {e}", exc_info=True)
+            # Fallback to default on any error
+            default_link = DEFAULT_LINKS.get('pob', '')
+            if default_link:
+                await ctx.send(f'{ctx.chatter.mention} {default_link}')
+            else:
+                await ctx.send(f'{ctx.chatter.mention} Error retrieving POB link.')
 
     @commands.command()
     async def profile(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + profile)
+        link = get_link_from_db('profile')
+        if link:
+            await ctx.send(f'{ctx.chatter.mention} ' + link)
+        else:
+            await ctx.send(f'{ctx.chatter.mention} Profile link not configured. Use the links manager to set it.')
 
     @commands.command()
     async def build(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + build)
+        link = get_link_from_db('build')
+        if link:
+            await ctx.send(f'{ctx.chatter.mention} ' + link)
+        else:
+            await ctx.send(f'{ctx.chatter.mention} Build link not configured. Use the links manager to set it.')
         
     @commands.command()
     async def vid(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + vid)
+        link = get_link_from_db('vid')
+        if link:
+            await ctx.send(f'{ctx.chatter.mention} ' + link)
+        else:
+            await ctx.send(f'{ctx.chatter.mention} Video link not configured. Use the links manager to set it.')
 
     @commands.command()
     async def discord(self, ctx: commands.Context) -> None:
@@ -365,7 +497,19 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def ign(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention}  ' + ign)
+        link = get_link_from_db('ign')
+        if link:
+            await ctx.send(f'{ctx.chatter.mention}  ' + link)
+        else:
+            await ctx.send(f'{ctx.chatter.mention} IGN not configured. Use the links manager to set it.')
+
+    @commands.command()
+    async def mb(self, ctx: commands.Context) -> None:
+        link = get_link_from_db('mb')
+        if link:
+            await ctx.send(f'{ctx.chatter.mention} ' + link)
+        else:
+            await ctx.send(f'{ctx.chatter.mention} MB link not configured. Use the links manager to set it.')
 
     @commands.command()
     async def lurk(self, ctx: commands.Context) -> None:
@@ -650,6 +794,9 @@ class MyComponent(commands.Component):
 
 def start_bot() -> None:
     twitchio.utils.setup_logging(level=logging.INFO)
+    
+    # Initialize links database on startup
+    init_links_database()
 
     async def runner() -> None:
         async with asqlite.create_pool("tokens.db") as tdb, Bot(token_database=tdb) as bot:

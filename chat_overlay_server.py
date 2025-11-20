@@ -4,7 +4,7 @@ Serves an HTML overlay that displays both Twitch and YouTube chat messages.
 """
 import sqlite3
 import os
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 import logging
@@ -525,6 +525,104 @@ def debug_twitch_emotes():
 def serve_tts():
     """Serve the TTS audio file."""
     return send_from_directory('.', 'tts.mp3', mimetype='audio/mpeg')
+
+def init_links_table():
+    """Initialize the links table in the database."""
+    try:
+        conn = sqlite3.connect(SQL_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS links (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            )
+        ''')
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        LOGGER.error(f"Error initializing links table: {e}")
+
+def get_link(key: str, default: str = "") -> str:
+    """Get a link value from the database."""
+    try:
+        conn = sqlite3.connect(SQL_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT value FROM links WHERE key = ?", (key,))
+        result = cursor.fetchone()
+        conn.close()
+        return result[0] if result else default
+    except Exception as e:
+        LOGGER.error(f"Error getting link {key}: {e}")
+        return default
+
+def set_link(key: str, value: str) -> bool:
+    """Set a link value in the database."""
+    try:
+        conn = sqlite3.connect(SQL_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT OR REPLACE INTO links (key, value)
+            VALUES (?, ?)
+        ''', (key, value))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        LOGGER.error(f"Error setting link {key}: {e}")
+        return False
+
+def get_all_links() -> dict:
+    """Get all links from the database."""
+    try:
+        conn = sqlite3.connect(SQL_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT key, value FROM links")
+        results = cursor.fetchall()
+        conn.close()
+        return {row[0]: row[1] for row in results}
+    except Exception as e:
+        LOGGER.error(f"Error getting all links: {e}")
+        return {}
+
+# Initialize links table on module load
+init_links_table()
+
+@app.route('/api/links', methods=['GET'])
+def api_get_links():
+    """API endpoint to get all links."""
+    links = get_all_links()
+    return jsonify(links)
+
+@app.route('/api/links', methods=['POST'])
+def api_set_links():
+    """API endpoint to set links."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        results = {}
+        for key, value in data.items():
+            if set_link(key, value):
+                results[key] = 'success'
+            else:
+                results[key] = 'error'
+        
+        return jsonify({'status': 'success', 'results': results})
+    except Exception as e:
+        LOGGER.error(f"Error setting links: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/links/<key>', methods=['GET'])
+def api_get_link(key):
+    """API endpoint to get a specific link."""
+    value = get_link(key)
+    return jsonify({'key': key, 'value': value})
+
+@app.route('/links')
+def links_page():
+    """Serve the links management page."""
+    return send_from_directory('.', 'links_manager.html')
 
 @app.route('/')
 def index():
