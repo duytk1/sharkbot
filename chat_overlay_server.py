@@ -392,7 +392,7 @@ def get_recent_messages(limit=50, max_age_hours=24):
                 'message': row['message'],
                 'platform': row['platform'] or 'twitch',
                 'id': row['id'],
-                'timestamp': row.get('timestamp')
+                'timestamp': row['timestamp']
             }
             for row in reversed(messages)
         ]

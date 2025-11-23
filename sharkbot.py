@@ -461,11 +461,30 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
-        link = get_link_from_db('pob')
-        if link:
-            await ctx.send(f'{ctx.chatter.mention} {link}')
-        else:
-            await ctx.send(f'{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it.')
+        try:
+            LOGGER.info(f"!pob command called by {ctx.chatter.name}")
+            link = get_link_from_db('pob')
+            LOGGER.info(f"POB link from database: '{link}' (type: {type(link)}, length: {len(link) if link else 0})")
+            if link and link.strip():
+                response = f'{ctx.chatter.mention} {link}'
+                LOGGER.info(f"Sending response: {response}")
+                await ctx.send(response)
+                LOGGER.info(f"Successfully sent POB link to {ctx.chatter.name}")
+            else:
+                error_msg = f'{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it.'
+                LOGGER.warning(f"POB link not found in database for {ctx.chatter.name}, sending error message")
+                await ctx.send(error_msg)
+        except Exception as e:
+            LOGGER.error(f"Error in !pob command: {e}", exc_info=True)
+            try:
+                await ctx.send(f'{ctx.chatter.mention} Error retrieving POB link. Please try again later.')
+            except Exception as send_error:
+                LOGGER.error(f"Failed to send error message: {send_error}")
+
+    @commands.Component.listener()
+    async def event_command_error(self, ctx: commands.Context, error: Exception) -> None:
+        """Handle command errors."""
+        LOGGER.error(f"Command error in {ctx.command.name if ctx.command else 'unknown'} command from {ctx.chatter.name}: {error}", exc_info=True)
 
     @commands.command()
     async def profile(self, ctx: commands.Context) -> None:
