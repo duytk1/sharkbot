@@ -344,23 +344,40 @@ def fetch_twitch_emotes(user_id=None, client_id=None):
     
     return emotes
 
-def get_recent_messages(limit=50):
-    """Get recent chat messages from database."""
+def get_recent_messages(limit=50, max_age_hours=24):
+    """Get recent chat messages from database.
+    
+    Args:
+        limit: Maximum number of messages to return
+        max_age_hours: Only return messages newer than this many hours (default 24)
+    """
     try:
         conn = sqlite3.connect(SQL_DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
-        # Ensure platform column exists
+        # Ensure platform and timestamp columns exist
         try:
             cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
             conn.commit()
         except sqlite3.OperationalError:
             pass  # Column already exists
+        try:
+            cursor.execute("ALTER TABLE messages ADD COLUMN timestamp REAL DEFAULT (julianday('now'))")
+            conn.commit()
+        except sqlite3.OperationalError:
+            pass  # Column already exists
         
-        cursor.execute("""
-            SELECT from_user, message, platform, id
+        # Calculate cutoff time (current time minus max_age_hours)
+        # SQLite uses Julian day numbers, so we subtract hours/24
+        cutoff_time = f"julianday('now') - {max_age_hours}/24.0"
+        
+        # Only include messages with valid timestamps that are within the age limit
+        # Exclude NULL timestamps to avoid showing old messages without timestamps
+        cursor.execute(f"""
+            SELECT from_user, message, platform, id, timestamp
             FROM messages 
+            WHERE timestamp IS NOT NULL AND timestamp > {cutoff_time}
             ORDER BY id DESC 
             LIMIT ?
         """, (limit,))
@@ -374,7 +391,8 @@ def get_recent_messages(limit=50):
                 'user': row['from_user'],
                 'message': row['message'],
                 'platform': row['platform'] or 'twitch',
-                'id': row['id']
+                'id': row['id'],
+                'timestamp': row.get('timestamp')
             }
             for row in reversed(messages)
         ]
@@ -386,7 +404,10 @@ def get_recent_messages(limit=50):
 @app.route('/api/messages')
 def get_messages():
     """API endpoint to get recent chat messages."""
-    messages = get_recent_messages(limit=50)
+    # Get max_age_hours from query parameter, default to 1 hour for initial load
+    # This ensures we only show messages from the last hour on initial load
+    max_age_hours = request.args.get('max_age_hours', default=1, type=float)
+    messages = get_recent_messages(limit=50, max_age_hours=max_age_hours)
     return jsonify(messages)
 
 @app.route('/api/tts')

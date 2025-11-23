@@ -131,29 +131,16 @@ def get_link_from_db(key: str) -> str:
     try:
         conn = sqlite3.connect(SQL_DB_PATH)
         cursor = conn.cursor()
-        # Ensure links table exists
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS links (
-                key TEXT PRIMARY KEY,
-                value TEXT NOT NULL
-            )
-        ''')
         cursor.execute("SELECT value FROM links WHERE key = ?", (key,))
         result = cursor.fetchone()
         conn.close()
         if result and result[0]:
-            LOGGER.debug(f"Retrieved link {key} from database: {result[0]}")
             return result[0]
-        else:
-            LOGGER.debug(f"Link {key} not found in database, using default")
     except Exception as e:
-        LOGGER.error(f"Error getting link {key} from database: {e}", exc_info=True)
+        LOGGER.error(f"Error getting link {key} from database: {e}")
     
     # Fallback to default
-    default_value = DEFAULT_LINKS.get(key, '')
-    if default_value:
-        LOGGER.debug(f"Using default value for {key}: {default_value}")
-    return default_value
+    return DEFAULT_LINKS.get(key, '')
 
 # Initialize pygame mixer once
 pygame.mixer.init()
@@ -242,6 +229,24 @@ class MyComponent(commands.Component):
         self._youtube_chat_thread = None
         self._youtube_chat_queue = None
         self._youtube_chat_stop_event = None
+        self._processed_events = {}  # Track processed events to prevent duplicates
+        self._last_cleanup = time.time()
+    
+    def _cleanup_old_events(self):
+        """Clean up old processed events to prevent memory buildup."""
+        current_time = time.time()
+        # Only cleanup every 5 minutes
+        if current_time - self._last_cleanup < 300:
+            return
+        
+        # Remove events older than 1 minute
+        cutoff = current_time - 60
+        self._processed_events = {
+            k: v for k, v in self._processed_events.items() 
+            if v > cutoff
+        }
+        self._last_cleanup = current_time
+        LOGGER.debug(f"Cleaned up old events, {len(self._processed_events)} events remaining")
     
     @contextmanager
     def _get_db_connection(self):
@@ -268,48 +273,13 @@ class MyComponent(commands.Component):
 
         if not message:
             return
-
-        # Check if message is a command (starts with !)
-        # With EventSub, commands need to be manually processed
-        if message.startswith('!'):
-            command_name = message.split()[0][1:].lower()  # Remove ! and get command name
-            LOGGER.info(f"Command detected: !{command_name} from {chatter_name}")
-            
-            # Try to manually invoke the command method from this component
-            try:
-                # Check if this component has the command method
-                if hasattr(self, command_name):
-                    command_method = getattr(self, command_name)
-                    LOGGER.info(f"Found command method: {command_name}, invoking...")
-                    
-                    # Create a simple context object that mimics commands.Context
-                    component_ref = self  # Capture self for use in the class
-                    payload_ref = payload  # Capture payload for use in the class
-                    
-                    class SimpleContext:
-                        def __init__(self):
-                            self.chatter = payload_ref.chatter
-                            self.author = payload_ref.chatter
-                            self.message = payload_ref
-                        
-                        async def send(self, content):
-                            await component_ref.send_message(payload_ref, content)
-                    
-                    ctx = SimpleContext()
-                    # Invoke the command
-                    await command_method(ctx)
-                    LOGGER.info(f"Command !{command_name} executed successfully")
-                    return  # Don't process as regular message if it's a command
-                else:
-                    LOGGER.debug(f"Command method {command_name} not found in component")
-            except Exception as e:
-                LOGGER.error(f"Error processing command !{command_name}: {e}", exc_info=True)
-
-        # Optimize: get first word once
+        
+        # Get first word once for efficiency
         first_word = message.split(' ', 1)[0].lower()
         is_clear_command = first_word == 'clear' and chatter_name == streamer_name
         is_mention = first_word in ('sharko')
         is_chatter = chatter_name != streamer_name
+        is_command = message.startswith('!')
 
         # Database operations
         try:
@@ -320,9 +290,14 @@ class MyComponent(commands.Component):
                     cursor.execute("DELETE FROM messages;")
                 else:
                     # Store all messages (including streamer) for overlay display
-                    # Ensure platform column exists (for overlay support)
+                    # Ensure platform and timestamp columns exist (for overlay support)
                     try:
                         cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
+                        conn.commit()
+                    except sqlite3.OperationalError:
+                        pass  # Column already exists
+                    try:
+                        cursor.execute("ALTER TABLE messages ADD COLUMN timestamp REAL DEFAULT (julianday('now'))")
                         conn.commit()
                     except sqlite3.OperationalError:
                         pass  # Column already exists
@@ -334,7 +309,7 @@ class MyComponent(commands.Component):
                         cursor.execute(
                             "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
                     cursor.execute(
-                        "INSERT INTO messages (from_user, message, platform) VALUES (?, ?, ?)", 
+                        "INSERT INTO messages (from_user, message, platform, timestamp) VALUES (?, ?, ?, julianday('now'))", 
                         (chatter_name, message, "twitch"))
         except Exception as e:
             LOGGER.error(f"Database error in event_message: {e}")
@@ -343,6 +318,10 @@ class MyComponent(commands.Component):
         
         if is_chatter and chatter_name != BOT_NAME:
             winsound.PlaySound("*", winsound.SND_ALIAS)
+        
+        # Skip further processing for commands - let twitchio's command system handle them
+        if is_command:
+            return
         
         if is_mention:
             response = SharkAI.chat_with_openai(
@@ -378,6 +357,20 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
+        # Add deduplication - track last ad break to prevent duplicate processing
+        # Use timestamp and duration as unique identifier
+        if not hasattr(self, '_last_ad_break_time'):
+            self._last_ad_break_time = 0
+        
+        current_time = time.time()
+        # If we processed an ad break in the last 2 seconds, skip it (duplicate)
+        if current_time - self._last_ad_break_time < 2:
+            LOGGER.warning(f"Skipping duplicate ad break event (duplicate EventSub subscription detected)")
+            return
+        
+        self._last_ad_break_time = current_time
+        LOGGER.info(f"Processing ad break event (duration: {payload.duration}s)")
+        
         prompt = f'an ad break has begun for {payload.duration}, thank the viewers for their patience. from then on treat the chat room as a clean new one.'
         
         try:
@@ -396,12 +389,28 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
+        # Deduplication for raids
+        self._cleanup_old_events()
+        raid_key = f"raid_{payload.from_broadcaster.name}_{time.time():.0f}"
+        if raid_key in self._processed_events and time.time() - self._processed_events[raid_key] < 5:
+            LOGGER.warning(f"Skipping duplicate raid event from {payload.from_broadcaster.name}")
+            return
+        self._processed_events[raid_key] = time.time()
+        
         message = SharkAI.chat_with_openai(
             f'{payload.from_broadcaster.name} is raiding, thank them')
         await self.send_message(payload, message)
 
     @commands.Component.listener()
     async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
+        # Deduplication for follows
+        self._cleanup_old_events()
+        follow_key = f"follow_{payload.user.name}_{time.time():.0f}"
+        if follow_key in self._processed_events and time.time() - self._processed_events[follow_key] < 5:
+            LOGGER.warning(f"Skipping duplicate follow event from {payload.user.name}")
+            return
+        self._processed_events[follow_key] = time.time()
+        
         message = SharkAI.chat_with_openai(
             f'{payload.user} followed, thank them properly')
         await self.send_message(payload, message)
@@ -410,6 +419,14 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_subscription(self, payload: twitchio.ChannelSubscribe) -> None:
+        # Deduplication for subscriptions
+        self._cleanup_old_events()
+        sub_key = f"sub_{payload.user.name}_{time.time():.0f}"
+        if sub_key in self._processed_events and time.time() - self._processed_events[sub_key] < 5:
+            LOGGER.warning(f"Skipping duplicate subscription event from {payload.user.name}")
+            return
+        self._processed_events[sub_key] = time.time()
+        
         subscription_tier = int(payload.tier) / 1000
         message = SharkAI.chat_with_openai(
             f'{payload.user} just subscribed with tier {subscription_tier}, thank them')
@@ -419,6 +436,14 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_subscription_gift(self, payload: twitchio.ChannelSubscriptionGift) -> None:
+        # Deduplication for gift subs
+        self._cleanup_old_events()
+        gift_key = f"gift_{payload.user.name if payload.user else 'anonymous'}_{payload.total}_{time.time():.0f}"
+        if gift_key in self._processed_events and time.time() - self._processed_events[gift_key] < 5:
+            LOGGER.warning(f"Skipping duplicate gift sub event")
+            return
+        self._processed_events[gift_key] = time.time()
+        
         message = SharkAI.chat_with_openai(
             f'{payload.user} just gifted {payload.total} subs, thank them')
         await self.send_message(payload, message)
@@ -434,38 +459,13 @@ class MyComponent(commands.Component):
     async def event_ban(self, payload: twitchio.ChannelBan) -> None:
         await self.send_message(payload, 'RIPBOZO')
 
-    # @commands.command(aliases=["hello", "howdy", "hey"])
-    # async def hi(self, ctx: commands.Context) -> None:
-    #     """
-    #     !hi, !hello, !howdy, !hey
-    #     """
-    #     message = SharkAI.chat_with_openai(f"just say hi to {ctx.chatter}")
-    #     await ctx.reply(f'{ctx.chatter.mention} ' + message)
-
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
-        try:
-            print('here')
-            link = get_link_from_db('pob')
-            LOGGER.info(f"!pob command called by {ctx.chatter.name}, retrieved link: '{link}' (length: {len(link) if link else 0})")
-            if link and link.strip():
-                await ctx.send(f'{ctx.chatter.mention} {link}')
-            else:
-                LOGGER.warning(f"POB link is empty or whitespace. Default fallback: '{DEFAULT_LINKS.get('pob', 'N/A')}'")
-                # Try default as last resort
-                default_link = DEFAULT_LINKS.get('pob', '')
-                if default_link:
-                    await ctx.send(f'{ctx.chatter.mention} {default_link}')
-                else:
-                    await ctx.send(f'{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it.')
-        except Exception as e:
-            LOGGER.error(f"Error in !pob command: {e}", exc_info=True)
-            # Fallback to default on any error
-            default_link = DEFAULT_LINKS.get('pob', '')
-            if default_link:
-                await ctx.send(f'{ctx.chatter.mention} {default_link}')
-            else:
-                await ctx.send(f'{ctx.chatter.mention} Error retrieving POB link.')
+        link = get_link_from_db('pob')
+        if link:
+            await ctx.send(f'{ctx.chatter.mention} {link}')
+        else:
+            await ctx.send(f'{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it.')
 
     @commands.command()
     async def profile(self, ctx: commands.Context) -> None:
@@ -556,9 +556,14 @@ class MyComponent(commands.Component):
                     cursor.execute("DELETE FROM messages;")
                 else:
                     # Store all messages (including streamer) for overlay display
-                    # Ensure platform column exists (for overlay support)
+                    # Ensure platform and timestamp columns exist (for overlay support)
                     try:
                         cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
+                        conn.commit()
+                    except sqlite3.OperationalError:
+                        pass  # Column already exists
+                    try:
+                        cursor.execute("ALTER TABLE messages ADD COLUMN timestamp REAL DEFAULT (julianday('now'))")
                         conn.commit()
                     except sqlite3.OperationalError:
                         pass  # Column already exists
@@ -570,7 +575,7 @@ class MyComponent(commands.Component):
                         cursor.execute(
                             "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
                     cursor.execute(
-                        "INSERT INTO messages (from_user, message, platform) VALUES (?, ?, ?)", 
+                        "INSERT INTO messages (from_user, message, platform, timestamp) VALUES (?, ?, ?, julianday('now'))", 
                         (chatter_name, message, platform))
         except Exception as e:
             LOGGER.error(f"Database error in process_chat_message: {e}")

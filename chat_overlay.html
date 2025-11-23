@@ -347,7 +347,10 @@
 
         async function fetchMessages() {
             try {
-                const response = await fetch(API_URL);
+                // On initial load, only fetch messages from the last hour to avoid showing old messages
+                // After initial load, fetch all recent messages (up to 24 hours) to catch any we might have missed
+                const maxAgeHours = isInitialLoad ? 1 : 24;
+                const response = await fetch(`${API_URL}?max_age_hours=${maxAgeHours}`);
                 const messages = await response.json();
 
                 // Debug: Log if we got messages
@@ -363,14 +366,14 @@
                     if (existingDebug) existingDebug.remove();
                 }
 
-                // On initial load, show all existing messages
+                // On initial load, show all existing messages (already filtered to last hour by API)
                 if (isInitialLoad && messages.length > 0) {
                     messages.forEach(message => {
                         addMessage(message);
                         lastMessageId = Math.max(lastMessageId, message.id);
                     });
                     isInitialLoad = false;
-                    console.log(`Initial load: Displayed ${messages.length} existing messages, last ID: ${lastMessageId}`);
+                    console.log(`Initial load: Displayed ${messages.length} recent messages (last hour), last ID: ${lastMessageId}`);
                 } else {
                     // After initial load, only show new messages
                     let newMessagesCount = 0;
