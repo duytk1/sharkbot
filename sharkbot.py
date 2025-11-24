@@ -246,7 +246,6 @@ class MyComponent(commands.Component):
             if v > cutoff
         }
         self._last_cleanup = current_time
-        LOGGER.debug(f"Cleaned up old events, {len(self._processed_events)} events remaining")
     
     @contextmanager
     def _get_db_connection(self):
@@ -378,7 +377,6 @@ class MyComponent(commands.Component):
                 cursor = conn.cursor()
                 cursor.execute("SELECT COUNT(*) FROM messages")
                 count = cursor.fetchone()[0]
-                LOGGER.info(f'Message count for ad break: {count}')
                 if count > 0:
                     prompt += ' recap the chat and mention the chatters by .'
                 
@@ -461,18 +459,15 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
+        print('here - command handler called')
         try:
-            LOGGER.info(f"!pob command called by {ctx.chatter.name}")
+            print('here')
             link = get_link_from_db('pob')
-            LOGGER.info(f"POB link from database: '{link}' (type: {type(link)}, length: {len(link) if link else 0})")
             if link and link.strip():
                 response = f'{ctx.chatter.mention} {link}'
-                LOGGER.info(f"Sending response: {response}")
                 await ctx.send(response)
-                LOGGER.info(f"Successfully sent POB link to {ctx.chatter.name}")
             else:
                 error_msg = f'{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it.'
-                LOGGER.warning(f"POB link not found in database for {ctx.chatter.name}, sending error message")
                 await ctx.send(error_msg)
         except Exception as e:
             LOGGER.error(f"Error in !pob command: {e}", exc_info=True)
@@ -608,9 +603,9 @@ class MyComponent(commands.Component):
             response = SharkAI.chat_with_openai(
                 f"new message from {chatter_name} on {platform}: {message}, response")
             
-            # For YouTube, we can't send messages back directly, but we can log it
+            # For YouTube, we can't send messages back directly
             if platform == "youtube":
-                LOGGER.info(f"AI Response to {chatter_name}: {response}")
+                pass
             else:
                 # For Twitch, we need the payload to send messages
                 # This will be handled in event_message
@@ -713,8 +708,8 @@ class MyComponent(commands.Component):
                 try:
                     if hasattr(chat, 'terminate'):
                         chat.terminate()
-                except Exception as e:
-                    LOGGER.debug(f"Error cleaning up chat: {e}")
+                except Exception:
+                    pass
             LOGGER.info("YouTube chat thread stopped")
 
     async def _process_youtube_chat_queue(self) -> None:
@@ -774,7 +769,6 @@ class MyComponent(commands.Component):
             # Note: Audio is now played through the overlay (OBS Browser Source)
             # The overlay polls for new TTS files and plays them automatically
             # We keep the file longer to ensure overlay can play it
-            LOGGER.info(f"TTS file generated: {file_name} (duration: {duration_ms}ms)")
 
             # Use threading to avoid blocking the async event loop
             # Keep file for duration + 5 seconds to ensure overlay can play it
