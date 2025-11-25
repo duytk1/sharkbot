@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Overlay - OBS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            overflow: hidden;
+            color: #ffffff;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 15px;
+            height: 100vh;
+            justify-content: flex-end;
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+
+        #chat-container::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border-left: 3px solid;
+            animation: slideIn 0.3s ease-out;
+            max-width: 100%;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .message.twitch {
+            border-left-color: #9146ff;
+        }
+
+        .message.youtube {
+            border-left-color: #ff0000;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message.fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+
+        .username {
+            font-weight: 700;
+            font-size: 40px;
+            color: #ffffff;
+            min-width: fit-content;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .message.twitch .username {
+            color: #9146ff;
+        }
+
+        .message.youtube .username {
+            color: #ff4444;
+        }
+
+        .message-content {
+            flex: 1;
+            font-size: 40px;
+            line-height: 1.4;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            word-break: break-word;
+        }
+
+        .platform-badge {
+            display: inline-block;
+            font-size: 40px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+
+        .platform-badge.twitch {
+            background: #9146ff;
+            color: white;
+        }
+
+        .platform-badge.youtube {
+            background: #ff0000;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        /* Smooth scrolling */
+        #chat-container {
+            scroll-behavior: smooth;
+        }
+
+        /* Hide messages that are too old (optional - can be configured) */
+        .message.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div class="empty-state" id="empty-state">Waiting for chat messages...</div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const emptyState = document.getElementById('empty-state');
+        const API_URL = '/api/chat';
+        const MAX_MESSAGES = 30; // Maximum messages to display
+        const POLL_INTERVAL = 2000; // Poll every 2 seconds
+        const MESSAGE_TIMEOUT = 300000; // Hide messages after 5 minutes (300000ms)
+
+        let lastMessageIds = new Set();
+        let messageElements = new Map();
+
+        function createMessageElement(messageData) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${messageData.platform}`;
+            messageDiv.dataset.messageId = `${messageData.user}_${messageData.timestamp}_${Date.now()}`;
+            messageDiv.dataset.timestamp = messageData.timestamp || Date.now();
+
+            const usernameSpan = document.createElement('span');
+            usernameSpan.className = 'username';
+            usernameSpan.textContent = messageData.user + ':';
+
+            const contentSpan = document.createElement('span');
+            contentSpan.className = 'message-content';
+            contentSpan.textContent = messageData.message;
+
+            messageDiv.appendChild(usernameSpan);
+            messageDiv.appendChild(contentSpan);
+
+            return messageDiv;
+        }
+
+        function addMessage(messageData) {
+            const messageId = `${messageData.user}_${messageData.timestamp || Date.now()}`;
+            
+            // Skip if we've already shown this message
+            if (lastMessageIds.has(messageId)) {
+                return;
+            }
+
+            lastMessageIds.add(messageId);
+            
+            // Hide empty state
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+
+            const messageElement = createMessageElement(messageData);
+            chatContainer.appendChild(messageElement);
+            messageElements.set(messageId, messageElement);
+
+            // Remove oldest messages if we exceed MAX_MESSAGES
+            while (chatContainer.children.length > MAX_MESSAGES + 1) { // +1 for empty state
+                const oldestChild = chatContainer.children[0];
+                if (oldestChild !== emptyState) {
+                    const oldestId = oldestChild.dataset.messageId;
+                    if (oldestId) {
+                        lastMessageIds.delete(oldestId.split('_')[0] + '_' + oldestChild.dataset.timestamp);
+                        messageElements.delete(oldestId);
+                    }
+                    chatContainer.removeChild(oldestChild);
+                }
+            }
+
+            // Auto-scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Set timeout to fade out old messages
+            setTimeout(() => {
+                if (messageElement.parentNode) {
+                    messageElement.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (messageElement.parentNode) {
+                            messageElement.remove();
+                            messageElements.delete(messageId);
+                        }
+                    }, 500);
+                }
+            }, MESSAGE_TIMEOUT);
+        }
+
+        function updateChat() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.messages && Array.isArray(data.messages)) {
+                        // Add new messages
+                        data.messages.forEach(message => {
+                            addMessage(message);
+                        });
+
+                        // Show empty state if no messages
+                        if (data.messages.length === 0 && chatContainer.children.length === 1) {
+                            if (emptyState) {
+                                emptyState.style.display = 'block';
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching chat messages:', error);
+                });
+        }
+
+        // Initial load
+        updateChat();
+
+        // Poll for new messages
+        setInterval(updateChat, POLL_INTERVAL);
+
+        // Clean up old message IDs periodically to prevent memory issues
+        setInterval(() => {
+            if (lastMessageIds.size > MAX_MESSAGES * 2) {
+                const idsArray = Array.from(lastMessageIds);
+                lastMessageIds = new Set(idsArray.slice(-MAX_MESSAGES));
+            }
+        }, 60000); // Every minute
+    </script>
+</body>
+</html>
+
