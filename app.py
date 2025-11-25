@@ -189,6 +189,52 @@ def save_links():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/tts')
+def get_tts_info():
+    """Get TTS file info (timestamp to detect new files)."""
+    import os
+    from datetime import datetime
+    
+    TTS_FILE = 'tts.mp3'
+    
+    try:
+        if os.path.exists(TTS_FILE):
+            # Get file modification time
+            mtime = os.path.getmtime(TTS_FILE)
+            file_size = os.path.getsize(TTS_FILE)
+            
+            return jsonify({
+                'exists': True,
+                'timestamp': mtime,
+                'size': file_size,
+                'url': '/api/tts/audio'
+            })
+        else:
+            return jsonify({
+                'exists': False,
+                'timestamp': None,
+                'size': 0,
+                'url': None
+            })
+    except Exception as e:
+        LOGGER.error(f"Error getting TTS info: {e}")
+        return jsonify({'error': str(e), 'exists': False}), 500
+
+
+@app.route('/api/tts/audio')
+def serve_tts_audio():
+    """Serve the TTS audio file."""
+    from flask import send_file
+    import os
+    
+    TTS_FILE = 'tts.mp3'
+    
+    if os.path.exists(TTS_FILE):
+        return send_file(TTS_FILE, mimetype='audio/mpeg')
+    else:
+        return jsonify({'error': 'TTS file not found'}), 404
+
+
 def run_flask_server():
     """Run the Flask web server."""
     try:

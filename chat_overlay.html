@@ -147,19 +147,23 @@
 </head>
 <body>
     <div id="chat-container">
-        <div class="empty-state" id="empty-state">Waiting for chat messages...</div>
+        <div class="empty-state" id="empty-state"></div>
     </div>
 
     <script>
         const chatContainer = document.getElementById('chat-container');
         const emptyState = document.getElementById('empty-state');
         const API_URL = '/api/chat';
+        const TTS_API_URL = '/api/tts';
         const MAX_MESSAGES = 30; // Maximum messages to display
         const POLL_INTERVAL = 2000; // Poll every 2 seconds
+        const TTS_POLL_INTERVAL = 1000; // Poll for TTS every 1 second
         const MESSAGE_TIMEOUT = 300000; // Hide messages after 5 minutes (300000ms)
 
         let lastMessageIds = new Set();
         let messageElements = new Map();
+        let lastTTSTimestamp = null;
+        let audioPlayer = null;
 
         function createMessageElement(messageData) {
             const messageDiv = document.createElement('div');
@@ -253,11 +257,58 @@
                 });
         }
 
+        function checkForTTS() {
+            fetch(TTS_API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists && data.timestamp) {
+                        // Check if this is a new TTS file
+                        if (lastTTSTimestamp === null || data.timestamp > lastTTSTimestamp) {
+                            lastTTSTimestamp = data.timestamp;
+                            
+                            // Stop any currently playing audio
+                            if (audioPlayer) {
+                                audioPlayer.pause();
+                                audioPlayer = null;
+                            }
+                            
+                            // Create new audio element and play
+                            audioPlayer = new Audio(data.url + '?t=' + data.timestamp);
+                            audioPlayer.volume = 1.0; // Full volume
+                            
+                            audioPlayer.play().catch(error => {
+                                console.error('Error playing TTS:', error);
+                                // Some browsers require user interaction before playing audio
+                                // This is expected in OBS browser source
+                            });
+                            
+                            // Clean up after playback
+                            audioPlayer.addEventListener('ended', () => {
+                                audioPlayer = null;
+                            });
+                            
+                            audioPlayer.addEventListener('error', (error) => {
+                                console.error('TTS playback error:', error);
+                                audioPlayer = null;
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    // Silently fail - TTS might not be available
+                    console.debug('TTS check error (this is normal if no TTS file exists):', error);
+                });
+        }
+
         // Initial load
         updateChat();
+        checkForTTS();
 
         // Poll for new messages
         setInterval(updateChat, POLL_INTERVAL);
+
+        // Poll for new TTS files
+        setInterval(checkForTTS, TTS_POLL_INTERVAL);
 
         // Clean up old message IDs periodically to prevent memory issues
         setInterval(() => {
