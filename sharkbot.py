@@ -14,6 +14,8 @@ import winsound
 import edge_tts
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
+import requests
+import json
 
 from sharkai import SharkAI
 
@@ -231,39 +233,30 @@ class MyComponent(commands.Component):
         self._youtube_chat_stop_event = None
         self._processed_events = {}  # Track processed events to prevent duplicates
         self._last_cleanup = time.time()
-    
-    def _cleanup_old_events(self):
-        """Clean up old processed events to prevent memory buildup."""
-        current_time = time.time()
-        # Only cleanup every 5 minutes
-        if current_time - self._last_cleanup < 300:
-            return
-        
-        # Remove events older than 1 minute
-        cutoff = current_time - 60
-        self._processed_events = {
-            k: v for k, v in self._processed_events.items() 
-            if v > cutoff
-        }
-        self._last_cleanup = current_time
+        self._processing_lock = threading.Lock()  # Lock for deduplication
     
     @contextmanager
     def _get_db_connection(self):
-        """Context manager for database connections."""
-        conn = None
+        """Get a database connection as a context manager."""
+        conn = sqlite3.connect(self._db_path)
         try:
-            conn = sqlite3.connect(self._db_path)
             yield conn
             conn.commit()
-        except Exception as e:
-            if conn:
-                conn.rollback()
-            LOGGER.error(f"Database error: {e}")
+        except Exception:
+            conn.rollback()
             raise
         finally:
-            if conn:
-                conn.close()
-
+            conn.close()
+    
+    def _cleanup_old_events(self):
+        """Clean up old processed events to prevent memory growth."""
+        current_time = time.time()
+        self._processed_events = {
+            k: v for k, v in self._processed_events.items() 
+            if current_time - v < 300  # Keep events from last 5 minutes
+        }
+        self._last_cleanup = current_time
+    
     @commands.Component.listener()
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
         chatter_name = payload.chatter.name
@@ -288,8 +281,8 @@ class MyComponent(commands.Component):
                 if is_clear_command:
                     cursor.execute("DELETE FROM messages;")
                 else:
-                    # Store all messages (including streamer) for overlay display
-                    # Ensure platform and timestamp columns exist (for overlay support)
+                    # Store all messages (including streamer)
+                    # Ensure platform and timestamp columns exist
                     try:
                         cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
                         conn.commit()
@@ -336,16 +329,6 @@ class MyComponent(commands.Component):
             await self.make_tts(tts_text)
             self.play_sound(TTS_FILE)
 
-    @commands.command(aliases=["repeat"])
-    async def say(self, ctx: commands.Context, *, content: str) -> None:
-        """
-        !say {message}
-        This triggers TTS bot to say the message
-        """
-        await self.make_tts(content)
-        self.play_sound(TTS_FILE)
-        await ctx.send(content)
-
     @commands.Component.listener()
     async def event_stream_online(self, payload: twitchio.StreamOnline) -> None:
         # Event dispatched when we go live
@@ -377,6 +360,7 @@ class MyComponent(commands.Component):
                 cursor = conn.cursor()
                 cursor.execute("SELECT COUNT(*) FROM messages")
                 count = cursor.fetchone()[0]
+                LOGGER.info(f'Message count for ad break: {count}')
                 if count > 0:
                     prompt += ' recap the chat and mention the chatters by .'
                 
@@ -459,15 +443,15 @@ class MyComponent(commands.Component):
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
-        print('here - command handler called')
         try:
             print('here')
             link = get_link_from_db('pob')
             if link and link.strip():
-                response = f'{ctx.chatter.mention} {link}'
+                response = f'{ctx.chatter.mention} {link}'                
                 await ctx.send(response)
             else:
                 error_msg = f'{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it.'
+                
                 await ctx.send(error_msg)
         except Exception as e:
             LOGGER.error(f"Error in !pob command: {e}", exc_info=True)
@@ -569,8 +553,8 @@ class MyComponent(commands.Component):
                 if is_clear_command:
                     cursor.execute("DELETE FROM messages;")
                 else:
-                    # Store all messages (including streamer) for overlay display
-                    # Ensure platform and timestamp columns exist (for overlay support)
+                    # Store all messages (including streamer)
+                    # Ensure platform and timestamp columns exist
                     try:
                         cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
                         conn.commit()
@@ -603,9 +587,9 @@ class MyComponent(commands.Component):
             response = SharkAI.chat_with_openai(
                 f"new message from {chatter_name} on {platform}: {message}, response")
             
-            # For YouTube, we can't send messages back directly
+            # For YouTube, we can't send messages back directly, but we can log it
             if platform == "youtube":
-                pass
+                LOGGER.info(f"AI Response to {chatter_name}: {response}")
             else:
                 # For Twitch, we need the payload to send messages
                 # This will be handled in event_message
@@ -708,8 +692,8 @@ class MyComponent(commands.Component):
                 try:
                     if hasattr(chat, 'terminate'):
                         chat.terminate()
-                except Exception:
-                    pass
+                except Exception as e:
+                    LOGGER.debug(f"Error cleaning up chat: {e}")
             LOGGER.info("YouTube chat thread stopped")
 
     async def _process_youtube_chat_queue(self) -> None:
@@ -760,18 +744,16 @@ class MyComponent(commands.Component):
         await tts.save(TTS_FILE)
 
     def play_sound(self, file_name: str) -> None:
-        """Play sound file. File is served via overlay for OBS capture."""
+        """Play sound file."""
         try:
             # Get duration using pygame for cleanup timing
             sound = pygame.mixer.Sound(file_name)
             duration_ms = int(sound.get_length() * 1000)
             
-            # Note: Audio is now played through the overlay (OBS Browser Source)
-            # The overlay polls for new TTS files and plays them automatically
-            # We keep the file longer to ensure overlay can play it
+            LOGGER.info(f"TTS file generated: {file_name} (duration: {duration_ms}ms)")
 
             # Use threading to avoid blocking the async event loop
-            # Keep file for duration + 5 seconds to ensure overlay can play it
+            # Keep file for duration + 5 seconds before cleanup
             def cleanup_after_duration():
                 time.sleep((duration_ms / 1000.0) + 5.0)  # Duration + 5 second buffer
                 try:
