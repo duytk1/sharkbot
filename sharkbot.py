@@ -20,16 +20,20 @@ import json
 from sharkai import SharkAI
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 LOGGER: logging.Logger = logging.getLogger("Bot")
 
 try:
     import pytchat
+
     YOUTUBE_CHAT_AVAILABLE = True
 except ImportError:
     YOUTUBE_CHAT_AVAILABLE = False
-    LOGGER.warning("pytchat not installed. YouTube chat functionality will be disabled.")
+    LOGGER.warning(
+        "pytchat not installed. YouTube chat functionality will be disabled."
+    )
 
 # Configuration
 CLIENT_ID: str = os.environ.get("CLIENT_ID")
@@ -37,6 +41,7 @@ CLIENT_SECRET: str = os.environ.get("CLIENT_SECRET")
 BOT_ID = os.environ.get("OWNER_ID")
 OWNER_ID = os.environ.get("OWNER_ID")
 SQL_DB_PATH = os.environ.get("SQL_CONNECT", "messages.db")
+
 
 def _extract_youtube_video_id(raw_value: str | None) -> str:
     """Allow users to paste a whole YouTube URL or just the video ID."""
@@ -74,7 +79,9 @@ def _extract_youtube_video_id(raw_value: str | None) -> str:
     return value.split("&")[0].split("?")[0]
 
 
-YOUTUBE_VIDEO_ID = _extract_youtube_video_id(os.environ.get("YOUTUBE_VIDEO_ID"))  # YouTube live stream video ID
+YOUTUBE_VIDEO_ID = _extract_youtube_video_id(
+    os.environ.get("YOUTUBE_VIDEO_ID")
+)  # YouTube live stream video ID
 
 # Constants
 MAX_MESSAGE_HISTORY = 30
@@ -82,20 +89,21 @@ MAX_MESSAGE_LENGTH = 900
 LONG_MESSAGE_THRESHOLD = 500
 FIRST_MESSAGE_CHUNK = 480
 SECOND_MESSAGE_CHUNK = 990
-TTS_FILE = 'tts.mp3'
-BOT_NAME = 'sharkothehuman'
+TTS_FILE = "tts.mp3"
+BOT_NAME = "sharkothehuman"
 STREAMER_NAME = os.environ.get("STREAMER_NAME", "sharko51")
 
 # Default links (fallback if not in database)
 DEFAULT_LINKS = {
-    'pob': 'https://pobb.in/V3nQhzR2IxTl',
-    'profile': 'https://www.pathofexile.com/account/view-profile/cbera-0095/characters',
-    'ign': 'sharko_can_breed',
-    'build': 'https://www.youtube.com/watch?v=nAQ1Y-Jz888&t',
-    'vid': 'https://www.twitch.tv/sharko51/clip/PeppyCooperativeLasagnaRiPepperonis-TqCjkjPL7Pegl2LB',
-    'mb': ''
+    "pob": "https://pobb.in/V3nQhzR2IxTl",
+    "profile": "https://www.pathofexile.com/account/view-profile/cbera-0095/characters",
+    "ign": "sharko_can_breed",
+    "build": "https://www.youtube.com/watch?v=nAQ1Y-Jz888&t",
+    "vid": "https://www.twitch.tv/sharko51/clip/PeppyCooperativeLasagnaRiPepperonis-TqCjkjPL7Pegl2LB",
+    "mb": "",
 }
-bot_language = 'en-AU-NatashaNeural'
+bot_language = "en-AU-NatashaNeural"
+
 
 def init_links_database():
     """Initialize links database with default values if empty."""
@@ -103,30 +111,34 @@ def init_links_database():
         conn = sqlite3.connect(SQL_DB_PATH)
         cursor = conn.cursor()
         # Ensure links table exists
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS links (
                 key TEXT PRIMARY KEY,
                 value TEXT NOT NULL
             )
-        ''')
+        """)
         # Check if table is empty
         cursor.execute("SELECT COUNT(*) FROM links")
         count = cursor.fetchone()[0]
-        
+
         # If empty, populate with defaults
         if count == 0:
             for key, value in DEFAULT_LINKS.items():
                 if value:  # Only insert non-empty defaults
-                    cursor.execute('''
+                    cursor.execute(
+                        """
                         INSERT OR IGNORE INTO links (key, value)
                         VALUES (?, ?)
-                    ''', (key, value))
+                    """,
+                        (key, value),
+                    )
             conn.commit()
             LOGGER.info("Initialized links database with default values")
-        
+
         conn.close()
     except Exception as e:
         LOGGER.warning(f"Error initializing links database: {e}")
+
 
 def get_link_from_db(key: str) -> str:
     """Get a link from the database, with fallback to default."""
@@ -140,9 +152,10 @@ def get_link_from_db(key: str) -> str:
             return result[0]
     except Exception as e:
         LOGGER.error(f"Error getting link {key} from database: {e}")
-    
+
     # Fallback to default
-    return DEFAULT_LINKS.get(key, '')
+    return DEFAULT_LINKS.get(key, "")
+
 
 # Initialize pygame mixer once
 pygame.mixer.init()
@@ -162,7 +175,7 @@ class Bot(commands.Bot):
     async def setup_hook(self) -> None:
         component = MyComponent(self)
         await self.add_component(component)
-        
+
         # Start YouTube chat monitoring if configured
         if YOUTUBE_CHAT_AVAILABLE and YOUTUBE_VIDEO_ID:
             await component.start_youtube_chat()
@@ -170,25 +183,24 @@ class Bot(commands.Bot):
         # Define all subscriptions in a list for cleaner code
         subscriptions = [
             eventsub.ChatMessageSubscription(
-                broadcaster_user_id=OWNER_ID, user_id=BOT_ID),
-            eventsub.StreamOnlineSubscription(
-                broadcaster_user_id=OWNER_ID),
+                broadcaster_user_id=OWNER_ID, user_id=BOT_ID
+            ),
+            eventsub.StreamOnlineSubscription(broadcaster_user_id=OWNER_ID),
             eventsub.AdBreakBeginSubscription(
-                broadcaster_user_id=OWNER_ID, moderator_user_id=OWNER_ID),
-            eventsub.ChannelRaidSubscription(
-                to_broadcaster_user_id=OWNER_ID),
+                broadcaster_user_id=OWNER_ID, moderator_user_id=OWNER_ID
+            ),
+            eventsub.ChannelRaidSubscription(to_broadcaster_user_id=OWNER_ID),
             eventsub.ChannelFollowSubscription(
-                broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID),
-            eventsub.ChannelSubscriptionGiftSubscription(
-                broadcaster_user_id=OWNER_ID),
+                broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID
+            ),
+            eventsub.ChannelSubscriptionGiftSubscription(broadcaster_user_id=OWNER_ID),
             eventsub.AutomodMessageHoldV2Subscription(
-                broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID),
-            eventsub.ChannelBanSubscription(
-                broadcaster_user_id=OWNER_ID),
-            eventsub.ChannelSubscribeSubscription(
-                broadcaster_user_id=OWNER_ID),
+                broadcaster_user_id=OWNER_ID, moderator_user_id=BOT_ID
+            ),
+            eventsub.ChannelBanSubscription(broadcaster_user_id=OWNER_ID),
+            eventsub.ChannelSubscribeSubscription(broadcaster_user_id=OWNER_ID),
         ]
-        
+
         # Subscribe to all events
         for subscription in subscriptions:
             await self.subscribe_websocket(payload=subscription)
@@ -209,7 +221,9 @@ class Bot(commands.Bot):
 
     async def load_tokens(self, path: str | None = None) -> None:
         async with self.token_database.acquire() as connection:
-            rows: list[sqlite3.Row] = await connection.fetchall("""SELECT * from tokens""")
+            rows: list[sqlite3.Row] = await connection.fetchall(
+                """SELECT * from tokens"""
+            )
 
         for row in rows:
             await self.add_token(row["token"], row["refresh"])
@@ -231,10 +245,7 @@ class MyComponent(commands.Component):
         self._youtube_chat_thread = None
         self._youtube_chat_queue = None
         self._youtube_chat_stop_event = None
-        self._processed_events = {}  # Track processed events to prevent duplicates
-        self._last_cleanup = time.time()
-        self._processing_lock = threading.Lock()  # Lock for deduplication
-    
+
     @contextmanager
     def _get_db_connection(self):
         """Get a database connection as a context manager."""
@@ -247,16 +258,7 @@ class MyComponent(commands.Component):
             raise
         finally:
             conn.close()
-    
-    def _cleanup_old_events(self):
-        """Clean up old processed events to prevent memory growth."""
-        current_time = time.time()
-        self._processed_events = {
-            k: v for k, v in self._processed_events.items() 
-            if current_time - v < 300  # Keep events from last 5 minutes
-        }
-        self._last_cleanup = current_time
-    
+
     @commands.Component.listener()
     async def event_message(self, payload: twitchio.ChatMessage) -> None:
         chatter_name = payload.chatter.name
@@ -265,70 +267,77 @@ class MyComponent(commands.Component):
 
         if not message:
             return
-        
+
         # Get first word once for efficiency
-        first_word = message.split(' ', 1)[0].lower()
-        is_clear_command = first_word == 'clear' and chatter_name == streamer_name
-        is_mention = first_word in ('sharko')
+        first_word = message.split(" ", 1)[0].lower()
+        is_clear_command = first_word == "clear" and chatter_name == streamer_name
+        is_mention = first_word in ("sharko")
         is_chatter = chatter_name != streamer_name
-        is_command = message.startswith('!')
+        is_command = message.startswith("!")
 
         # Database operations
         try:
             with self._get_db_connection() as conn:
                 cursor = conn.cursor()
-                
+
                 if is_clear_command:
                     cursor.execute("DELETE FROM messages;")
                 else:
                     # Store all messages (including streamer)
                     # Ensure platform and timestamp columns exist
                     try:
-                        cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
+                        cursor.execute(
+                            "ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'"
+                        )
                         conn.commit()
                     except sqlite3.OperationalError:
                         pass  # Column already exists
                     try:
-                        cursor.execute("ALTER TABLE messages ADD COLUMN timestamp REAL DEFAULT (julianday('now'))")
+                        cursor.execute(
+                            "ALTER TABLE messages ADD COLUMN timestamp REAL DEFAULT (julianday('now'))"
+                        )
                         conn.commit()
                     except sqlite3.OperationalError:
                         pass  # Column already exists
-                    
+
                     # Optimize: combine count check and delete in one query if needed
                     cursor.execute("SELECT COUNT(*) FROM messages")
                     count = cursor.fetchone()[0]
                     if count >= MAX_MESSAGE_HISTORY:
                         cursor.execute(
-                            "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
+                            "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)"
+                        )
                     cursor.execute(
-                        "INSERT INTO messages (from_user, message, platform, timestamp) VALUES (?, ?, ?, julianday('now'))", 
-                        (chatter_name, message, "twitch"))
+                        "INSERT INTO messages (from_user, message, platform, timestamp) VALUES (?, ?, ?, julianday('now'))",
+                        (chatter_name, message, "twitch"),
+                    )
         except Exception as e:
             LOGGER.error(f"Database error in event_message: {e}")
 
         print(f"[TWITCH] [{chatter_name}]: {message}")
-        
+
         if is_chatter and chatter_name != BOT_NAME:
             winsound.PlaySound("*", winsound.SND_ALIAS)
-        
+
         # Skip further processing for commands - let twitchio's command system handle them
         if is_command:
             return
-        
+
         if is_mention:
             # Remove "sharko" prefix from message before sending to AI
-            cleaned_message = message.removeprefix('sharko').strip()
+            cleaned_message = message.removeprefix("sharko").strip()
             if not cleaned_message:
                 cleaned_message = message  # Fallback if removal leaves nothing
-            
+
             response = SharkAI.chat_with_openai(
-                f"new message from {chatter_name}: {cleaned_message}, response")
-            
+                f"new message from {chatter_name}: {cleaned_message}, response"
+            )
+
             # Send response in chunks if needed
             await self.send_message(payload, response)
 
             # Create TTS text
-            tts_text = f'{chatter_name} asked me: {cleaned_message}. {response}'
+            tts_text = f"{chatter_name} asked me: {cleaned_message}. {response}"
 
             await self.make_tts(tts_text)
             self.play_sound(TTS_FILE)
@@ -343,31 +352,19 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_ad_break(self, payload: twitchio.ChannelAdBreakBegin) -> None:
-        # Add deduplication - track last ad break to prevent duplicate processing
-        # Use timestamp and duration as unique identifier
-        if not hasattr(self, '_last_ad_break_time'):
-            self._last_ad_break_time = 0
-        
-        current_time = time.time()
-        # If we processed an ad break in the last 2 seconds, skip it (duplicate)
-        if current_time - self._last_ad_break_time < 2:
-            LOGGER.warning(f"Skipping duplicate ad break event (duplicate EventSub subscription detected)")
-            return
-        
-        self._last_ad_break_time = current_time
         LOGGER.info(f"Processing ad break event (duration: {payload.duration}s)")
-        
-        prompt = f'an ad break has begun for {payload.duration}, thank the viewers for their patience. from then on treat the chat room as a clean new one.'
-        
+
+        prompt = f"an ad break has begun for {payload.duration}, thank the viewers for their patience. from then on treat the chat room as a clean new one."
+
         try:
             with self._get_db_connection() as conn:
                 cursor = conn.cursor()
                 cursor.execute("SELECT COUNT(*) FROM messages")
                 count = cursor.fetchone()[0]
-                LOGGER.info(f'Message count for ad break: {count}')
+                LOGGER.info(f"Message count for ad break: {count}")
                 if count > 0:
-                    prompt += ' recap the chat and mention the chatters by .'
-                
+                    prompt += " recap the chat and mention the chatters by ."
+
                 await self.send_message(payload, SharkAI.chat_with_openai(prompt))
                 cursor.execute("DELETE FROM messages;")
         except Exception as e:
@@ -375,227 +372,241 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_raid(self, payload: twitchio.ChannelRaid) -> None:
-        # Deduplication for raids
-        self._cleanup_old_events()
-        raid_key = f"raid_{payload.from_broadcaster.name}_{time.time():.0f}"
-        if raid_key in self._processed_events and time.time() - self._processed_events[raid_key] < 5:
-            LOGGER.warning(f"Skipping duplicate raid event from {payload.from_broadcaster.name}")
-            return
-        self._processed_events[raid_key] = time.time()
-        
         message = SharkAI.chat_with_openai(
-            f'{payload.from_broadcaster.name} is raiding, thank them')
+            f"{payload.from_broadcaster.name} is raiding, thank them"
+        )
         await self.send_message(payload, message)
 
     @commands.Component.listener()
     async def event_follow(self, payload: twitchio.ChannelFollow) -> None:
-        # Deduplication for follows
-        self._cleanup_old_events()
-        follow_key = f"follow_{payload.user.name}_{time.time():.0f}"
-        if follow_key in self._processed_events and time.time() - self._processed_events[follow_key] < 5:
-            LOGGER.warning(f"Skipping duplicate follow event from {payload.user.name}")
-            return
-        self._processed_events[follow_key] = time.time()
-        
         message = SharkAI.chat_with_openai(
-            f'{payload.user} followed, thank them properly')
+            f"{payload.user} followed, thank them properly"
+        )
         await self.send_message(payload, message)
         await self.make_tts(message)
         self.play_sound(TTS_FILE)
 
     @commands.Component.listener()
     async def event_subscription(self, payload: twitchio.ChannelSubscribe) -> None:
-        # Deduplication for subscriptions
-        self._cleanup_old_events()
-        sub_key = f"sub_{payload.user.name}_{time.time():.0f}"
-        if sub_key in self._processed_events and time.time() - self._processed_events[sub_key] < 5:
-            LOGGER.warning(f"Skipping duplicate subscription event from {payload.user.name}")
-            return
-        self._processed_events[sub_key] = time.time()
-        
         subscription_tier = int(payload.tier) / 1000
         message = SharkAI.chat_with_openai(
-            f'{payload.user} just subscribed with tier {subscription_tier}, thank them')
+            f"{payload.user} just subscribed with tier {subscription_tier}, thank them"
+        )
         await self.send_message(payload, message)
         await self.make_tts(message)
         self.play_sound(TTS_FILE)
 
     @commands.Component.listener()
-    async def event_subscription_gift(self, payload: twitchio.ChannelSubscriptionGift) -> None:
-        # Deduplication for gift subs
-        self._cleanup_old_events()
-        gift_key = f"gift_{payload.user.name if payload.user else 'anonymous'}_{payload.total}_{time.time():.0f}"
-        if gift_key in self._processed_events and time.time() - self._processed_events[gift_key] < 5:
-            LOGGER.warning(f"Skipping duplicate gift sub event")
-            return
-        self._processed_events[gift_key] = time.time()
-        
+    async def event_subscription_gift(
+        self, payload: twitchio.ChannelSubscriptionGift
+    ) -> None:
         message = SharkAI.chat_with_openai(
-            f'{payload.user} just gifted {payload.total} subs, thank them')
+            f"{payload.user} just gifted {payload.total} subs, thank them"
+        )
         await self.send_message(payload, message)
         await self.make_tts(message)
         self.play_sound(TTS_FILE)
 
     @commands.Component.listener()
-    async def event_automod_message_hold(self, payload: twitchio.AutomodMessageHold) -> None:
+    async def event_automod_message_hold(
+        self, payload: twitchio.AutomodMessageHold
+    ) -> None:
         winsound.PlaySound("*", winsound.SND_ALIAS)
-        print('automodded message: ' + payload.text)
+        print("automodded message: " + payload.text)
 
     @commands.Component.listener()
     async def event_ban(self, payload: twitchio.ChannelBan) -> None:
-        await self.send_message(payload, 'RIPBOZO')
+        await self.send_message(payload, "RIPBOZO")
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
         try:
-            print('here')
-            link = get_link_from_db('pob')
+            print("here")
+            link = get_link_from_db("pob")
             if link and link.strip():
-                response = f'{ctx.chatter.mention} {link}'                
+                response = f"{ctx.chatter.mention} {link}"
                 await ctx.send(response)
             else:
-                error_msg = f'{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it.'
-                
+                error_msg = f"{ctx.chatter.mention} POB link not configured. Use the links manager at http://localhost:5000/links to set it."
+
                 await ctx.send(error_msg)
         except Exception as e:
             LOGGER.error(f"Error in !pob command: {e}", exc_info=True)
             try:
-                await ctx.send(f'{ctx.chatter.mention} Error retrieving POB link. Please try again later.')
+                await ctx.send(
+                    f"{ctx.chatter.mention} Error retrieving POB link. Please try again later."
+                )
             except Exception as send_error:
                 LOGGER.error(f"Failed to send error message: {send_error}")
 
     @commands.Component.listener()
-    async def event_command_error(self, ctx: commands.Context, error: Exception) -> None:
+    async def event_command_error(
+        self, ctx: commands.Context, error: Exception
+    ) -> None:
         """Handle command errors."""
-        LOGGER.error(f"Command error in {ctx.command.name if ctx.command else 'unknown'} command from {ctx.chatter.name}: {error}", exc_info=True)
+        LOGGER.error(
+            f"Command error in {ctx.command.name if ctx.command else 'unknown'} command from {ctx.chatter.name}: {error}",
+            exc_info=True,
+        )
 
     @commands.command()
     async def profile(self, ctx: commands.Context) -> None:
-        link = get_link_from_db('profile')
+        link = get_link_from_db("profile")
         if link:
-            await ctx.send(f'{ctx.chatter.mention} ' + link)
+            await ctx.send(f"{ctx.chatter.mention} " + link)
         else:
-            await ctx.send(f'{ctx.chatter.mention} Profile link not configured. Use the links manager to set it.')
+            await ctx.send(
+                f"{ctx.chatter.mention} Profile link not configured. Use the links manager to set it."
+            )
 
     @commands.command()
     async def build(self, ctx: commands.Context) -> None:
-        link = get_link_from_db('build')
+        link = get_link_from_db("build")
         if link:
-            await ctx.send(f'{ctx.chatter.mention} ' + link)
+            await ctx.send(f"{ctx.chatter.mention} " + link)
         else:
-            await ctx.send(f'{ctx.chatter.mention} Build link not configured. Use the links manager to set it.')
-        
+            await ctx.send(
+                f"{ctx.chatter.mention} Build link not configured. Use the links manager to set it."
+            )
+
     @commands.command()
     async def vid(self, ctx: commands.Context) -> None:
-        link = get_link_from_db('vid')
+        link = get_link_from_db("vid")
         if link:
-            await ctx.send(f'{ctx.chatter.mention} ' + link)
+            await ctx.send(f"{ctx.chatter.mention} " + link)
         else:
-            await ctx.send(f'{ctx.chatter.mention} Video link not configured. Use the links manager to set it.')
+            await ctx.send(
+                f"{ctx.chatter.mention} Video link not configured. Use the links manager to set it."
+            )
 
     @commands.command()
     async def discord(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention} ' + ' https://discord.com/invite/ZyDXVXdHWM')
+        await ctx.send(
+            f"{ctx.chatter.mention} " + " https://discord.com/invite/ZyDXVXdHWM"
+        )
 
     @commands.command()
     async def ign(self, ctx: commands.Context) -> None:
-        link = get_link_from_db('ign')
+        link = get_link_from_db("ign")
         if link:
-            await ctx.send(f'{ctx.chatter.mention}  ' + link)
+            await ctx.send(f"{ctx.chatter.mention}  " + link)
         else:
-            await ctx.send(f'{ctx.chatter.mention} IGN not configured. Use the links manager to set it.')
+            await ctx.send(
+                f"{ctx.chatter.mention} IGN not configured. Use the links manager to set it."
+            )
 
     @commands.command()
     async def mb(self, ctx: commands.Context) -> None:
-        link = get_link_from_db('mb')
+        link = get_link_from_db("mb")
         if link:
-            await ctx.send(f'{ctx.chatter.mention} ' + link)
+            await ctx.send(f"{ctx.chatter.mention} " + link)
         else:
-            await ctx.send(f'{ctx.chatter.mention} MB link not configured. Use the links manager to set it.')
+            await ctx.send(
+                f"{ctx.chatter.mention} MB link not configured. Use the links manager to set it."
+            )
 
     @commands.command()
     async def lurk(self, ctx: commands.Context) -> None:
         message = SharkAI.chat_with_openai(
-            f'{ctx.chatter.name} is lurking, tell them a joke and thank for lurking')
-        await ctx.send(f'{ctx.chatter.mention} ' + message)
+            f"{ctx.chatter.name} is lurking, tell them a joke and thank for lurking"
+        )
+        await ctx.send(f"{ctx.chatter.mention} " + message)
 
     @commands.command()
     async def search(self, ctx: commands.Context, *, query: str) -> None:
         try:
             result = SharkAI.search_open_ai(query)
             # Extract the response content from the OpenAI response object
-            if hasattr(result, 'choices') and len(result.choices) > 0:
-                response_text = result.choices[0].message.content if hasattr(result.choices[0].message, 'content') else str(result)
+            if hasattr(result, "choices") and len(result.choices) > 0:
+                response_text = (
+                    result.choices[0].message.content
+                    if hasattr(result.choices[0].message, "content")
+                    else str(result)
+                )
             else:
                 response_text = str(result)
-            await ctx.send(f'{ctx.chatter.mention} {response_text}')
+            await ctx.send(f"{ctx.chatter.mention} {response_text}")
         except Exception as e:
             LOGGER.error(f"Search error: {e}")
-            await ctx.send(f'{ctx.chatter.mention} Error performing search.')
-    
+            await ctx.send(f"{ctx.chatter.mention} Error performing search.")
+
     @commands.command()
     async def trick(self, ctx: commands.Context) -> None:
-        await ctx.send(f'{ctx.chatter.mention}' + ' https://www.twitch.tv/sharko51/clip/ElegantPeacefulRaccoonAllenHuhu-4SNxLLMor3NV6m11')
+        await ctx.send(
+            f"{ctx.chatter.mention}"
+            + " https://www.twitch.tv/sharko51/clip/ElegantPeacefulRaccoonAllenHuhu-4SNxLLMor3NV6m11"
+        )
 
-    async def process_chat_message(self, chatter_name: str, message: str, platform: str = "twitch") -> None:
+    async def process_chat_message(
+        self, chatter_name: str, message: str, platform: str = "twitch"
+    ) -> None:
         """Process chat messages from any platform (Twitch/YouTube)."""
         if not message:
             return
 
         # Optimize: get first word once
-        first_word = message.split(' ', 1)[0].lower()
+        first_word = message.split(" ", 1)[0].lower()
         chatter_lower = chatter_name.lower()
         streamer_lower = STREAMER_NAME.lower()
-        is_clear_command = first_word == 'clear' and chatter_lower == streamer_lower
-        is_mention = first_word in ('sharko', '@sharko51')
+        is_clear_command = first_word == "clear" and chatter_lower == streamer_lower
+        is_mention = first_word in ("sharko", "@sharko51")
         is_chatter = chatter_lower != streamer_lower
         # Database operations
         try:
             with self._get_db_connection() as conn:
                 cursor = conn.cursor()
-                
+
                 if is_clear_command:
                     cursor.execute("DELETE FROM messages;")
                 else:
                     # Store all messages (including streamer)
                     # Ensure platform and timestamp columns exist
                     try:
-                        cursor.execute("ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'")
+                        cursor.execute(
+                            "ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'"
+                        )
                         conn.commit()
                     except sqlite3.OperationalError:
                         pass  # Column already exists
                     try:
-                        cursor.execute("ALTER TABLE messages ADD COLUMN timestamp REAL DEFAULT (julianday('now'))")
+                        cursor.execute(
+                            "ALTER TABLE messages ADD COLUMN timestamp REAL DEFAULT (julianday('now'))"
+                        )
                         conn.commit()
                     except sqlite3.OperationalError:
                         pass  # Column already exists
-                    
+
                     # Optimize: combine count check and delete in one query if needed
                     cursor.execute("SELECT COUNT(*) FROM messages")
                     count = cursor.fetchone()[0]
                     if count >= MAX_MESSAGE_HISTORY:
                         cursor.execute(
-                            "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)")
+                            "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)"
+                        )
                     cursor.execute(
-                        "INSERT INTO messages (from_user, message, platform, timestamp) VALUES (?, ?, ?, julianday('now'))", 
-                        (chatter_name, message, platform))
+                        "INSERT INTO messages (from_user, message, platform, timestamp) VALUES (?, ?, ?, julianday('now'))",
+                        (chatter_name, message, platform),
+                    )
         except Exception as e:
             LOGGER.error(f"Database error in process_chat_message: {e}")
 
         print(f"[{platform.upper()}] [{chatter_name}]: {message}")
-        
+
         if is_chatter and chatter_name != BOT_NAME:
             winsound.PlaySound("*", winsound.SND_ALIAS)
-        
+
         if is_mention:
             # Remove mention prefixes from message before sending to AI
-            cleaned_message = message.removeprefix('@sharko51').removeprefix('sharko').strip()
+            cleaned_message = (
+                message.removeprefix("@sharko51").removeprefix("sharko").strip()
+            )
             if not cleaned_message:
                 cleaned_message = message  # Fallback if removal leaves nothing
-            
+
             response = SharkAI.chat_with_openai(
-                f"new message from {chatter_name} on {platform}: {cleaned_message}, response")
-            
+                f"new message from {chatter_name} on {platform}: {cleaned_message}, response"
+            )
+
             # For YouTube, we can't send messages back directly, but we can log it
             if platform == "youtube":
                 LOGGER.info(f"AI Response to {chatter_name}: {response}")
@@ -605,7 +616,9 @@ class MyComponent(commands.Component):
                 pass
 
             # Create TTS text
-            tts_text = f'{chatter_name} asked me on {platform}: {cleaned_message}. {response}'
+            tts_text = (
+                f"{chatter_name} asked me on {platform}: {cleaned_message}. {response}"
+            )
 
             await self.make_tts(tts_text)
             self.play_sound(TTS_FILE)
@@ -615,90 +628,102 @@ class MyComponent(commands.Component):
         if not YOUTUBE_CHAT_AVAILABLE:
             LOGGER.warning("pytchat not available. YouTube chat monitoring disabled.")
             return
-        
+
         if not YOUTUBE_VIDEO_ID:
             LOGGER.info("YOUTUBE_VIDEO_ID not set. YouTube chat monitoring disabled.")
             return
 
         LOGGER.info(f"Starting YouTube chat monitoring for video: {YOUTUBE_VIDEO_ID}")
-        
+
         # Create queue and stop event for thread communication
         self._youtube_chat_queue = queue.Queue()
         self._youtube_chat_stop_event = threading.Event()
-        
+
         # Start the monitoring thread (runs pytchat in a separate thread to avoid signal handler issues)
         self._youtube_chat_thread = threading.Thread(
             target=self._youtube_chat_thread_worker,
             daemon=True,
-            args=(YOUTUBE_VIDEO_ID, self._youtube_chat_queue, self._youtube_chat_stop_event)
+            args=(
+                YOUTUBE_VIDEO_ID,
+                self._youtube_chat_queue,
+                self._youtube_chat_stop_event,
+            ),
         )
         self._youtube_chat_thread.start()
-        
-        # Start async task to process messages from the queue
-        self._youtube_chat_task = asyncio.create_task(self._process_youtube_chat_queue())
 
-    def _youtube_chat_thread_worker(self, video_id: str, msg_queue: queue.Queue, stop_event: threading.Event) -> None:
+        # Start async task to process messages from the queue
+        self._youtube_chat_task = asyncio.create_task(
+            self._process_youtube_chat_queue()
+        )
+
+    def _youtube_chat_thread_worker(
+        self, video_id: str, msg_queue: queue.Queue, stop_event: threading.Event
+    ) -> None:
         """Worker thread that runs pytchat (must be in a thread to avoid signal handler issues)."""
         chat = None
         # Polling configuration: start with 5 seconds, increase on errors (exponential backoff)
         poll_interval = 10.0  # 10 seconds is a reasonable default for live chat
         max_poll_interval = 30.0  # Cap at 30 seconds max
         error_count = 0
-        
+
         try:
             # Create chat object with interruptable=False to disable signal handlers
             # This allows it to work in non-main threads
             chat = pytchat.create(video_id=video_id, interruptable=False)
             LOGGER.info("YouTube chat thread started")
-            
+
             while not stop_event.is_set():
                 try:
                     if not chat.is_alive():
                         LOGGER.warning("YouTube chat is no longer alive")
                         break
-                    
+
                     # Get chat items (blocking operation)
                     message_count = 0
                     for c in chat.get().sync_items():
                         if stop_event.is_set():
                             break
-                        
+
                         # Put message data in queue for async processing
-                        msg_queue.put({
-                            'chatter_name': c.author.name,
-                            'message': c.message,
-                            'timestamp': c.datetime
-                        })
+                        msg_queue.put(
+                            {
+                                "chatter_name": c.author.name,
+                                "message": c.message,
+                                "timestamp": c.datetime,
+                            }
+                        )
                         message_count += 1
-                    
+
                     # Reset error count and poll interval on successful poll
                     if error_count > 0:
                         error_count = 0
                         poll_interval = 5.0  # Reset to default
-                    
+
                     # Poll every N seconds (5s default, longer if there were recent errors)
                     # This reduces API requests and respects rate limits
                     time.sleep(poll_interval)
-                    
+
                 except Exception as e:
                     error_count += 1
                     LOGGER.error(f"Error in YouTube chat thread: {e}")
-                    
+
                     if stop_event.is_set():
                         break
-                    
+
                     # Exponential backoff: increase wait time on consecutive errors
                     # This helps avoid overwhelming the API during issues
                     poll_interval = min(poll_interval * 1.5, max_poll_interval)
-                    LOGGER.info(f"Backing off: waiting {poll_interval:.1f}s before retry (error count: {error_count})")
+                    LOGGER.info(
+                        f"Backing off: waiting {poll_interval:.1f}s before retry (error count: {error_count})"
+                    )
                     time.sleep(poll_interval)
-                    
+
         except Exception as e:
             LOGGER.error(f"YouTube chat thread error: {e}")
         finally:
             if chat:
                 try:
-                    if hasattr(chat, 'terminate'):
+                    if hasattr(chat, "terminate"):
                         chat.terminate()
                 except Exception as e:
                     LOGGER.debug(f"Error cleaning up chat: {e}")
@@ -707,40 +732,44 @@ class MyComponent(commands.Component):
     async def _process_youtube_chat_queue(self) -> None:
         """Process messages from the YouTube chat queue in the async event loop."""
         loop = asyncio.get_event_loop()
-        
+
         def get_from_queue(q: queue.Queue, timeout: float):
             """Helper function to get from queue with timeout."""
             return q.get(timeout=timeout)
-        
+
         try:
             while True:
                 try:
                     # Wait for message from queue (with timeout to allow checking if thread is alive)
                     try:
                         message_data = await loop.run_in_executor(
-                            None,
-                            get_from_queue,
-                            self._youtube_chat_queue,
-                            1.0
+                            None, get_from_queue, self._youtube_chat_queue, 1.0
                         )
                     except queue.Empty:
                         # Check if thread is still alive
-                        if self._youtube_chat_thread and not self._youtube_chat_thread.is_alive():
+                        if (
+                            self._youtube_chat_thread
+                            and not self._youtube_chat_thread.is_alive()
+                        ):
                             LOGGER.warning("YouTube chat thread has stopped")
                             break
                         continue
-                    
-                    chatter_name = message_data['chatter_name']
-                    message = message_data['message']
-                    timestamp = message_data['timestamp']
-                    
+
+                    chatter_name = message_data["chatter_name"]
+                    message = message_data["message"]
+                    timestamp = message_data["timestamp"]
+
                     # Process the YouTube chat message (this will print the message once)
-                    await self.process_chat_message(chatter_name, message, platform="youtube")
-                    
+                    await self.process_chat_message(
+                        chatter_name, message, platform="youtube"
+                    )
+
                 except Exception as e:
-                    LOGGER.error(f"Error processing YouTube chat message from queue: {e}")
+                    LOGGER.error(
+                        f"Error processing YouTube chat message from queue: {e}"
+                    )
                     await asyncio.sleep(1)
-                    
+
         except Exception as e:
             LOGGER.error(f"YouTube chat queue processing error: {e}")
         finally:
@@ -748,8 +777,10 @@ class MyComponent(commands.Component):
 
     async def make_tts(self, text: str) -> None:
         """Generate TTS audio file."""
-        tts = edge_tts.Communicate(text, bot_language)
-        await tts.save(TTS_FILE)
+        # Use lock to prevent concurrent TTS generation from overwriting the file
+        with self._tts_lock:
+            tts = edge_tts.Communicate(text, bot_language)
+            await tts.save(TTS_FILE)
 
     def play_sound(self, file_name: str) -> None:
         """Play sound file."""
@@ -757,8 +788,11 @@ class MyComponent(commands.Component):
             # Get duration using pygame for cleanup timing
             sound = pygame.mixer.Sound(file_name)
             duration_ms = int(sound.get_length() * 1000)
-            
+
             LOGGER.info(f"TTS file generated: {file_name} (duration: {duration_ms}ms)")
+
+            # Actually play the sound
+            sound.play()
 
             # Use threading to avoid blocking the async event loop
             # Keep file for duration + 5 seconds before cleanup
@@ -768,8 +802,10 @@ class MyComponent(commands.Component):
                     os.remove(file_name)
                 except Exception as e:
                     LOGGER.error(f"Error removing TTS file: {e}")
-            
-            cleanup_thread = threading.Thread(target=cleanup_after_duration, daemon=True)
+
+            cleanup_thread = threading.Thread(
+                target=cleanup_after_duration, daemon=True
+            )
             cleanup_thread.start()
         except Exception as e:
             LOGGER.error(f"Error playing sound: {e}")
@@ -777,11 +813,11 @@ class MyComponent(commands.Component):
     async def send_message(self, payload, message: str) -> None:
         """Send message, splitting into chunks if necessary."""
         message_len = len(message)
-        
+
         if message_len > MAX_MESSAGE_LENGTH:
             await payload.broadcaster.send_message(
                 sender=self.bot.bot_id,
-                message='Message is too long.',
+                message="Message is too long.",
             )
         elif message_len >= LONG_MESSAGE_THRESHOLD:
             # Split into two messages
@@ -802,12 +838,15 @@ class MyComponent(commands.Component):
 
 def start_bot() -> None:
     twitchio.utils.setup_logging(level=logging.INFO)
-    
+
     # Initialize links database on startup
     init_links_database()
 
     async def runner() -> None:
-        async with asqlite.create_pool("tokens.db") as tdb, Bot(token_database=tdb) as bot:
+        async with (
+            asqlite.create_pool("tokens.db") as tdb,
+            Bot(token_database=tdb) as bot,
+        ):
             await bot.setup_database()
             await bot.start()
 
