@@ -245,6 +245,7 @@ class MyComponent(commands.Component):
         self._youtube_chat_thread = None
         self._youtube_chat_queue = None
         self._youtube_chat_stop_event = None
+        self._tts_lock = threading.Lock()  # Lock for TTS generation to prevent concurrent overwrites
 
     @contextmanager
     def _get_db_connection(self):
@@ -783,32 +784,19 @@ class MyComponent(commands.Component):
             await tts.save(TTS_FILE)
 
     def play_sound(self, file_name: str) -> None:
-        """Play sound file."""
+        """Play sound file (for overlay - file is served via Flask API)."""
         try:
-            # Get duration using pygame for cleanup timing
+            # Get duration using pygame for logging
             sound = pygame.mixer.Sound(file_name)
             duration_ms = int(sound.get_length() * 1000)
 
             LOGGER.info(f"TTS file generated: {file_name} (duration: {duration_ms}ms)")
-
-            # Actually play the sound
-            sound.play()
-
-            # Use threading to avoid blocking the async event loop
-            # Keep file for duration + 5 seconds before cleanup
-            def cleanup_after_duration():
-                time.sleep((duration_ms / 1000.0) + 5.0)  # Duration + 5 second buffer
-                try:
-                    os.remove(file_name)
-                except Exception as e:
-                    LOGGER.error(f"Error removing TTS file: {e}")
-
-            cleanup_thread = threading.Thread(
-                target=cleanup_after_duration, daemon=True
-            )
-            cleanup_thread.start()
+            
+            # Note: The overlay will play the file via the Flask API endpoint /api/tts/audio
+            # We don't delete the file here - let the overlay handle playback
+            # The file will be overwritten on the next TTS generation
         except Exception as e:
-            LOGGER.error(f"Error playing sound: {e}")
+            LOGGER.error(f"Error processing TTS file: {e}")
 
     async def send_message(self, payload, message: str) -> None:
         """Send message, splitting into chunks if necessary."""
