@@ -780,8 +780,19 @@ class MyComponent(commands.Component):
         """Generate TTS audio file."""
         # Use lock to prevent concurrent TTS generation from overwriting the file
         with self._tts_lock:
+            # Delete old file first to ensure clean write
+            try:
+                if os.path.exists(TTS_FILE):
+                    os.remove(TTS_FILE)
+            except Exception:
+                pass
+            
+            # Generate and save TTS
             tts = edge_tts.Communicate(text, bot_language)
             await tts.save(TTS_FILE)
+            
+            # Small delay to ensure file is fully written and flushed to disk
+            await asyncio.sleep(0.1)
 
     def play_sound(self, file_name: str) -> None:
         """Play sound file (for overlay - file is served via Flask API)."""
