@@ -235,6 +235,196 @@ def serve_tts_audio():
         return jsonify({'error': 'TTS file not found'}), 404
 
 
+@app.route('/api/streamer')
+def get_streamer_name():
+    """Get the streamer name for 7TV emote fetching."""
+    streamer_name = os.environ.get("STREAMER_NAME", "sharko51")
+    return jsonify({'streamer_name': streamer_name})
+
+
+@app.route('/api/7tv/emotes')
+def get_7tv_emotes():
+    """Get 7TV emotes for the streamer."""
+    import requests
+    import json
+    
+    streamer_name = os.environ.get("STREAMER_NAME", "sharko51")
+    
+    try:
+        emotes = {}
+        
+        # First, get user from 7TV
+        LOGGER.info(f"Fetching 7TV user data for: {streamer_name}")
+        user_response = requests.get(
+            f'https://7tv.io/v3/users/twitch/{streamer_name}',
+            timeout=10
+        )
+        
+        if user_response.status_code != 200:
+            LOGGER.warning(f"7TV user API returned status {user_response.status_code}: {user_response.text}")
+        else:
+            user_data = user_response.json()
+            LOGGER.debug(f"7TV user data: {json.dumps(user_data, indent=2)[:500]}")
+            
+            # Get emote set ID - 7TV API structure: user has 'emote_set' object with 'id'
+            emote_set_id = None
+            if 'emote_set' in user_data:
+                emote_set_id = user_data['emote_set'].get('id')
+            elif 'emote_sets' in user_data:
+                emote_sets = user_data['emote_sets']
+                if isinstance(emote_sets, list) and len(emote_sets) > 0:
+                    emote_set_id = emote_sets[0]
+                elif isinstance(emote_sets, dict):
+                    emote_set_id = emote_sets.get('id')
+            
+            if emote_set_id:
+                LOGGER.info(f"Fetching 7TV emote set: {emote_set_id}")
+                set_response = requests.get(
+                    f'https://7tv.io/v3/emote-sets/{emote_set_id}',
+                    timeout=10
+                )
+                
+                if set_response.status_code == 200:
+                    set_data = set_response.json()
+                    emote_list = set_data.get('emotes', [])
+                    LOGGER.info(f"Found {len(emote_list)} emotes in set")
+                    
+                    for emote in emote_list:
+                        emote_name = emote.get('name', '')
+                        if not emote_name:
+                            continue
+                        
+                        # 7TV API structure: emote has 'data' object with 'host' object
+                        emote_data = emote.get('data', {})
+                        if not emote_data:
+                            continue
+                        
+                        host = emote_data.get('host', {})
+                        if not host:
+                            continue
+                        
+                        # Host has 'url' and 'files' array
+                        host_url = host.get('url', '')
+                        files = host.get('files', [])
+                        
+                        if not host_url:
+                            continue
+                        
+                        # Find the best quality file (prefer 2x webp)
+                        file_url = None
+                        if files:
+                            # Look for 2x webp first
+                            for file in files:
+                                if file.get('format', '').lower() == 'webp':
+                                    width = file.get('width', 0)
+                                    if width >= 56:  # 2x or higher
+                                        file_name = file.get('name', '')
+                                        if file_name:
+                                            file_url = f"https:{host_url}/{file_name}"
+                                            break
+                            
+                            # Fallback to first webp file
+                            if not file_url:
+                                for file in files:
+                                    if file.get('format', '').lower() == 'webp':
+                                        file_name = file.get('name', '')
+                                        if file_name:
+                                            file_url = f"https:{host_url}/{file_name}"
+                                            break
+                            
+                            # Last resort: use first file
+                            if not file_url and files:
+                                file_name = files[0].get('name', '')
+                                if file_name:
+                                    file_url = f"https:{host_url}/{file_name}"
+                        else:
+                            # If no files array, try to construct URL (format: /2x.webp)
+                            file_url = f"https:{host_url}/2x.webp"
+                        
+                        if file_url:
+                            emotes[emote_name] = file_url
+                            LOGGER.debug(f"Added emote: {emote_name} -> {file_url}")
+                else:
+                    LOGGER.warning(f"7TV emote set API returned status {set_response.status_code}: {set_response.text}")
+            else:
+                LOGGER.warning(f"No emote set ID found for user {streamer_name}")
+        
+        # Also get global emotes
+        try:
+            LOGGER.info("Fetching global 7TV emotes")
+            global_response = requests.get(
+                'https://7tv.io/v3/emote-sets/global',
+                timeout=10
+            )
+            
+            if global_response.status_code == 200:
+                global_data = global_response.json()
+                emote_list = global_data.get('emotes', [])
+                LOGGER.info(f"Found {len(emote_list)} global emotes")
+                
+                for emote in emote_list:
+                    emote_name = emote.get('name', '')
+                    if not emote_name or emote_name in emotes:
+                        continue
+                    
+                    emote_data = emote.get('data', {})
+                    if not emote_data:
+                        continue
+                    
+                    host = emote_data.get('host', {})
+                    if not host:
+                        continue
+                    
+                    host_url = host.get('url', '')
+                    files = host.get('files', [])
+                    
+                    if not host_url:
+                        continue
+                    
+                    file_url = None
+                    if files:
+                        for file in files:
+                            if file.get('format', '').lower() == 'webp':
+                                width = file.get('width', 0)
+                                if width >= 56:
+                                    file_name = file.get('name', '')
+                                    if file_name:
+                                        file_url = f"https:{host_url}/{file_name}"
+                                        break
+                        
+                        if not file_url:
+                            for file in files:
+                                if file.get('format', '').lower() == 'webp':
+                                    file_name = file.get('name', '')
+                                    if file_name:
+                                        file_url = f"https:{host_url}/{file_name}"
+                                        break
+                        
+                        if not file_url and files:
+                            file_name = files[0].get('name', '')
+                            if file_name:
+                                file_url = f"https:{host_url}/{file_name}"
+                    else:
+                        file_url = f"https:{host_url}/2x.webp"
+                    
+                    if file_url:
+                        emotes[emote_name] = file_url
+            else:
+                LOGGER.warning(f"Global 7TV emotes API returned status {global_response.status_code}")
+        except Exception as global_error:
+            LOGGER.warning(f"Could not fetch global 7TV emotes: {global_error}")
+        
+        LOGGER.info(f"Loaded {len(emotes)} total 7TV emotes for {streamer_name}")
+        if len(emotes) == 0:
+            LOGGER.warning("No 7TV emotes loaded! Check API responses above.")
+        
+        return jsonify({'emotes': emotes})
+        
+    except Exception as e:
+        LOGGER.error(f"Error fetching 7TV emotes: {e}", exc_info=True)
+        return jsonify({'emotes': {}, 'error': str(e)})
+
+
 def run_flask_server():
     """Run the Flask web server."""
     try:

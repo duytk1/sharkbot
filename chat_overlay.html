@@ -104,6 +104,18 @@
             color: #ffffff;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
             word-break: break-word;
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .emote {
+            display: inline-block;
+            vertical-align: middle;
+            height: 40px;
+            width: auto;
+            object-fit: contain;
         }
 
         .platform-badge {
@@ -164,6 +176,79 @@
         let messageElements = new Map();
         let lastTTSTimestamp = null;
         let audioPlayer = null;
+        let sevenTVEmotes = {};
+        let emoteCacheLoaded = false;
+
+        function parseMessageWithEmotes(text) {
+            if (!emoteCacheLoaded || Object.keys(sevenTVEmotes).length === 0) {
+                return document.createTextNode(text);
+            }
+
+            const fragment = document.createDocumentFragment();
+            
+            // Sort emotes by length (longest first) to match longer emotes first
+            const sortedEmotes = Object.keys(sevenTVEmotes).sort((a, b) => b.length - a.length);
+            
+            let remainingText = text;
+            let lastIndex = 0;
+            
+            // Find all emote matches in the text
+            const matches = [];
+            sortedEmotes.forEach(emoteName => {
+                const regex = new RegExp(`\\b${emoteName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+                let match;
+                while ((match = regex.exec(remainingText)) !== null) {
+                    matches.push({
+                        emote: emoteName,
+                        index: match.index,
+                        length: match[0].length
+                    });
+                }
+            });
+            
+            // Sort matches by index
+            matches.sort((a, b) => a.index - b.index);
+            
+            // Remove overlapping matches (keep first match)
+            const nonOverlappingMatches = [];
+            let lastEnd = 0;
+            matches.forEach(match => {
+                if (match.index >= lastEnd) {
+                    nonOverlappingMatches.push(match);
+                    lastEnd = match.index + match.length;
+                }
+            });
+            
+            // Build the fragment with text and emotes
+            nonOverlappingMatches.forEach(match => {
+                // Add text before the emote
+                if (match.index > lastIndex) {
+                    fragment.appendChild(document.createTextNode(remainingText.substring(lastIndex, match.index)));
+                }
+                
+                // Add the emote image
+                const img = document.createElement('img');
+                img.src = sevenTVEmotes[match.emote];
+                img.className = 'emote';
+                img.alt = match.emote;
+                img.title = match.emote;
+                fragment.appendChild(img);
+                
+                lastIndex = match.index + match.length;
+            });
+            
+            // Add remaining text
+            if (lastIndex < remainingText.length) {
+                fragment.appendChild(document.createTextNode(remainingText.substring(lastIndex)));
+            }
+            
+            // If no matches, return plain text
+            if (nonOverlappingMatches.length === 0) {
+                return document.createTextNode(text);
+            }
+            
+            return fragment;
+        }
 
         function createMessageElement(messageData) {
             const messageDiv = document.createElement('div');
@@ -177,7 +262,14 @@
 
             const contentSpan = document.createElement('span');
             contentSpan.className = 'message-content';
-            contentSpan.textContent = messageData.message;
+            
+            // Parse message with emotes (only for Twitch)
+            if (messageData.platform === 'twitch') {
+                const parsedContent = parseMessageWithEmotes(messageData.message);
+                contentSpan.appendChild(parsedContent);
+            } else {
+                contentSpan.textContent = messageData.message;
+            }
 
             messageDiv.appendChild(usernameSpan);
             messageDiv.appendChild(contentSpan);
@@ -257,6 +349,30 @@
                 });
         }
 
+        function load7TVEmotes() {
+            fetch('/api/7tv/emotes')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.emotes) {
+                        sevenTVEmotes = data.emotes;
+                        emoteCacheLoaded = true;
+                        console.log(`Loaded ${Object.keys(sevenTVEmotes).length} 7TV emotes`);
+                        if (Object.keys(sevenTVEmotes).length === 0) {
+                            console.warn('No 7TV emotes loaded. Check server logs for errors.');
+                        }
+                    } else if (data.error) {
+                        console.error('7TV API error:', data.error);
+                        // Retry after 30 seconds
+                        setTimeout(load7TVEmotes, 30000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading 7TV emotes:', error);
+                    // Retry after 30 seconds
+                    setTimeout(load7TVEmotes, 30000);
+                });
+        }
+
         function checkForTTS() {
             fetch(TTS_API_URL)
                 .then(response => response.json())
@@ -301,8 +417,12 @@
         }
 
         // Initial load
+        load7TVEmotes(); // Load 7TV emotes first
         updateChat();
         checkForTTS();
+        
+        // Reload emotes every 5 minutes (in case new ones are added)
+        setInterval(load7TVEmotes, 300000);
 
         // Poll for new messages
         setInterval(updateChat, POLL_INTERVAL);

@@ -316,14 +316,18 @@ class MyComponent(commands.Component):
             return
         
         if is_mention:
+            # Remove "sharko" prefix from message before sending to AI
+            cleaned_message = message.removeprefix('sharko').strip()
+            if not cleaned_message:
+                cleaned_message = message  # Fallback if removal leaves nothing
+            
             response = SharkAI.chat_with_openai(
-                f"new message from {chatter_name}: {message}, response")
+                f"new message from {chatter_name}: {cleaned_message}, response")
             
             # Send response in chunks if needed
             await self.send_message(payload, response)
 
             # Create TTS text
-            cleaned_message = message.removeprefix('sharko')
             tts_text = f'{chatter_name} asked me: {cleaned_message}. {response}'
 
             await self.make_tts(tts_text)
@@ -584,8 +588,13 @@ class MyComponent(commands.Component):
             winsound.PlaySound("*", winsound.SND_ALIAS)
         
         if is_mention:
+            # Remove mention prefixes from message before sending to AI
+            cleaned_message = message.removeprefix('@sharko51').removeprefix('sharko').strip()
+            if not cleaned_message:
+                cleaned_message = message  # Fallback if removal leaves nothing
+            
             response = SharkAI.chat_with_openai(
-                f"new message from {chatter_name} on {platform}: {message}, response")
+                f"new message from {chatter_name} on {platform}: {cleaned_message}, response")
             
             # For YouTube, we can't send messages back directly, but we can log it
             if platform == "youtube":
@@ -596,7 +605,6 @@ class MyComponent(commands.Component):
                 pass
 
             # Create TTS text
-            cleaned_message = message.removeprefix('@sharko51').removeprefix('sharko')
             tts_text = f'{chatter_name} asked me on {platform}: {cleaned_message}. {response}'
 
             await self.make_tts(tts_text)
