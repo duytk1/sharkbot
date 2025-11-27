@@ -365,29 +365,50 @@
         }
 
         function load7TVEmotes() {
+            console.log('Loading 7TV emotes...');
             fetch('/api/7tv/emotes')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        console.error(`HTTP error! status: ${response.status}`);
+                        return response.json().then(data => {
+                            throw new Error(data.error || `HTTP ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('7TV API response received:', data);
                     if (data.emotes) {
                         sevenTVEmotes = data.emotes;
                         emoteCacheLoaded = true;
                         const emoteCount = Object.keys(sevenTVEmotes).length;
-                        console.log(`Loaded ${emoteCount} 7TV emotes`);
+                        console.log(`✓ Loaded ${emoteCount} 7TV emotes`);
                         if (emoteCount === 0) {
-                            console.warn('No 7TV emotes loaded. Check server logs for errors.');
+                            console.warn('⚠ No 7TV emotes loaded. Check server logs for errors.');
+                            if (data.error) {
+                                console.error('Server error:', data.error);
+                            }
                         } else {
-                            // Log first few emote names for debugging
+                            // Log first few emote names and URLs for debugging
                             const sampleEmotes = Object.keys(sevenTVEmotes).slice(0, 5);
                             console.log('Sample emotes:', sampleEmotes);
+                            // Log first emote URL to verify format
+                            const firstEmote = sampleEmotes[0];
+                            if (firstEmote) {
+                                console.log(`Sample emote URL (${firstEmote}):`, sevenTVEmotes[firstEmote]);
+                            }
                         }
                     } else if (data.error) {
                         console.error('7TV API error:', data.error);
                         // Retry after 30 seconds
                         setTimeout(load7TVEmotes, 30000);
+                    } else {
+                        console.warn('Unexpected response format:', data);
                     }
                 })
                 .catch(error => {
                     console.error('Error loading 7TV emotes:', error);
+                    console.error('Error details:', error.message);
                     // Retry after 30 seconds
                     setTimeout(load7TVEmotes, 30000);
                 });

@@ -3,14 +3,13 @@ import threading
 import sqlite3
 import logging
 
-from sharkai import SharkAI
 from sharkbot import start_bot
 import time
 import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
-from flask import Flask, render_template_string, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 load_dotenv()
@@ -193,7 +192,6 @@ def save_links():
 def get_tts_info():
     """Get TTS file info (timestamp to detect new files)."""
     import os
-    from datetime import datetime
     
     TTS_FILE = 'tts.mp3'
     
@@ -242,55 +240,165 @@ def get_streamer_name():
     return jsonify({'streamer_name': streamer_name})
 
 
-@app.route('/api/7tv/emotes')
-def get_7tv_emotes():
-    """Get 7TV emotes for the streamer."""
+@app.route('/api/7tv/debug')
+def debug_7tv():
+    """Debug endpoint to test 7TV API ID-based lookups."""
     import requests
     import json
     
-    streamer_name = os.environ.get("STREAMER_NAME", "sharko51")
+    seven_tv_user_id = os.environ.get("7TV_USER_ID", None)
+    emote_set_id = os.environ.get("7TV_EMOTE_SET_ID", None)
+    
+    debug_info = {
+        '7TV_USER_ID': seven_tv_user_id,
+        '7TV_EMOTE_SET_ID': emote_set_id,
+        'tests': []
+    }
+    
+    # Test 1: 7TV User ID lookup
+    if seven_tv_user_id:
+        try:
+            response = requests.get(
+                f'https://7tv.io/v3/users/{seven_tv_user_id}',
+                timeout=10
+            )
+            debug_info['tests'].append({
+                'method': '7TV User ID',
+                'url': f'https://7tv.io/v3/users/{seven_tv_user_id}',
+                'status': response.status_code,
+                'success': response.status_code == 200,
+                'response_keys': list(response.json().keys()) if response.status_code == 200 else None,
+                'response_preview': json.dumps(response.json(), indent=2)[:1000] if response.status_code == 200 else response.text[:500]
+            })
+        except Exception as e:
+            debug_info['tests'].append({
+                'method': '7TV User ID',
+                'url': f'https://7tv.io/v3/users/{seven_tv_user_id}',
+                'error': str(e)
+            })
+    else:
+        debug_info['tests'].append({
+            'method': '7TV User ID',
+            'status': 'skipped',
+            'message': '7TV_USER_ID not set in environment variables'
+        })
+    
+    # Test 2: Emote Set ID lookup
+    if emote_set_id:
+        try:
+            response = requests.get(
+                f'https://7tv.io/v3/emote-sets/{emote_set_id}',
+                timeout=10
+            )
+            debug_info['tests'].append({
+                'method': 'Emote Set ID',
+                'url': f'https://7tv.io/v3/emote-sets/{emote_set_id}',
+                'status': response.status_code,
+                'success': response.status_code == 200,
+                'emote_count': len(response.json().get('emotes', [])) if response.status_code == 200 else None,
+                'response_preview': json.dumps(response.json(), indent=2)[:1000] if response.status_code == 200 else response.text[:500]
+            })
+        except Exception as e:
+            debug_info['tests'].append({
+                'method': 'Emote Set ID',
+                'url': f'https://7tv.io/v3/emote-sets/{emote_set_id}',
+                'error': str(e)
+            })
+    else:
+        debug_info['tests'].append({
+            'method': 'Emote Set ID',
+            'status': 'skipped',
+            'message': '7TV_EMOTE_SET_ID not set in environment variables'
+        })
+    
+    debug_info['instructions'] = {
+        'finding_7tv_user_id': 'Go to https://7tv.app, log in, go to your profile. The user ID is in the URL or API responses.',
+        'finding_emote_set_id': 'Go to https://7tv.app, log in, go to your emote set. The ID is in the URL (e.g., /emote-sets/1234567890abcdef) or in the API response.',
+        'environment_variables': {
+            '7TV_USER_ID': 'Set this to your 7TV user ID for direct lookup',
+            '7TV_EMOTE_SET_ID': 'Set this to your emote set ID to bypass user lookup'
+        }
+    }
+    
+    return jsonify(debug_info)
+
+
+@app.route('/api/7tv/emotes')
+def get_7tv_emotes():
+    """Get 7TV emotes using ID-based lookups."""
+    import requests
+    import json
+    
+    # Get IDs from environment variables
+    seven_tv_user_id = os.environ.get("7TV_USER_ID", None)
+    emote_set_id = os.environ.get("7TV_EMOTE_SET_ID", None)
     
     try:
         emotes = {}
+        user_data = None
         
-        # First, get user from 7TV
-        LOGGER.info(f"Fetching 7TV user data for: {streamer_name}")
-        user_response = requests.get(
-            f'https://7tv.io/v3/users/twitch/{streamer_name}',
-            timeout=10
-        )
-        
-        if user_response.status_code != 200:
-            LOGGER.warning(f"7TV user API returned status {user_response.status_code}: {user_response.text}")
-        else:
-            user_data = user_response.json()
-            LOGGER.debug(f"7TV user data: {json.dumps(user_data, indent=2)[:500]}")
+        # Try to get user data by 7TV User ID
+        if seven_tv_user_id:
+            LOGGER.info(f"Fetching 7TV user data by User ID: {seven_tv_user_id}")
+            user_response = requests.get(
+                f'https://7tv.io/v3/users/{seven_tv_user_id}',
+                timeout=10
+            )
             
-            # Get emote set ID - 7TV API v3 structure can vary
-            emote_set_id = None
+            if user_response.status_code == 200:
+                user_data = user_response.json()
+                LOGGER.info(f"✓ Successfully found 7TV user: {seven_tv_user_id}")
+                LOGGER.info(f"7TV user data keys: {list(user_data.keys())}")
+            else:
+                LOGGER.warning(f"7TV user API returned status {user_response.status_code}: {user_response.text[:500]}")
+        
+        # Get emote set ID from user data or environment variable
+        emote_set_id = os.environ.get("7TV_EMOTE_SET_ID", None)
+        
+        # If we have user data, try to extract emote set ID from it
+        if user_data and not emote_set_id:
+            # Try different possible locations for emote_set
             if 'emote_set' in user_data:
                 emote_set_obj = user_data['emote_set']
                 if isinstance(emote_set_obj, dict):
                     emote_set_id = emote_set_obj.get('id')
+                    LOGGER.info(f"Found emote_set.id: {emote_set_id}")
                 elif isinstance(emote_set_obj, str):
                     emote_set_id = emote_set_obj
-            elif 'emote_sets' in user_data:
+                    LOGGER.info(f"Found emote_set (string): {emote_set_id}")
+            
+            if not emote_set_id and 'emote_sets' in user_data:
                 emote_sets = user_data['emote_sets']
                 if isinstance(emote_sets, list) and len(emote_sets) > 0:
-                    # First item might be a string ID or an object
                     first_set = emote_sets[0]
                     if isinstance(first_set, str):
                         emote_set_id = first_set
+                        LOGGER.info(f"Found emote_sets[0] (string): {emote_set_id}")
                     elif isinstance(first_set, dict):
                         emote_set_id = first_set.get('id')
+                        LOGGER.info(f"Found emote_sets[0].id: {emote_set_id}")
                 elif isinstance(emote_sets, dict):
                     emote_set_id = emote_sets.get('id')
+                    LOGGER.info(f"Found emote_sets.id: {emote_set_id}")
             
-            # Also try 'id' directly on user_data (some API versions)
-            if not emote_set_id and 'id' in user_data:
-                emote_set_id = user_data.get('id')
-            
-            if emote_set_id:
+            # Check connections for emote set
+            if not emote_set_id and 'connections' in user_data:
+                connections = user_data['connections']
+                if isinstance(connections, list) and len(connections) > 0:
+                    for conn in connections:
+                        if isinstance(conn, dict) and conn.get('platform') == 'TWITCH':
+                            if 'emote_set' in conn:
+                                emote_set_obj = conn['emote_set']
+                                if isinstance(emote_set_obj, dict):
+                                    emote_set_id = emote_set_obj.get('id')
+                                elif isinstance(emote_set_obj, str):
+                                    emote_set_id = emote_set_obj
+                                if emote_set_id:
+                                    LOGGER.info(f"Found emote_set from connection: {emote_set_id}")
+                                    break
+        
+        # Fetch emotes from emote set if we have an ID
+        if emote_set_id:
                 LOGGER.info(f"Fetching 7TV emote set: {emote_set_id}")
                 set_response = requests.get(
                     f'https://7tv.io/v3/emote-sets/{emote_set_id}',
@@ -299,33 +407,29 @@ def get_7tv_emotes():
                 
                 if set_response.status_code == 200:
                     set_data = set_response.json()
+                    LOGGER.info(f"Emote set data keys: {list(set_data.keys())}")
                     emote_list = set_data.get('emotes', [])
                     LOGGER.info(f"Found {len(emote_list)} emotes in set")
+                    
+                    if len(emote_list) > 0:
+                        # Log first emote structure for debugging
+                        LOGGER.debug(f"First emote structure: {json.dumps(emote_list[0], indent=2)[:500]}")
                     
                     for emote in emote_list:
                         emote_name = emote.get('name', '')
                         if not emote_name:
                             continue
                         
-                        # 7TV API v3 structure: emote can have 'data' object with 'host' object
-                        # Or the emote might have the data directly
-                        emote_data = emote.get('data', emote)  # Fallback to emote itself if no 'data' key
+                        # 7TV API v3: emote has 'data' object
+                        emote_data = emote.get('data', {})
+                        if not emote_data:
+                            LOGGER.debug(f"Emote {emote_name} has no data object")
+                            continue
                         
-                        # Try to get host from different possible locations
+                        # Get host from data
                         host = emote_data.get('host', {})
-                        if not host and 'host' in emote:
-                            host = emote.get('host', {})
-                        
                         if not host:
-                            # Try alternative structure: might have 'urls' or direct URL
-                            if 'urls' in emote_data:
-                                urls = emote_data['urls']
-                                if isinstance(urls, list) and len(urls) > 0:
-                                    file_url = urls[0] if isinstance(urls[0], str) else urls[0].get('url', '')
-                                    if file_url:
-                                        emotes[emote_name] = file_url
-                                        LOGGER.debug(f"Added emote (alt structure): {emote_name} -> {file_url}")
-                                continue
+                            LOGGER.debug(f"Emote {emote_name} has no host in data")
                             continue
                         
                         # Host has 'url' and 'files' array
@@ -333,6 +437,7 @@ def get_7tv_emotes():
                         files = host.get('files', [])
                         
                         if not host_url:
+                            LOGGER.debug(f"Emote {emote_name} has no host URL")
                             continue
                         
                         # Find the best quality file (prefer 2x webp)
@@ -369,10 +474,77 @@ def get_7tv_emotes():
                         if file_url:
                             emotes[emote_name] = file_url
                             LOGGER.debug(f"Added emote: {emote_name} -> {file_url}")
+                        else:
+                            LOGGER.warning(f"Could not construct URL for emote: {emote_name}")
                 else:
-                    LOGGER.warning(f"7TV emote set API returned status {set_response.status_code}: {set_response.text}")
-            else:
-                LOGGER.warning(f"No emote set ID found for user {streamer_name}")
+                    LOGGER.warning(f"7TV emote set API returned status {set_response.status_code}: {set_response.text[:500]}")
+        else:
+            if user_data:
+                LOGGER.warning(f"No emote set ID found in user data. User data structure: {json.dumps(user_data, indent=2)[:500]}")
+        
+        # If we have an emote set ID from environment variable and haven't loaded emotes yet, try using it
+        if not emotes and emote_set_id:
+            LOGGER.info(f"Fetching emotes from emote set ID: {emote_set_id}")
+            try:
+                set_response = requests.get(
+                    f'https://7tv.io/v3/emote-sets/{emote_set_id}',
+                    timeout=10
+                )
+                if set_response.status_code == 200:
+                    set_data = set_response.json()
+                    emote_list = set_data.get('emotes', [])
+                    LOGGER.info(f"Found {len(emote_list)} emotes in emote set")
+                    
+                    for emote in emote_list:
+                        emote_name = emote.get('name', '')
+                        if not emote_name:
+                            continue
+                        
+                        emote_data = emote.get('data', {})
+                        if not emote_data:
+                            continue
+                        
+                        host = emote_data.get('host', {})
+                        if not host:
+                            continue
+                        
+                        host_url = host.get('url', '')
+                        files = host.get('files', [])
+                        
+                        if not host_url:
+                            continue
+                        
+                        file_url = None
+                        if files:
+                            for file in files:
+                                if file.get('format', '').lower() == 'webp':
+                                    width = file.get('width', 0)
+                                    if width >= 56:
+                                        file_name = file.get('name', '')
+                                        if file_name:
+                                            file_url = f"https:{host_url}/{file_name}"
+                                            break
+                            
+                            if not file_url:
+                                for file in files:
+                                    if file.get('format', '').lower() == 'webp':
+                                        file_name = file.get('name', '')
+                                        if file_name:
+                                            file_url = f"https:{host_url}/{file_name}"
+                                            break
+                            
+                            if not file_url and files:
+                                file_name = files[0].get('name', '')
+                                if file_name:
+                                    file_url = f"https:{host_url}/{file_name}"
+                        else:
+                            file_url = f"https:{host_url}/2x.webp"
+                        
+                        if file_url:
+                            emotes[emote_name] = file_url
+                            LOGGER.debug(f"Added emote from set: {emote_name} -> {file_url}")
+            except Exception as set_error:
+                LOGGER.warning(f"Failed to load emote set: {set_error}")
         
         # Also get global emotes
         try:
@@ -392,24 +564,12 @@ def get_7tv_emotes():
                     if not emote_name or emote_name in emotes:
                         continue
                     
-                    # 7TV API v3 structure: emote can have 'data' object with 'host' object
-                    emote_data = emote.get('data', emote)  # Fallback to emote itself if no 'data' key
+                    emote_data = emote.get('data', {})
+                    if not emote_data:
+                        continue
                     
-                    # Try to get host from different possible locations
                     host = emote_data.get('host', {})
-                    if not host and 'host' in emote:
-                        host = emote.get('host', {})
-                    
                     if not host:
-                        # Try alternative structure: might have 'urls' or direct URL
-                        if 'urls' in emote_data:
-                            urls = emote_data['urls']
-                            if isinstance(urls, list) and len(urls) > 0:
-                                file_url = urls[0] if isinstance(urls[0], str) else urls[0].get('url', '')
-                                if file_url:
-                                    emotes[emote_name] = file_url
-                                    LOGGER.debug(f"Added global emote (alt structure): {emote_name} -> {file_url}")
-                            continue
                         continue
                     
                     host_url = host.get('url', '')
@@ -449,13 +609,21 @@ def get_7tv_emotes():
             else:
                 LOGGER.warning(f"Global 7TV emotes API returned status {global_response.status_code}")
         except Exception as global_error:
-            LOGGER.warning(f"Could not fetch global 7TV emotes: {global_error}")
+            LOGGER.warning(f"Could not fetch global 7TV emotes: {global_error}", exc_info=True)
         
-        LOGGER.info(f"Loaded {len(emotes)} total 7TV emotes for {streamer_name}")
+        LOGGER.info(f"Loaded {len(emotes)} total 7TV emotes")
         if len(emotes) == 0:
-            LOGGER.warning("No 7TV emotes loaded! Check API responses above.")
+            LOGGER.warning("No 7TV emotes loaded! Set 7TV_USER_ID or 7TV_EMOTE_SET_ID environment variables.")
+        else:
+            # Log first few emote names
+            sample_emotes = list(emotes.keys())[:5]
+            LOGGER.info(f"Sample emotes loaded: {sample_emotes}")
         
-        return jsonify({'emotes': emotes})
+        return jsonify({
+            'emotes': emotes,
+            'user_found': user_data is not None,
+            'emote_count': len(emotes)
+        })
         
     except Exception as e:
         LOGGER.error(f"Error fetching 7TV emotes: {e}", exc_info=True)
