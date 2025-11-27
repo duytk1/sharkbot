@@ -247,15 +247,13 @@ def debug_7tv():
     import json
     
     seven_tv_user_id = os.environ.get("7TV_USER_ID", None)
-    emote_set_id = os.environ.get("7TV_EMOTE_SET_ID", None)
     
     debug_info = {
         '7TV_USER_ID': seven_tv_user_id,
-        '7TV_EMOTE_SET_ID': emote_set_id,
         'tests': []
     }
     
-    # Test 1: 7TV User ID lookup
+    # Test: 7TV User ID lookup
     if seven_tv_user_id:
         try:
             response = requests.get(
@@ -283,40 +281,10 @@ def debug_7tv():
             'message': '7TV_USER_ID not set in environment variables'
         })
     
-    # Test 2: Emote Set ID lookup
-    if emote_set_id:
-        try:
-            response = requests.get(
-                f'https://7tv.io/v3/emote-sets/{emote_set_id}',
-                timeout=10
-            )
-            debug_info['tests'].append({
-                'method': 'Emote Set ID',
-                'url': f'https://7tv.io/v3/emote-sets/{emote_set_id}',
-                'status': response.status_code,
-                'success': response.status_code == 200,
-                'emote_count': len(response.json().get('emotes', [])) if response.status_code == 200 else None,
-                'response_preview': json.dumps(response.json(), indent=2)[:1000] if response.status_code == 200 else response.text[:500]
-            })
-        except Exception as e:
-            debug_info['tests'].append({
-                'method': 'Emote Set ID',
-                'url': f'https://7tv.io/v3/emote-sets/{emote_set_id}',
-                'error': str(e)
-            })
-    else:
-        debug_info['tests'].append({
-            'method': 'Emote Set ID',
-            'status': 'skipped',
-            'message': '7TV_EMOTE_SET_ID not set in environment variables'
-        })
-    
     debug_info['instructions'] = {
         'finding_7tv_user_id': 'Go to https://7tv.app, log in, go to your profile. The user ID is in the URL or API responses.',
-        'finding_emote_set_id': 'Go to https://7tv.app, log in, go to your emote set. The ID is in the URL (e.g., /emote-sets/1234567890abcdef) or in the API response.',
         'environment_variables': {
-            '7TV_USER_ID': 'Set this to your 7TV user ID for direct lookup',
-            '7TV_EMOTE_SET_ID': 'Set this to your emote set ID to bypass user lookup'
+            '7TV_USER_ID': 'Set this to your 7TV user ID for direct lookup'
         }
     }
     
@@ -329,9 +297,8 @@ def get_7tv_emotes():
     import requests
     import json
     
-    # Get IDs from environment variables
+    # Get 7TV User ID from environment variable
     seven_tv_user_id = os.environ.get("7TV_USER_ID", None)
-    emote_set_id = os.environ.get("7TV_EMOTE_SET_ID", None)
     
     try:
         emotes = {}
@@ -352,11 +319,11 @@ def get_7tv_emotes():
             else:
                 LOGGER.warning(f"7TV user API returned status {user_response.status_code}: {user_response.text[:500]}")
         
-        # Get emote set ID from user data or environment variable
-        emote_set_id = os.environ.get("7TV_EMOTE_SET_ID", None)
+        # Get emote set ID from user data
+        emote_set_id = None
         
         # If we have user data, try to extract emote set ID from it
-        if user_data and not emote_set_id:
+        if user_data:
             # Try different possible locations for emote_set
             if 'emote_set' in user_data:
                 emote_set_obj = user_data['emote_set']
@@ -482,70 +449,6 @@ def get_7tv_emotes():
             if user_data:
                 LOGGER.warning(f"No emote set ID found in user data. User data structure: {json.dumps(user_data, indent=2)[:500]}")
         
-        # If we have an emote set ID from environment variable and haven't loaded emotes yet, try using it
-        if not emotes and emote_set_id:
-            LOGGER.info(f"Fetching emotes from emote set ID: {emote_set_id}")
-            try:
-                set_response = requests.get(
-                    f'https://7tv.io/v3/emote-sets/{emote_set_id}',
-                    timeout=10
-                )
-                if set_response.status_code == 200:
-                    set_data = set_response.json()
-                    emote_list = set_data.get('emotes', [])
-                    LOGGER.info(f"Found {len(emote_list)} emotes in emote set")
-                    
-                    for emote in emote_list:
-                        emote_name = emote.get('name', '')
-                        if not emote_name:
-                            continue
-                        
-                        emote_data = emote.get('data', {})
-                        if not emote_data:
-                            continue
-                        
-                        host = emote_data.get('host', {})
-                        if not host:
-                            continue
-                        
-                        host_url = host.get('url', '')
-                        files = host.get('files', [])
-                        
-                        if not host_url:
-                            continue
-                        
-                        file_url = None
-                        if files:
-                            for file in files:
-                                if file.get('format', '').lower() == 'webp':
-                                    width = file.get('width', 0)
-                                    if width >= 56:
-                                        file_name = file.get('name', '')
-                                        if file_name:
-                                            file_url = f"https:{host_url}/{file_name}"
-                                            break
-                            
-                            if not file_url:
-                                for file in files:
-                                    if file.get('format', '').lower() == 'webp':
-                                        file_name = file.get('name', '')
-                                        if file_name:
-                                            file_url = f"https:{host_url}/{file_name}"
-                                            break
-                            
-                            if not file_url and files:
-                                file_name = files[0].get('name', '')
-                                if file_name:
-                                    file_url = f"https:{host_url}/{file_name}"
-                        else:
-                            file_url = f"https:{host_url}/2x.webp"
-                        
-                        if file_url:
-                            emotes[emote_name] = file_url
-                            LOGGER.debug(f"Added emote from set: {emote_name} -> {file_url}")
-            except Exception as set_error:
-                LOGGER.warning(f"Failed to load emote set: {set_error}")
-        
         # Also get global emotes
         try:
             LOGGER.info("Fetching global 7TV emotes")
@@ -613,7 +516,7 @@ def get_7tv_emotes():
         
         LOGGER.info(f"Loaded {len(emotes)} total 7TV emotes")
         if len(emotes) == 0:
-            LOGGER.warning("No 7TV emotes loaded! Set 7TV_USER_ID or 7TV_EMOTE_SET_ID environment variables.")
+            LOGGER.warning("No 7TV emotes loaded! Set 7TV_USER_ID environment variable.")
         else:
             # Log first few emote names
             sample_emotes = list(emotes.keys())[:5]
