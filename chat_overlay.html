@@ -189,19 +189,23 @@
             // Sort emotes by length (longest first) to match longer emotes first
             const sortedEmotes = Object.keys(sevenTVEmotes).sort((a, b) => b.length - a.length);
             
-            let remainingText = text;
-            let lastIndex = 0;
-            
             // Find all emote matches in the text
             const matches = [];
             sortedEmotes.forEach(emoteName => {
-                const regex = new RegExp(`\\b${emoteName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+                // Escape special regex characters in emote name
+                const escapedEmote = emoteName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // Match emote that is separated by spaces or at start/end of message
+                // This handles the most common case: emotes separated by spaces in chat
+                const regex = new RegExp(`(^|\\s)${escapedEmote}(?=\\s|$)`, 'gi');
                 let match;
-                while ((match = regex.exec(remainingText)) !== null) {
+                while ((match = regex.exec(text)) !== null) {
+                    // Adjust index if match includes leading whitespace
+                    const leadingSpace = match[1] || '';
+                    const actualIndex = match.index + leadingSpace.length;
                     matches.push({
                         emote: emoteName,
-                        index: match.index,
-                        length: match[0].length
+                        index: actualIndex,
+                        length: emoteName.length
                     });
                 }
             });
@@ -220,10 +224,11 @@
             });
             
             // Build the fragment with text and emotes
+            let lastIndex = 0;
             nonOverlappingMatches.forEach(match => {
                 // Add text before the emote
                 if (match.index > lastIndex) {
-                    fragment.appendChild(document.createTextNode(remainingText.substring(lastIndex, match.index)));
+                    fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
                 }
                 
                 // Add the emote image
@@ -238,8 +243,8 @@
             });
             
             // Add remaining text
-            if (lastIndex < remainingText.length) {
-                fragment.appendChild(document.createTextNode(remainingText.substring(lastIndex)));
+            if (lastIndex < text.length) {
+                fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
             }
             
             // If no matches, return plain text
@@ -267,6 +272,16 @@
             if (messageData.platform === 'twitch') {
                 const parsedContent = parseMessageWithEmotes(messageData.message);
                 contentSpan.appendChild(parsedContent);
+                // Debug: log if emotes were found
+                if (emoteCacheLoaded && Object.keys(sevenTVEmotes).length > 0) {
+                    const messageText = messageData.message.toLowerCase();
+                    const foundEmotes = Object.keys(sevenTVEmotes).filter(emote => 
+                        messageText.includes(emote.toLowerCase())
+                    );
+                    if (foundEmotes.length > 0) {
+                        console.log('Message contains potential emotes:', foundEmotes, 'in message:', messageData.message);
+                    }
+                }
             } else {
                 contentSpan.textContent = messageData.message;
             }
@@ -356,9 +371,14 @@
                     if (data.emotes) {
                         sevenTVEmotes = data.emotes;
                         emoteCacheLoaded = true;
-                        console.log(`Loaded ${Object.keys(sevenTVEmotes).length} 7TV emotes`);
-                        if (Object.keys(sevenTVEmotes).length === 0) {
+                        const emoteCount = Object.keys(sevenTVEmotes).length;
+                        console.log(`Loaded ${emoteCount} 7TV emotes`);
+                        if (emoteCount === 0) {
                             console.warn('No 7TV emotes loaded. Check server logs for errors.');
+                        } else {
+                            // Log first few emote names for debugging
+                            const sampleEmotes = Object.keys(sevenTVEmotes).slice(0, 5);
+                            console.log('Sample emotes:', sampleEmotes);
                         }
                     } else if (data.error) {
                         console.error('7TV API error:', data.error);
@@ -370,6 +390,24 @@
                     console.error('Error loading 7TV emotes:', error);
                     // Retry after 30 seconds
                     setTimeout(load7TVEmotes, 30000);
+                });
+        }
+
+        function initializeTTSTimestamp() {
+            // On overlay load, check if TTS file exists and set initial timestamp
+            // This prevents playing old TTS files when the overlay refreshes
+            fetch(TTS_API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists && data.timestamp && data.size > 0) {
+                        // Set the initial timestamp so we don't play this old file
+                        lastTTSTimestamp = data.timestamp;
+                        console.log('Initialized TTS timestamp (ignoring old file):', data.timestamp);
+                    }
+                })
+                .catch(error => {
+                    // Silently fail - TTS might not be available
+                    console.debug('TTS initialization check error (this is normal if no TTS file exists):', error);
                 });
         }
 
@@ -427,9 +465,11 @@
         }
 
         // Initial load
+        initializeTTSTimestamp(); // Initialize TTS timestamp first to ignore old files
         load7TVEmotes(); // Load 7TV emotes first
         updateChat();
-        checkForTTS();
+        // Don't check for TTS immediately - wait a bit to avoid playing old files
+        setTimeout(checkForTTS, 1000);
         
         // Reload emotes every 5 minutes (in case new ones are added)
         setInterval(load7TVEmotes, 300000);

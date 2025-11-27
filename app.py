@@ -266,16 +266,29 @@ def get_7tv_emotes():
             user_data = user_response.json()
             LOGGER.debug(f"7TV user data: {json.dumps(user_data, indent=2)[:500]}")
             
-            # Get emote set ID - 7TV API structure: user has 'emote_set' object with 'id'
+            # Get emote set ID - 7TV API v3 structure can vary
             emote_set_id = None
             if 'emote_set' in user_data:
-                emote_set_id = user_data['emote_set'].get('id')
+                emote_set_obj = user_data['emote_set']
+                if isinstance(emote_set_obj, dict):
+                    emote_set_id = emote_set_obj.get('id')
+                elif isinstance(emote_set_obj, str):
+                    emote_set_id = emote_set_obj
             elif 'emote_sets' in user_data:
                 emote_sets = user_data['emote_sets']
                 if isinstance(emote_sets, list) and len(emote_sets) > 0:
-                    emote_set_id = emote_sets[0]
+                    # First item might be a string ID or an object
+                    first_set = emote_sets[0]
+                    if isinstance(first_set, str):
+                        emote_set_id = first_set
+                    elif isinstance(first_set, dict):
+                        emote_set_id = first_set.get('id')
                 elif isinstance(emote_sets, dict):
                     emote_set_id = emote_sets.get('id')
+            
+            # Also try 'id' directly on user_data (some API versions)
+            if not emote_set_id and 'id' in user_data:
+                emote_set_id = user_data.get('id')
             
             if emote_set_id:
                 LOGGER.info(f"Fetching 7TV emote set: {emote_set_id}")
@@ -294,13 +307,25 @@ def get_7tv_emotes():
                         if not emote_name:
                             continue
                         
-                        # 7TV API structure: emote has 'data' object with 'host' object
-                        emote_data = emote.get('data', {})
-                        if not emote_data:
-                            continue
+                        # 7TV API v3 structure: emote can have 'data' object with 'host' object
+                        # Or the emote might have the data directly
+                        emote_data = emote.get('data', emote)  # Fallback to emote itself if no 'data' key
                         
+                        # Try to get host from different possible locations
                         host = emote_data.get('host', {})
+                        if not host and 'host' in emote:
+                            host = emote.get('host', {})
+                        
                         if not host:
+                            # Try alternative structure: might have 'urls' or direct URL
+                            if 'urls' in emote_data:
+                                urls = emote_data['urls']
+                                if isinstance(urls, list) and len(urls) > 0:
+                                    file_url = urls[0] if isinstance(urls[0], str) else urls[0].get('url', '')
+                                    if file_url:
+                                        emotes[emote_name] = file_url
+                                        LOGGER.debug(f"Added emote (alt structure): {emote_name} -> {file_url}")
+                                continue
                             continue
                         
                         # Host has 'url' and 'files' array
@@ -313,7 +338,7 @@ def get_7tv_emotes():
                         # Find the best quality file (prefer 2x webp)
                         file_url = None
                         if files:
-                            # Look for 2x webp first
+                            # Look for 2x webp first (56px width = 2x for 28px base)
                             for file in files:
                                 if file.get('format', '').lower() == 'webp':
                                     width = file.get('width', 0)
@@ -367,12 +392,24 @@ def get_7tv_emotes():
                     if not emote_name or emote_name in emotes:
                         continue
                     
-                    emote_data = emote.get('data', {})
-                    if not emote_data:
-                        continue
+                    # 7TV API v3 structure: emote can have 'data' object with 'host' object
+                    emote_data = emote.get('data', emote)  # Fallback to emote itself if no 'data' key
                     
+                    # Try to get host from different possible locations
                     host = emote_data.get('host', {})
+                    if not host and 'host' in emote:
+                        host = emote.get('host', {})
+                    
                     if not host:
+                        # Try alternative structure: might have 'urls' or direct URL
+                        if 'urls' in emote_data:
+                            urls = emote_data['urls']
+                            if isinstance(urls, list) and len(urls) > 0:
+                                file_url = urls[0] if isinstance(urls[0], str) else urls[0].get('url', '')
+                                if file_url:
+                                    emotes[emote_name] = file_url
+                                    LOGGER.debug(f"Added global emote (alt structure): {emote_name} -> {file_url}")
+                            continue
                         continue
                     
                     host_url = host.get('url', '')
@@ -437,15 +474,35 @@ def run_flask_server():
 if __name__ == "__main__":
     # Clear messages database on startup
     try:
-        conn = sqlite3.connect('messages.db')
+        conn = sqlite3.connect(SQL_DB_PATH)
         cursor = conn.cursor()
+        # Ensure messages table exists first
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                from_user TEXT NOT NULL,
+                message TEXT NOT NULL,
+                platform TEXT DEFAULT 'twitch',
+                timestamp REAL DEFAULT (julianday('now'))
+            )
+        ''')
+        # Clear all messages
         cursor.execute("DELETE FROM messages;")
         conn.commit()
         cursor.close()
         conn.close()
-        LOGGER.info("Cleared messages database")
+        LOGGER.info(f"Cleared messages database at {SQL_DB_PATH}")
     except Exception as e:
         LOGGER.warning(f"Could not clear messages database: {e}")
+    
+    # Clear old TTS file on startup to prevent playing old audio on overlay refresh
+    TTS_FILE = 'tts.mp3'
+    try:
+        if os.path.exists(TTS_FILE):
+            os.remove(TTS_FILE)
+            LOGGER.info("Cleared old TTS file on startup")
+    except Exception as e:
+        LOGGER.warning(f"Could not clear TTS file: {e}")
     
     # Start bot in background thread
     LOGGER.info("Starting bot...")
