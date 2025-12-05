@@ -176,6 +176,12 @@ class Bot(commands.Bot):
         component = MyComponent(self)
         await self.add_component(component)
 
+        # Initialize TTS queue (needs event loop to exist)
+        component._tts_queue = asyncio.Queue()
+        
+        # Start TTS queue processor
+        component._tts_processor_task = asyncio.create_task(component._process_tts_queue())
+
         # Start YouTube chat monitoring if configured
         if YOUTUBE_CHAT_AVAILABLE and YOUTUBE_VIDEO_ID:
             await component.start_youtube_chat()
@@ -246,6 +252,9 @@ class MyComponent(commands.Component):
         self._youtube_chat_queue = None
         self._youtube_chat_stop_event = None
         self._tts_lock = threading.Lock()  # Lock for TTS generation to prevent concurrent overwrites
+        self._tts_queue = None  # Queue for TTS requests (initialized in setup)
+        self._tts_processing = False  # Flag to track if TTS is currently being processed
+        self._tts_processor_task = None  # Task that processes the TTS queue
 
     @contextmanager
     def _get_db_connection(self):
@@ -337,8 +346,8 @@ class MyComponent(commands.Component):
             # Send response in chunks if needed
             await self.send_message(payload, response)
 
-            # Create TTS text
-            tts_text = f"{chatter_name} asked me: {cleaned_message}. {response}"
+            # Create TTS text - just use the response to avoid repetition
+            tts_text = response
 
             await self.make_tts(tts_text)
             self.play_sound(TTS_FILE)
@@ -616,10 +625,8 @@ class MyComponent(commands.Component):
                 # This will be handled in event_message
                 pass
 
-            # Create TTS text
-            tts_text = (
-                f"{chatter_name} asked me on {platform}: {cleaned_message}. {response}"
-            )
+            # Create TTS text - just use the response to avoid repetition
+            tts_text = response
 
             await self.make_tts(tts_text)
             self.play_sound(TTS_FILE)
@@ -776,16 +783,65 @@ class MyComponent(commands.Component):
         finally:
             LOGGER.info("YouTube chat queue processing stopped")
 
-    async def make_tts(self, text: str) -> None:
-        """Generate TTS audio file."""
+    async def _process_tts_queue(self) -> None:
+        """Process TTS queue one item at a time to prevent interruptions."""
+        while True:
+            try:
+                # Wait for a TTS request from the queue
+                text = await self._tts_queue.get()
+                
+                # Generate TTS and get actual duration
+                # This will wait for current file to finish if needed
+                actual_duration = await self._generate_tts_file(text)
+                
+                # The file has been generated and should start playing in OBS
+                # We don't need to wait here because the next TTS generation will wait
+                # for this one to finish (checked in _generate_tts_file)
+                # But we add a small buffer to ensure the file is detected by the overlay
+                await asyncio.sleep(1.0)
+                
+                LOGGER.info(f"TTS generated (duration: {actual_duration:.1f}s), ready for next TTS")
+                
+                # Mark task as done
+                self._tts_queue.task_done()
+                
+            except Exception as e:
+                LOGGER.error(f"Error processing TTS queue: {e}", exc_info=True)
+                await asyncio.sleep(1)
+
+    async def _generate_tts_file(self, text: str) -> float:
+        """Generate TTS audio file (internal method, called by queue processor).
+        Waits for current file to finish playing if needed.
+        Returns the duration in seconds of the generated file."""
         # Use lock to prevent concurrent TTS generation from overwriting the file
         with self._tts_lock:
-            # Delete old file first to ensure clean write
+            # Check if file exists and wait for it to finish playing
             try:
                 if os.path.exists(TTS_FILE):
-                    os.remove(TTS_FILE)
-            except Exception:
-                pass
+                    file_age = time.time() - os.path.getmtime(TTS_FILE)
+                    # Get the actual duration of the current file
+                    try:
+                        sound = pygame.mixer.Sound(TTS_FILE)
+                        current_file_duration = sound.get_length()
+                        
+                        # Check if file is still playing (age is less than duration + buffer)
+                        if file_age < (current_file_duration + 3):
+                            # File is still playing, wait for it to finish
+                            remaining_time = (current_file_duration + 3) - file_age
+                            if remaining_time > 0:
+                                LOGGER.info(f"Current TTS still playing ({file_age:.1f}s old, {current_file_duration:.1f}s duration), waiting {remaining_time:.1f}s before generating next")
+                                await asyncio.sleep(remaining_time)
+                    except Exception as e:
+                        LOGGER.warning(f"Could not get current file duration: {e}")
+                    
+                    # Now safe to delete the old file
+                    try:
+                        os.remove(TTS_FILE)
+                        LOGGER.debug("Deleted old TTS file")
+                    except Exception:
+                        pass
+            except Exception as e:
+                LOGGER.warning(f"Error checking/deleting old TTS file: {e}")
             
             # Generate and save TTS
             tts = edge_tts.Communicate(text, bot_language)
@@ -793,6 +849,30 @@ class MyComponent(commands.Component):
             
             # Small delay to ensure file is fully written and flushed to disk
             await asyncio.sleep(0.1)
+            
+            # Get and return the actual duration
+            try:
+                sound = pygame.mixer.Sound(TTS_FILE)
+                duration_seconds = sound.get_length()
+                duration_ms = int(duration_seconds * 1000)
+                LOGGER.info(f"TTS file generated: {TTS_FILE} (duration: {duration_ms}ms)")
+                return duration_seconds
+            except Exception as e:
+                LOGGER.warning(f"Could not get TTS duration: {e}")
+                # Fallback to estimated duration
+                estimated_chars = len(text)
+                estimated_words = estimated_chars / 4
+                estimated_duration = (estimated_words / 150) * 60
+                return max(2.0, min(30.0, estimated_duration))
+
+    async def make_tts(self, text: str) -> None:
+        """Queue TTS generation request."""
+        # Add to queue instead of generating immediately
+        if self._tts_queue is None:
+            LOGGER.error("TTS queue not initialized, cannot queue TTS request")
+            return
+        await self._tts_queue.put(text)
+        LOGGER.debug(f"TTS request queued (queue size: {self._tts_queue.qsize()})")
 
     def play_sound(self, file_name: str) -> None:
         """Play sound file (for overlay - file is served via Flask API)."""

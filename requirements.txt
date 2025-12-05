@@ -8,3 +8,4 @@ pytchat==0.5.5
 flask==3.0.0
 flask-cors==6.0.1
 requests==2.31.0
+edge-tts==6.1.9

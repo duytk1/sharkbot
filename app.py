@@ -84,6 +84,12 @@ def links_manager():
     return send_from_directory('.', 'links_manager.html')
 
 
+@app.route('/tts')
+def tts_page():
+    """Serve the TTS generator HTML."""
+    return send_from_directory('.', 'tts.html')
+
+
 @app.route('/api/chat')
 def get_chat_messages():
     """Get recent chat messages for the overlay."""
@@ -231,6 +237,60 @@ def serve_tts_audio():
         return send_file(TTS_FILE, mimetype='audio/mpeg')
     else:
         return jsonify({'error': 'TTS file not found'}), 404
+
+
+@app.route('/api/tts/generate', methods=['POST'])
+def generate_tts():
+    """Generate TTS from text input."""
+    import edge_tts
+    import asyncio
+    
+    TTS_FILE = 'tts.mp3'
+    bot_language = "en-AU-NatashaNeural"
+    
+    try:
+        data = request.json
+        if not data or 'text' not in data:
+            return jsonify({'error': 'Text is required'}), 400
+        
+        text = data['text'].strip()
+        if not text:
+            return jsonify({'error': 'Text cannot be empty'}), 400
+        
+        # Generate TTS using edge_tts
+        async def generate():
+            # Delete old file first
+            if os.path.exists(TTS_FILE):
+                try:
+                    os.remove(TTS_FILE)
+                except Exception:
+                    pass
+            
+            # Generate and save TTS
+            tts = edge_tts.Communicate(text, bot_language)
+            await tts.save(TTS_FILE)
+            # Wait a bit longer to ensure file is fully written and flushed to disk
+            await asyncio.sleep(0.2)
+        
+        # Run the async function
+        asyncio.run(generate())
+        
+        # Verify file was created and has content
+        if os.path.exists(TTS_FILE) and os.path.getsize(TTS_FILE) > 0:
+            # Get the file modification time for the response
+            mtime = os.path.getmtime(TTS_FILE)
+            return jsonify({
+                'success': True,
+                'url': '/api/tts/audio',
+                'message': 'TTS generated successfully and will play in OBS',
+                'timestamp': mtime
+            })
+        else:
+            return jsonify({'error': 'Failed to generate TTS file'}), 500
+            
+    except Exception as e:
+        LOGGER.error(f"Error generating TTS: {e}")
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/streamer')

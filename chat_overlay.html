@@ -176,6 +176,7 @@
         let messageElements = new Map();
         let lastTTSTimestamp = null;
         let audioPlayer = null;
+        let currentlyPlayingTimestamp = null; // Track which file is currently playing
         let sevenTVEmotes = {};
         let emoteCacheLoaded = false;
 
@@ -437,15 +438,26 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.exists && data.timestamp && data.size > 0) {
+                        // Check if this is the same file we're already playing
+                        if (currentlyPlayingTimestamp === data.timestamp) {
+                            // Same file is already playing, don't restart
+                            return;
+                        }
+                        
                         // Check if this is a new TTS file (use timestamp to detect new files)
                         // Only play if timestamp is significantly different (at least 0.1 seconds)
                         if (lastTTSTimestamp === null || Math.abs(data.timestamp - lastTTSTimestamp) > 0.1) {
-                            // Don't interrupt if audio is currently playing
+                            // Don't interrupt if audio is currently playing (double check)
                             if (audioPlayer && !audioPlayer.paused && !audioPlayer.ended) {
+                                // If it's the same timestamp, mark it as currently playing
+                                if (currentlyPlayingTimestamp === null) {
+                                    currentlyPlayingTimestamp = data.timestamp;
+                                }
                                 return;
                             }
                             
                             lastTTSTimestamp = data.timestamp;
+                            currentlyPlayingTimestamp = data.timestamp;
                             
                             // Stop any currently playing audio
                             if (audioPlayer) {
@@ -463,19 +475,28 @@
                             
                             audioPlayer.play().catch(error => {
                                 console.error('Error playing TTS:', error);
+                                currentlyPlayingTimestamp = null;
                                 // Some browsers require user interaction before playing audio
                                 // This is expected in OBS browser source
                             });
                             
                             // Clean up after playback
                             audioPlayer.addEventListener('ended', () => {
+                                currentlyPlayingTimestamp = null;
                                 audioPlayer = null;
                             });
                             
                             audioPlayer.addEventListener('error', (error) => {
                                 console.error('TTS playback error:', error);
+                                currentlyPlayingTimestamp = null;
                                 audioPlayer = null;
                             });
+                        }
+                    } else {
+                        // File doesn't exist or is invalid, clear playing state
+                        if (audioPlayer && audioPlayer.ended) {
+                            currentlyPlayingTimestamp = null;
+                            audioPlayer = null;
                         }
                     }
                 })
