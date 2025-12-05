@@ -5,6 +5,7 @@ import os
 import threading
 import time
 import queue
+import shutil
 import asqlite
 import twitchio
 from twitchio.ext import commands
@@ -255,6 +256,7 @@ class MyComponent(commands.Component):
         self._tts_queue = None  # Queue for TTS requests (initialized in setup)
         self._tts_processing = False  # Flag to track if TTS is currently being processed
         self._tts_processor_task = None  # Task that processes the TTS queue
+        self._current_tts_file = None  # Track the current TTS file being played
 
     @contextmanager
     def _get_db_connection(self):
@@ -815,55 +817,88 @@ class MyComponent(commands.Component):
         Returns the duration in seconds of the generated file."""
         # Use lock to prevent concurrent TTS generation from overwriting the file
         with self._tts_lock:
-            # Check if file exists and wait for it to finish playing
-            try:
-                if os.path.exists(TTS_FILE):
+            # Check if tts.mp3 exists and wait for it to finish playing
+            # This is the file the overlay is actually playing from
+            if os.path.exists(TTS_FILE):
+                try:
                     file_age = time.time() - os.path.getmtime(TTS_FILE)
                     # Get the actual duration of the current file
-                    try:
-                        sound = pygame.mixer.Sound(TTS_FILE)
-                        current_file_duration = sound.get_length()
-                        
-                        # Check if file is still playing (age is less than duration + buffer)
-                        if file_age < (current_file_duration + 3):
-                            # File is still playing, wait for it to finish
-                            remaining_time = (current_file_duration + 3) - file_age
-                            if remaining_time > 0:
-                                LOGGER.info(f"Current TTS still playing ({file_age:.1f}s old, {current_file_duration:.1f}s duration), waiting {remaining_time:.1f}s before generating next")
-                                await asyncio.sleep(remaining_time)
-                    except Exception as e:
-                        LOGGER.warning(f"Could not get current file duration: {e}")
+                    sound = pygame.mixer.Sound(TTS_FILE)
+                    current_file_duration = sound.get_length()
                     
-                    # Now safe to delete the old file
-                    try:
-                        os.remove(TTS_FILE)
-                        LOGGER.debug("Deleted old TTS file")
-                    except Exception:
-                        pass
-            except Exception as e:
-                LOGGER.warning(f"Error checking/deleting old TTS file: {e}")
+                    # Check if file is still playing (age is less than duration + buffer)
+                    if file_age < (current_file_duration + 3):
+                        # File is still playing, wait for it to finish
+                        remaining_time = (current_file_duration + 3) - file_age
+                        if remaining_time > 0:
+                            LOGGER.info(f"Current TTS still playing ({file_age:.1f}s old, {current_file_duration:.1f}s duration), waiting {remaining_time:.1f}s before generating next")
+                            await asyncio.sleep(remaining_time)
+                except Exception as e:
+                    LOGGER.warning(f"Could not get current file duration: {e}")
             
-            # Generate and save TTS
+            # Generate TTS with unique filename (timestamp-based)
+            timestamp = int(time.time() * 1000)  # milliseconds for uniqueness
+            unique_filename = f"tts_{timestamp}.mp3"
+            unique_filepath = unique_filename
+            
+            # Generate and save TTS to unique file
             tts = edge_tts.Communicate(text, bot_language)
-            await tts.save(TTS_FILE)
+            await tts.save(unique_filepath)
             
             # Small delay to ensure file is fully written and flushed to disk
             await asyncio.sleep(0.1)
             
-            # Get and return the actual duration
+            # Get the actual duration
             try:
-                sound = pygame.mixer.Sound(TTS_FILE)
+                sound = pygame.mixer.Sound(unique_filepath)
                 duration_seconds = sound.get_length()
                 duration_ms = int(duration_seconds * 1000)
-                LOGGER.info(f"TTS file generated: {TTS_FILE} (duration: {duration_ms}ms)")
-                return duration_seconds
+                LOGGER.info(f"TTS file generated: {unique_filepath} (duration: {duration_ms}ms)")
             except Exception as e:
                 LOGGER.warning(f"Could not get TTS duration: {e}")
                 # Fallback to estimated duration
                 estimated_chars = len(text)
                 estimated_words = estimated_chars / 4
                 estimated_duration = (estimated_words / 150) * 60
-                return max(2.0, min(30.0, estimated_duration))
+                duration_seconds = max(2.0, min(30.0, estimated_duration))
+            
+            # Create/update symlink or copy to main TTS_FILE for API compatibility
+            # We'll use a symlink approach: create tts.mp3 as a symlink to the current file
+            try:
+                # Remove old symlink/file if it exists
+                if os.path.exists(TTS_FILE):
+                    if os.path.islink(TTS_FILE):
+                        os.unlink(TTS_FILE)
+                    else:
+                        os.remove(TTS_FILE)
+                
+                # On Windows, we can't use symlinks easily, so we'll copy the file
+                # But actually, let's just update the current file reference and let the API handle it
+                shutil.copy2(unique_filepath, TTS_FILE)
+                
+                # Update current file reference
+                old_file = self._current_tts_file
+                self._current_tts_file = unique_filepath
+                
+                # Schedule cleanup of old file after it's done playing
+                if old_file and os.path.exists(old_file):
+                    # Clean up old file after a delay (it should be done playing by now)
+                    asyncio.create_task(self._cleanup_old_tts_file(old_file, duration_seconds + 5))
+                    
+            except Exception as e:
+                LOGGER.warning(f"Error updating TTS file reference: {e}")
+            
+            return duration_seconds
+    
+    async def _cleanup_old_tts_file(self, filepath: str, delay: float) -> None:
+        """Clean up old TTS file after it's done playing."""
+        await asyncio.sleep(delay)
+        try:
+            if os.path.exists(filepath) and filepath != TTS_FILE:
+                os.remove(filepath)
+                LOGGER.debug(f"Cleaned up old TTS file: {filepath}")
+        except Exception as e:
+            LOGGER.debug(f"Could not clean up old TTS file {filepath}: {e}")
 
     async def make_tts(self, text: str) -> None:
         """Queue TTS generation request."""
