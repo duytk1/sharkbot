@@ -609,6 +609,11 @@ class MyComponent(commands.Component):
 
         print(f"[{platform.upper()}] [{chatter_name}]: {message}")
 
+        # Send YouTube message to Twitch chat (skip bot messages and commands)
+        if platform == "youtube" and chatter_name != BOT_NAME and not message.startswith("!") and chatter_name.lower() != STREAMER_NAME.lower():
+            twitch_message = f"{chatter_name} from youtube: {message}"
+            await self.send_twitch_message(twitch_message)
+
         if is_chatter and chatter_name != BOT_NAME:
             winsound.PlaySound("*", winsound.SND_ALIAS)
 
@@ -953,6 +958,29 @@ class MyComponent(commands.Component):
                 sender=self.bot.bot_id,
                 message=message,
             )
+
+    async def send_twitch_message(self, message: str) -> None:
+        """Send a message to Twitch chat."""
+        try:
+            # Get the channel from connected channels
+            channel_name = STREAMER_NAME.lower()
+            channel = self.bot.get_channel(channel_name)
+            
+            if channel:
+                message_len = len(message)
+                
+                if message_len > MAX_MESSAGE_LENGTH:
+                    await channel.send("Message is too long.")
+                elif message_len >= LONG_MESSAGE_THRESHOLD:
+                    # Split into two messages
+                    await channel.send(message[:FIRST_MESSAGE_CHUNK])
+                    await channel.send(message[FIRST_MESSAGE_CHUNK:SECOND_MESSAGE_CHUNK])
+                else:
+                    await channel.send(message)
+            else:
+                LOGGER.warning(f"Could not find Twitch channel: {channel_name}")
+        except Exception as e:
+            LOGGER.error(f"Error sending message to Twitch chat: {e}")
 
     async def send_youtube_message(self, message: str) -> None:
         """Send a message to YouTube live chat."""

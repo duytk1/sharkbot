@@ -47,3 +47,5 @@ test.txt
 t.py
 spotify_now_playing.txt
 .tio.tokens.json
+youtube_token.pickle
+client_secret.json
