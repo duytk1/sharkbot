@@ -328,6 +328,11 @@ class MyComponent(commands.Component):
 
         print(f"[TWITCH] [{chatter_name}]: {message}")
 
+        # Send Twitch message to YouTube chat (skip bot messages and commands)
+        if YOUTUBE_VIDEO_ID and chatter_name != BOT_NAME and not is_command and chatter_name != streamer_name:
+            youtube_message = f"{chatter_name} from twitch: {message}"
+            await self.send_youtube_message(youtube_message)
+
         if is_chatter and chatter_name != BOT_NAME:
             winsound.PlaySound("*", winsound.SND_ALIAS)
 
@@ -948,6 +953,113 @@ class MyComponent(commands.Component):
                 sender=self.bot.bot_id,
                 message=message,
             )
+
+    async def send_youtube_message(self, message: str) -> None:
+        """Send a message to YouTube live chat."""
+        if not YOUTUBE_VIDEO_ID:
+            return
+        
+        try:
+            # Try to use google-api-python-client if available
+            try:
+                from googleapiclient.discovery import build
+                from google.auth.transport.requests import Request
+                import pickle
+                
+                # Get YouTube API credentials from environment
+                youtube_live_chat_id = os.environ.get("YOUTUBE_LIVE_CHAT_ID")
+                
+                if not youtube_live_chat_id:
+                    LOGGER.debug("YouTube live chat ID not configured, skipping YouTube message")
+                    return
+                
+                # OAuth2 flow for YouTube API
+                creds = None
+                token_file = 'youtube_token.pickle'
+                
+                # Load existing token if available
+                if os.path.exists(token_file):
+                    with open(token_file, 'rb') as token:
+                        creds = pickle.load(token)
+                
+                # If there are no (valid) credentials available, let the user log in
+                if not creds or not creds.valid:
+                    if creds and creds.expired and creds.refresh_token:
+                        creds.refresh(Request())
+                    else:
+                        # This would require user interaction, so we'll skip for now
+                        # In production, you'd want to handle OAuth flow properly
+                        LOGGER.warning("YouTube OAuth token not available or expired. Please authenticate first.")
+                        return
+                    
+                    # Save the credentials for the next run
+                    with open(token_file, 'wb') as token:
+                        pickle.dump(creds, token)
+                
+                # Build YouTube API service
+                youtube = build('youtube', 'v3', credentials=creds)
+                
+                # Send message to live chat
+                request = youtube.liveChatMessages().insert(
+                    part='snippet',
+                    body={
+                        'snippet': {
+                            'liveChatId': youtube_live_chat_id,
+                            'type': 'textMessageEvent',
+                            'textMessageDetails': {
+                                'messageText': message
+                            }
+                        }
+                    }
+                )
+                request.execute()
+                LOGGER.info(f"Sent message to YouTube chat: {message}")
+                
+            except ImportError:
+                # google-api-python-client not installed, use alternative method
+                LOGGER.debug("google-api-python-client not installed, using alternative method")
+                # Alternative: Use YouTube Data API v3 with direct HTTP requests
+                await self._send_youtube_message_http(message)
+            except Exception as e:
+                LOGGER.error(f"Error sending YouTube message via API: {e}")
+                # Fallback to HTTP method
+                await self._send_youtube_message_http(message)
+                
+        except Exception as e:
+            LOGGER.error(f"Error sending message to YouTube chat: {e}")
+
+    async def _send_youtube_message_http(self, message: str) -> None:
+        """Alternative method to send YouTube message using HTTP requests (requires OAuth token)."""
+        youtube_access_token = os.environ.get("YOUTUBE_ACCESS_TOKEN")
+        youtube_live_chat_id = os.environ.get("YOUTUBE_LIVE_CHAT_ID")
+        
+        if not youtube_access_token or not youtube_live_chat_id:
+            LOGGER.debug("YouTube access token or live chat ID not configured")
+            return
+        
+        try:
+            url = "https://www.googleapis.com/youtube/v3/liveChat/messages"
+            headers = {
+                "Authorization": f"Bearer {youtube_access_token}",
+                "Content-Type": "application/json"
+            }
+            data = {
+                "snippet": {
+                    "liveChatId": youtube_live_chat_id,
+                    "type": "textMessageEvent",
+                    "textMessageDetails": {
+                        "messageText": message
+                    }
+                }
+            }
+            
+            response = requests.post(url, headers=headers, json=data)
+            if response.status_code == 200:
+                LOGGER.info(f"Sent message to YouTube chat: {message}")
+            else:
+                LOGGER.warning(f"Failed to send YouTube message: {response.status_code} - {response.text}")
+        except Exception as e:
+            LOGGER.error(f"Error sending YouTube message via HTTP: {e}")
 
 
 def start_bot() -> None:
