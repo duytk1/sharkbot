@@ -851,9 +851,26 @@ class MyComponent(commands.Component):
             unique_filename = f"tts_{timestamp}.mp3"
             unique_filepath = unique_filename
             
-            # Generate and save TTS to unique file
-            tts = edge_tts.Communicate(text, bot_language)
-            await tts.save(unique_filepath)
+            # Generate and save TTS to unique file with retry logic
+            max_retries = 3
+            retry_delay = 2
+            for attempt in range(max_retries):
+                try:
+                    # Add a small delay between retries to avoid rate limiting
+                    if attempt > 0:
+                        await asyncio.sleep(retry_delay * attempt)
+                    
+                    tts = edge_tts.Communicate(text, bot_language)
+                    await tts.save(unique_filepath)
+                    break  # Success, exit retry loop
+                except Exception as e:
+                    if attempt == max_retries - 1:
+                        # Last attempt failed, raise the error
+                        LOGGER.error(f"TTS generation failed after {max_retries} attempts: {e}")
+                        raise
+                    else:
+                        LOGGER.warning(f"TTS generation attempt {attempt + 1} failed: {e}, retrying...")
+                        await asyncio.sleep(retry_delay)
             
             # Small delay to ensure file is fully written and flushed to disk
             await asyncio.sleep(0.1)

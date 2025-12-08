@@ -266,9 +266,26 @@ def generate_tts():
                 except Exception:
                     pass
             
-            # Generate and save TTS
-            tts = edge_tts.Communicate(text, bot_language)
-            await tts.save(TTS_FILE)
+            # Generate and save TTS with retry logic
+            max_retries = 3
+            retry_delay = 2
+            for attempt in range(max_retries):
+                try:
+                    # Add a small delay between retries to avoid rate limiting
+                    if attempt > 0:
+                        await asyncio.sleep(retry_delay * attempt)
+                    
+                    tts = edge_tts.Communicate(text, bot_language)
+                    await tts.save(TTS_FILE)
+                    break  # Success, exit retry loop
+                except Exception as e:
+                    if attempt == max_retries - 1:
+                        # Last attempt failed, raise the error
+                        raise Exception(f"TTS generation failed after {max_retries} attempts: {str(e)}")
+                    else:
+                        LOGGER.warning(f"TTS generation attempt {attempt + 1} failed: {e}, retrying...")
+                        await asyncio.sleep(retry_delay)
+            
             # Wait a bit longer to ensure file is fully written and flushed to disk
             await asyncio.sleep(0.2)
         
@@ -289,8 +306,18 @@ def generate_tts():
             return jsonify({'error': 'Failed to generate TTS file'}), 500
             
     except Exception as e:
+        error_msg = str(e)
         LOGGER.error(f"Error generating TTS: {e}")
-        return jsonify({'error': str(e)}), 500
+        
+        # Provide more helpful error messages
+        if '403' in error_msg or 'Invalid response status' in error_msg:
+            error_msg = "TTS service temporarily unavailable (403 error). This may be due to rate limiting or API changes. Please try again in a few moments."
+        elif '401' in error_msg or 'Unauthorized' in error_msg:
+            error_msg = "TTS authentication failed. The service may have changed its requirements."
+        elif 'timeout' in error_msg.lower():
+            error_msg = "TTS request timed out. Please try again."
+        
+        return jsonify({'error': error_msg}), 500
 
 
 @app.route('/api/streamer')
