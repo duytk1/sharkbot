@@ -242,11 +242,10 @@ def serve_tts_audio():
 @app.route('/api/tts/generate', methods=['POST'])
 def generate_tts():
     """Generate TTS from text input."""
-    import edge_tts
-    import asyncio
+    from gtts import gTTS
     
     TTS_FILE = 'tts.mp3'
-    bot_language = "en-AU-NatashaNeural"
+    bot_language = "en-au"  # Australian English (gTTS format)
     
     try:
         data = request.json
@@ -257,40 +256,39 @@ def generate_tts():
         if not text:
             return jsonify({'error': 'Text cannot be empty'}), 400
         
-        # Generate TTS using edge_tts
-        async def generate():
-            # Delete old file first
-            if os.path.exists(TTS_FILE):
-                try:
-                    os.remove(TTS_FILE)
-                except Exception:
-                    pass
-            
-            # Generate and save TTS with retry logic
-            max_retries = 3
-            retry_delay = 2
-            for attempt in range(max_retries):
-                try:
-                    # Add a small delay between retries to avoid rate limiting
-                    if attempt > 0:
-                        await asyncio.sleep(retry_delay * attempt)
-                    
-                    tts = edge_tts.Communicate(text, bot_language)
-                    await tts.save(TTS_FILE)
-                    break  # Success, exit retry loop
-                except Exception as e:
-                    if attempt == max_retries - 1:
-                        # Last attempt failed, raise the error
-                        raise Exception(f"TTS generation failed after {max_retries} attempts: {str(e)}")
-                    else:
-                        LOGGER.warning(f"TTS generation attempt {attempt + 1} failed: {e}, retrying...")
-                        await asyncio.sleep(retry_delay)
-            
-            # Wait a bit longer to ensure file is fully written and flushed to disk
-            await asyncio.sleep(0.2)
+        # Delete old file first
+        if os.path.exists(TTS_FILE):
+            try:
+                os.remove(TTS_FILE)
+            except Exception:
+                pass
         
-        # Run the async function
-        asyncio.run(generate())
+        # Generate and save TTS with retry logic
+        max_retries = 3
+        retry_delay = 2
+        for attempt in range(max_retries):
+            try:
+                # Add a small delay between retries to avoid rate limiting
+                if attempt > 0:
+                    import time
+                    time.sleep(retry_delay * attempt)
+                
+                # Generate TTS using gTTS (synchronous)
+                tts = gTTS(text=text, lang=bot_language, slow=False)
+                tts.save(TTS_FILE)
+                break  # Success, exit retry loop
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    # Last attempt failed, raise the error
+                    raise Exception(f"TTS generation failed after {max_retries} attempts: {str(e)}")
+                else:
+                    LOGGER.warning(f"TTS generation attempt {attempt + 1} failed: {e}, retrying...")
+                    import time
+                    time.sleep(retry_delay)
+        
+        # Wait a bit to ensure file is fully written and flushed to disk
+        import time
+        time.sleep(0.2)
         
         # Verify file was created and has content
         if os.path.exists(TTS_FILE) and os.path.getsize(TTS_FILE) > 0:

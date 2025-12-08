@@ -12,7 +12,8 @@ from twitchio.ext import commands
 from twitchio import eventsub
 import pygame
 import winsound
-import edge_tts
+from gtts import gTTS
+import io
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
 import requests
@@ -103,7 +104,9 @@ DEFAULT_LINKS = {
     "vid": "https://www.twitch.tv/sharko51/clip/PeppyCooperativeLasagnaRiPepperonis-TqCjkjPL7Pegl2LB",
     "mb": "",
 }
-bot_language = "en-AU-NatashaNeural"
+# TTS Language: gTTS uses language codes like 'en' (English), 'en-au' (Australian English), etc.
+# Common options: 'en' (US), 'en-uk' (UK), 'en-au' (Australia), 'en-ca' (Canada)
+bot_language = "en-au"  # Australian English
 
 
 def init_links_database():
@@ -852,6 +855,7 @@ class MyComponent(commands.Component):
             unique_filepath = unique_filename
             
             # Generate and save TTS to unique file with retry logic
+            # gTTS is synchronous, so we run it in an executor
             max_retries = 3
             retry_delay = 2
             for attempt in range(max_retries):
@@ -860,8 +864,13 @@ class MyComponent(commands.Component):
                     if attempt > 0:
                         await asyncio.sleep(retry_delay * attempt)
                     
-                    tts = edge_tts.Communicate(text, bot_language)
-                    await tts.save(unique_filepath)
+                    # Run gTTS in executor since it's synchronous
+                    def generate_tts():
+                        tts = gTTS(text=text, lang=bot_language, slow=False)
+                        tts.save(unique_filepath)
+                    
+                    loop = asyncio.get_event_loop()
+                    await loop.run_in_executor(None, generate_tts)
                     break  # Success, exit retry loop
                 except Exception as e:
                     if attempt == max_retries - 1:
