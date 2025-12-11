@@ -436,7 +436,40 @@ class MyComponent(commands.Component):
 
     @commands.Component.listener()
     async def event_ban(self, payload: twitchio.ChannelBan) -> None:
-        await self.send_message(payload, "RIPBOZO")
+        """Handle ban/timeout events and delete user's messages from database."""
+        try:
+            # Get the username from the payload
+            # Try to get the name attribute, otherwise convert to string
+            if hasattr(payload, 'user'):
+                if hasattr(payload.user, 'name'):
+                    banned_user_name = payload.user.name
+                else:
+                    banned_user_name = str(payload.user)
+            else:
+                LOGGER.warning("Ban payload does not have 'user' attribute")
+                banned_user_name = None
+            
+            if banned_user_name:
+                LOGGER.info(f"User {banned_user_name} was banned/timed out. Deleting their messages from database.")
+                
+                # Delete all messages from this user in the database
+                with self._get_db_connection() as conn:
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        "DELETE FROM messages WHERE from_user = ?",
+                        (banned_user_name,)
+                    )
+                    deleted_count = cursor.rowcount
+                    LOGGER.info(f"Deleted {deleted_count} messages from {banned_user_name}")
+            
+            await self.send_message(payload, "RIPBOZO")
+        except Exception as e:
+            LOGGER.error(f"Error handling ban/timeout event: {e}", exc_info=True)
+            # Still send the message even if deletion fails
+            try:
+                await self.send_message(payload, "RIPBOZO")
+            except Exception as send_error:
+                LOGGER.error(f"Error sending ban message: {send_error}")
 
     @commands.command()
     async def pob(self, ctx: commands.Context) -> None:
