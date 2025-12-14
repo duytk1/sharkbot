@@ -356,10 +356,14 @@ class MyComponent(commands.Component):
             # Send response in chunks if needed
             await self.send_message(payload, response)
 
-            # Create TTS text - just use the response to avoid repetition
-            tts_text = response
-
-            await self.make_tts(tts_text)
+            # Create TTS text - read question first, then response
+            # Queue question first, then response (queue processes sequentially)
+            question_tts = f"{chatter_name} asked: {cleaned_message}"
+            await self.make_tts(question_tts)
+            self.play_sound(TTS_FILE)
+            
+            # Queue the response after the question
+            await self.make_tts(response)
             self.play_sound(TTS_FILE)
 
     @commands.Component.listener()
@@ -673,10 +677,14 @@ class MyComponent(commands.Component):
                 # This will be handled in event_message
                 pass
 
-            # Create TTS text - just use the response to avoid repetition
-            tts_text = response
-
-            await self.make_tts(tts_text)
+            # Create TTS text - read question first, then response
+            # Queue question first, then response (queue processes sequentially)
+            question_tts = f"{chatter_name} asked me: {cleaned_message}"
+            await self.make_tts(question_tts)
+            self.play_sound(TTS_FILE)
+            
+            # Queue the response after the question
+            await self.make_tts(response)
             self.play_sound(TTS_FILE)
 
     async def start_youtube_chat(self) -> None:
