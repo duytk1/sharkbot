@@ -286,7 +286,7 @@ class MyComponent(commands.Component):
         # Get first word once for efficiency
         first_word = message.split(" ", 1)[0].lower()
         is_clear_command = first_word == "clear" and chatter_name == streamer_name
-        is_mention = first_word in ("sharko")
+        is_mention = first_word in ("sharko",)
         is_chatter = chatter_name != streamer_name
         is_command = message.startswith("!")
 
