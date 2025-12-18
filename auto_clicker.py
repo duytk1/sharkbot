@@ -1,72 +1,45 @@
 """
 Auto Clicker Script
 Automatically presses keys/buttons when a trigger key/button is pressed.
-Press CTRL+C to exit the script.
+Press CTRL+C or ESC to exit the script.
 """
 
 import pyautogui
-import mouse
+import keyboard
 import time
 import sys
 
 # Configuration - customize these as needed
-TRIGGER_BUTTON = 'right'  # 'right', 'left', or 'middle'
-AUTO_PRESS_KEY = 'r'  # Automatically press 'e' key
-AUTO_LEFT_CLICK = True  # Also perform left click
-DELAY_BETWEEN_ACTIONS = 0.05  # Delay in seconds between actions
+TRIGGER_KEY = 'e'  # Keyboard key that triggers the actions
+
+# Keys to press in sequence (set to [] for none)
+KEYS_TO_PRESS = ['r', 'f']  # Press T then F
+AUTO_LEFT_CLICK = False  # Perform left click
+DELAY_BETWEEN_ACTIONS = 0.6  # Delay in seconds between actions
 
 # Flag to stop the script
 running = True
-
+r
 # Prevent pyautogui fail-safe
 pyautogui.FAILSAFE = True
 
 
-def on_right_click():
-    """Called when right mouse button is clicked"""
-    x, y = pyautogui.position()
-    print(f"Right click detected at ({x}, {y})")
+def on_trigger():
+    """Called when the trigger key is pressed"""
+    print(f"'{TRIGGER_KEY}' key pressed")
     
     # Small delay to prevent interference
-    time.sleep(0.01)
+    time.sleep(DELAY_BETWEEN_ACTIONS)
     
-    # Perform automated actions
-    if AUTO_PRESS_KEY:
-        pyautogui.press(AUTO_PRESS_KEY)
-        print(f"  -> Pressed '{AUTO_PRESS_KEY}'")
+    # Press keys in sequence
+    for key in KEYS_TO_PRESS:
+        pyautogui.press(key)
+        print(f"  -> Pressed '{key.upper()}'")
         time.sleep(DELAY_BETWEEN_ACTIONS)
     
     if AUTO_LEFT_CLICK:
         pyautogui.click()
-        print(f"  -> Left clicked")
-
-
-def on_left_click():
-    """Called when left mouse button is clicked"""
-    x, y = pyautogui.position()
-    print(f"Left click detected at ({x}, {y})")
-    
-    time.sleep(0.01)
-    
-    if AUTO_PRESS_KEY:
-        pyautogui.press(AUTO_PRESS_KEY)
-        print(f"  -> Pressed '{AUTO_PRESS_KEY}'")
-
-
-def on_middle_click():
-    """Called when middle mouse button is clicked"""
-    x, y = pyautogui.position()
-    print(f"Middle click detected at ({x}, {y})")
-    
-    time.sleep(0.01)
-    
-    if AUTO_PRESS_KEY:
-        pyautogui.press(AUTO_PRESS_KEY)
-        print(f"  -> Pressed '{AUTO_PRESS_KEY}'")
-    
-    if AUTO_LEFT_CLICK:
-        pyautogui.click()
-        print(f"  -> Left clicked")
+        print("  -> Left clicked")
 
 
 def main():
@@ -75,30 +48,24 @@ def main():
     print("=" * 60)
     print("Auto Clicker Script Running")
     print("=" * 60)
-    print(f"Trigger: {TRIGGER_BUTTON.capitalize()} Click")
+    print(f"Trigger: '{TRIGGER_KEY}' key")
     actions = []
-    if AUTO_PRESS_KEY:
-        actions.append(f"Press '{AUTO_PRESS_KEY}'")
+    if KEYS_TO_PRESS:
+        key_sequence = " → ".join([k.upper() for k in KEYS_TO_PRESS])
+        actions.append(f"Press {key_sequence}")
     if AUTO_LEFT_CLICK:
         actions.append("Left Click")
-    print(f"Actions: {' + '.join(actions)}")
-    print(f"Press CTRL+C to exit")
+    print(f"Actions: {' then '.join(actions) if actions else 'None'}")
+    print("Press CTRL+C to exit")
     print("=" * 60)
     print()
     
-    # Register the appropriate mouse button hook
-    if TRIGGER_BUTTON == 'right':
-        mouse.on_right_click(on_right_click)
-    elif TRIGGER_BUTTON == 'left':
-        mouse.on_click(on_left_click)
-    elif TRIGGER_BUTTON == 'middle':
-        mouse.on_middle_click(on_middle_click)
-    else:
-        print(f"Error: Unknown trigger button '{TRIGGER_BUTTON}'")
-        return
+    # Register the keyboard hook for the trigger key
+    keyboard.on_press_key(TRIGGER_KEY, lambda _: on_trigger())
+
     
     try:
-        print("Waiting for mouse clicks...\n")
+        print(f"Waiting for '{TRIGGER_KEY}' key presses...\n")
         # Keep the script running
         while running:
             time.sleep(0.1)
@@ -107,7 +74,7 @@ def main():
         running = False
     finally:
         # Clean up
-        mouse.unhook_all()
+        keyboard.unhook_all()
         print("Script stopped.")
 
 
@@ -116,5 +83,5 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         print(f"\nError: {e}")
-        mouse.unhook_all()
+        keyboard.unhook_all()
         sys.exit(1)
