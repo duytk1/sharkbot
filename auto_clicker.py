@@ -18,7 +18,7 @@ TRIGGER_KEY = 'r'  # Keyboard key that triggers the actions
 KEYS_TO_PRESS = ['t', 'f']  # Press R then F
 AUTO_LEFT_CLICK = False  # Perform left click
 DELAY_BETWEEN_ACTIONS = 0.7  # Delay in seconds between actions
-DELAY_VARIANCE = 0.1  # Random variance (+/- this amount)
+DELAY_VARIANCE = 0.03  # Random variance (+/- this amount)
 
 # Flag to stop the script
 running = True
