@@ -8,38 +8,68 @@ import pyautogui
 import keyboard
 import time
 import sys
+import threading
 
 # Configuration - customize these as needed
 TRIGGER_KEY = 'e'  # Keyboard key that triggers the actions
 
 # Keys to press in sequence (set to [] for none)
-KEYS_TO_PRESS = ['r', 'f']  # Press T then F
+KEYS_TO_PRESS = ['r', 'f']  # Press R then F
 AUTO_LEFT_CLICK = False  # Perform left click
 DELAY_BETWEEN_ACTIONS = 0.6  # Delay in seconds between actions
 
 # Flag to stop the script
 running = True
-r
+# Flag to prevent overlapping sequences
+sequence_in_progress = False
+
 # Prevent pyautogui fail-safe
 pyautogui.FAILSAFE = True
 
 
-def on_trigger():
-    """Called when the trigger key is pressed"""
-    print(f"'{TRIGGER_KEY}' key pressed")
+def run_sequence():
+    """Runs the key sequence in a separate thread"""
+    global sequence_in_progress
     
-    # Small delay to prevent interference
-    time.sleep(DELAY_BETWEEN_ACTIONS)
-    
-    # Press keys in sequence
-    for key in KEYS_TO_PRESS:
-        pyautogui.press(key)
-        print(f"  -> Pressed '{key.upper()}'")
+    try:
+        # Small delay to prevent interference
         time.sleep(DELAY_BETWEEN_ACTIONS)
+        # Press keys in sequence
+        for key in KEYS_TO_PRESS:
+            pyautogui.press(key)
+            print(f"  -> Pressed '{key.upper()}'")
+            time.sleep(DELAY_BETWEEN_ACTIONS)
+        
+        if AUTO_LEFT_CLICK:
+            pyautogui.click()
+            print("  -> Left clicked")
+        
+        print("  ✓ Sequence complete\n")
+    finally:
+        # Always reset the flag when done
+        sequence_in_progress = False
+
+
+def on_trigger(event):
+    """Called when the trigger key is pressed"""
+    global sequence_in_progress
     
-    if AUTO_LEFT_CLICK:
-        pyautogui.click()
-        print("  -> Left clicked")
+    # Only handle key down events
+    if event.event_type != 'down':
+        return
+    
+    # Check if a sequence is already running
+    if sequence_in_progress:
+        # Ignore this key press - sequence already in progress
+        return
+    
+    # Mark that we're starting a sequence
+    sequence_in_progress = True
+    print(f"'{TRIGGER_KEY}' key pressed - starting sequence")
+    
+    # Run the sequence in a separate thread so it doesn't block keyboard input
+    thread = threading.Thread(target=run_sequence, daemon=True)
+    thread.start()
 
 
 def main():
@@ -60,12 +90,12 @@ def main():
     print("=" * 60)
     print()
     
-    # Register the keyboard hook for the trigger key
-    keyboard.on_press_key(TRIGGER_KEY, lambda _: on_trigger())
+    # Hook the trigger key (doesn't suppress, just monitors)
+    keyboard.on_press_key(TRIGGER_KEY, on_trigger)
 
-    
     try:
         print(f"Waiting for '{TRIGGER_KEY}' key presses...\n")
+        print("(All other keys work normally)\n")
         # Keep the script running
         while running:
             time.sleep(0.1)
