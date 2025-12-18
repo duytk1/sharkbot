@@ -9,6 +9,7 @@ import keyboard
 import time
 import sys
 import threading
+import random
 
 # Configuration - customize these as needed
 TRIGGER_KEY = 'e'  # Keyboard key that triggers the actions
@@ -16,7 +17,8 @@ TRIGGER_KEY = 'e'  # Keyboard key that triggers the actions
 # Keys to press in sequence (set to [] for none)
 KEYS_TO_PRESS = ['r', 'f']  # Press R then F
 AUTO_LEFT_CLICK = False  # Perform left click
-DELAY_BETWEEN_ACTIONS = 0.6  # Delay in seconds between actions
+DELAY_BETWEEN_ACTIONS = 0.7  # Delay in seconds between actions
+DELAY_VARIANCE = 0.1  # Random variance (+/- this amount)
 
 # Flag to stop the script
 running = True
@@ -27,18 +29,23 @@ sequence_in_progress = False
 pyautogui.FAILSAFE = True
 
 
+def get_random_delay():
+    """Returns a randomized delay time"""
+    return DELAY_BETWEEN_ACTIONS + random.uniform(-DELAY_VARIANCE, DELAY_VARIANCE)
+
+
 def run_sequence():
     """Runs the key sequence in a separate thread"""
     global sequence_in_progress
     
     try:
         # Small delay to prevent interference
-        time.sleep(DELAY_BETWEEN_ACTIONS)
+        time.sleep(get_random_delay())
         # Press keys in sequence
         for key in KEYS_TO_PRESS:
             pyautogui.press(key)
             print(f"  -> Pressed '{key.upper()}'")
-            time.sleep(DELAY_BETWEEN_ACTIONS)
+            time.sleep(get_random_delay())
         
         if AUTO_LEFT_CLICK:
             pyautogui.click()
@@ -86,6 +93,9 @@ def main():
     if AUTO_LEFT_CLICK:
         actions.append("Left Click")
     print(f"Actions: {' then '.join(actions) if actions else 'None'}")
+    min_delay = DELAY_BETWEEN_ACTIONS - DELAY_VARIANCE
+    max_delay = DELAY_BETWEEN_ACTIONS + DELAY_VARIANCE
+    print(f"Delay: {min_delay:.2f}s - {max_delay:.2f}s (randomized)")
     print("Press CTRL+C to exit")
     print("=" * 60)
     print()
