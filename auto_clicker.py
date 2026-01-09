@@ -12,10 +12,10 @@ import threading
 import random
 
 # Configuration - customize these as needed
-TRIGGER_KEY = 'r'  # Keyboard key that triggers the actions
+TRIGGER_KEY = 'f'  # Keyboard key that triggers the actions
 
 # Keys to press in sequence (set to [] for none)
-KEYS_TO_PRESS = ['t', 'f']  # Press R then F
+KEYS_TO_PRESS = ['r', 't']  # Press R then F
 AUTO_LEFT_CLICK = False  # Perform left click
 DELAY_BETWEEN_ACTIONS = 0.7  # Delay in seconds between actions
 DELAY_VARIANCE = 0.03  # Random variance (+/- this amount)
@@ -24,8 +24,8 @@ DELAY_VARIANCE = 0.03  # Random variance (+/- this amount)
 running = True
 # Flag to prevent overlapping sequences
 sequence_in_progress = False
-# Flag to temporarily disable the auto clicker
-disabled = False
+# Flag to toggle the auto clicker on/off
+enabled = True
 
 # Prevent pyautogui fail-safe
 pyautogui.FAILSAFE = True
@@ -59,21 +59,31 @@ def run_sequence():
         sequence_in_progress = False
 
 
+def toggle_enabled():
+    """Toggles the auto clicker on/off"""
+    global enabled
+    
+    enabled = not enabled
+    status = "ENABLED" if enabled else "DISABLED"
+    symbol = "✓" if enabled else "⚠"
+    print(f"\n{symbol} Auto clicker {status}\n")
+
+
 def disable_temporarily():
     """Disables the auto clicker for 10 seconds"""
-    global disabled
+    global enabled
     
-    if disabled:
+    if not enabled:
         print("Auto clicker is already disabled")
         return
     
-    disabled = True
+    enabled = False
     print("\n⚠ Auto clicker DISABLED for 10 seconds\n")
     
     def re_enable():
         time.sleep(10)
-        global disabled
-        disabled = False
+        global enabled
+        enabled = True
         print("✓ Auto clicker ENABLED again\n")
     
     # Run the re-enable timer in a separate thread
@@ -83,14 +93,14 @@ def disable_temporarily():
 
 def on_trigger(event):
     """Called when the trigger key is pressed"""
-    global sequence_in_progress, disabled
+    global sequence_in_progress, enabled
     
     # Only handle key down events
     if event.event_type != 'down':
         return
     
-    # Check if auto clicker is disabled
-    if disabled:
+    # Check if auto clicker is enabled
+    if not enabled:
         return
     
     # Check if a sequence is already running
@@ -125,12 +135,16 @@ def main():
     max_delay = DELAY_BETWEEN_ACTIONS + DELAY_VARIANCE
     print(f"Delay: {min_delay:.2f}s - {max_delay:.2f}s (randomized)")
     print("Press CTRL+C to exit")
+    print("Press CTRL+T to toggle auto clicker ON/OFF")
     print("Press CTRL+R to disable auto clicker for 10 seconds")
     print("=" * 60)
     print()
     
     # Hook the trigger key (doesn't suppress, just monitors)
     keyboard.on_press_key(TRIGGER_KEY, on_trigger)
+    
+    # Hook Ctrl+T to toggle the auto clicker on/off
+    keyboard.add_hotkey('ctrl+t', toggle_enabled)
     
     # Hook Ctrl+R to temporarily disable the auto clicker
     keyboard.add_hotkey('ctrl+r', disable_temporarily)
