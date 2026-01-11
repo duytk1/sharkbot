@@ -12,10 +12,10 @@ import threading
 import random
 
 # Configuration - customize these as needed
-TRIGGER_KEY = 'f'  # Keyboard key that triggers the actions
+TRIGGER_KEY = 'r'  # Keyboard key that triggers the actions
 
 # Keys to press in sequence (set to [] for none)
-KEYS_TO_PRESS = ['r', 't']  # Press R then F
+KEYS_TO_PRESS = ['t', 'l']  # Press R then F
 AUTO_LEFT_CLICK = False  # Perform left click
 DELAY_BETWEEN_ACTIONS = 0.7  # Delay in seconds between actions
 DELAY_VARIANCE = 0.03  # Random variance (+/- this amount)
