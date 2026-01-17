@@ -12,7 +12,7 @@ import threading
 import random
 
 # Configuration - customize these as needed
-TRIGGER_KEY = 'r'  # Keyboard key that triggers the actions
+TRIGGER_KEY = 'f'  # Keyboard key that triggers the actions
 
 # Keys to press in sequence (set to [] for none)
 KEYS_TO_PRESS = ['t', 'l']  # Press R then F
