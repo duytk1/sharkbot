@@ -15,7 +15,7 @@ import random
 TRIGGER_KEY = 'f'  # Keyboard key that triggers the actions
 
 # Keys to press in sequence (set to [] for none)
-KEYS_TO_PRESS = ['t', 'l']  # Press R then F
+KEYS_TO_PRESS = ['t', 'k']  # Press R then F
 AUTO_LEFT_CLICK = False  # Perform left click
 DELAY_BETWEEN_ACTIONS = 0.7  # Delay in seconds between actions
 DELAY_VARIANCE = 0.03  # Random variance (+/- this amount)
