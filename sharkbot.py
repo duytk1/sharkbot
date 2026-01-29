@@ -17,7 +17,6 @@ import io
 from contextlib import contextmanager
 from urllib.parse import urlparse, parse_qs
 import requests
-import json
 
 from sharkai import SharkAI
 
