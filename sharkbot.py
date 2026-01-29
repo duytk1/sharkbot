@@ -389,7 +389,7 @@ class MyComponent(commands.Component):
                 if count > 0:
                     prompt += " recap the chat and mention the chatters by ."
 
-                await self.send_message(payload, SharkAI.chat_with_openai(prompt))
+                # await self.send_message(payload, SharkAI.chat_with_openai(prompt))
                 cursor.execute("DELETE FROM messages;")
         except Exception as e:
             LOGGER.error(f"Database error in event_ad_break: {e}")
