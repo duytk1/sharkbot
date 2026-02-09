@@ -892,7 +892,7 @@ class MyComponent(commands.Component):
             # Generate TTS with unique filename (timestamp-based)
             timestamp = int(time.time() * 1000)  # milliseconds for uniqueness
             unique_filename = f"tts_{timestamp}.mp3"
-            unique_filepath = unique_filename
+            unique_filepath = os.path.abspath(unique_filename)
             
             # Generate and save TTS to unique file with retry logic
             # gTTS is synchronous, so we run it in an executor
@@ -956,10 +956,11 @@ class MyComponent(commands.Component):
                 old_file = self._current_tts_file
                 self._current_tts_file = unique_filepath
                 
-                # Schedule cleanup of old file after it's done playing
-                if old_file and os.path.exists(old_file):
-                    # Clean up old file after a delay (it should be done playing by now)
-                    asyncio.create_task(self._cleanup_old_tts_file(old_file, duration_seconds + 5))
+                # Schedule cleanup of old file after it's done playing (use abs path so cwd changes don't break deletion)
+                if old_file:
+                    old_abs = os.path.abspath(old_file) if not os.path.isabs(old_file) else old_file
+                    if os.path.exists(old_abs):
+                        asyncio.create_task(self._cleanup_old_tts_file(old_abs, duration_seconds + 5))
                     
             except Exception as e:
                 LOGGER.warning(f"Error updating TTS file reference: {e}")
@@ -969,12 +970,22 @@ class MyComponent(commands.Component):
     async def _cleanup_old_tts_file(self, filepath: str, delay: float) -> None:
         """Clean up old TTS file after it's done playing."""
         await asyncio.sleep(delay)
-        try:
-            if os.path.exists(filepath) and filepath != TTS_FILE:
+        tts_abs = os.path.abspath(TTS_FILE)
+        if not filepath or filepath == tts_abs:
+            return
+        if not os.path.exists(filepath):
+            return
+        # Retry removal (Windows can briefly lock files)
+        for attempt in range(3):
+            try:
                 os.remove(filepath)
                 LOGGER.debug(f"Cleaned up old TTS file: {filepath}")
-        except Exception as e:
-            LOGGER.debug(f"Could not clean up old TTS file {filepath}: {e}")
+                return
+            except Exception as e:
+                if attempt < 2:
+                    await asyncio.sleep(1.0)
+                else:
+                    LOGGER.warning(f"Could not clean up old TTS file {filepath}: {e}")
 
     async def make_tts(self, text: str) -> None:
         """Queue TTS generation request."""
