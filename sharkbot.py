@@ -105,7 +105,8 @@ DEFAULT_LINKS = {
 }
 # TTS Language: gTTS uses language codes like 'en' (English), 'en-au' (Australian English), etc.
 # Common options: 'en' (US), 'en-uk' (UK), 'en-au' (Australia), 'en-ca' (Canada)
-bot_language = "en-au"  # Australian English
+bot_language = "en"  # Australian English
+tld = "com.au"
 
 
 def init_links_database():
@@ -355,14 +356,9 @@ class MyComponent(commands.Component):
             # Send response in chunks if needed
             await self.send_message(payload, response)
 
-            # Create TTS text - read question first, then response
-            # Queue question first, then response (queue processes sequentially)
-            question_tts = f"{chatter_name} asked: {cleaned_message}"
-            await self.make_tts(question_tts)
-            self.play_sound(TTS_FILE)
-            
-            # Queue the response after the question
-            await self.make_tts(response)
+            # Single TTS: question + response in one file
+            combined_tts = f"{chatter_name} asked me; {cleaned_message}. {response}"
+            await self.make_tts(combined_tts)
             self.play_sound(TTS_FILE)
 
     @commands.Component.listener()
@@ -676,14 +672,9 @@ class MyComponent(commands.Component):
                 # This will be handled in event_message
                 pass
 
-            # Create TTS text - read question first, then response
-            # Queue question first, then response (queue processes sequentially)
-            question_tts = f"{chatter_name} asked me: {cleaned_message}"
-            await self.make_tts(question_tts)
-            self.play_sound(TTS_FILE)
-            
-            # Queue the response after the question
-            await self.make_tts(response)
+            # Single TTS: question + response in one file
+            combined_tts = f"{chatter_name} asked me: {cleaned_message}. {response}"
+            await self.make_tts(combined_tts)
             self.play_sound(TTS_FILE)
 
     async def start_youtube_chat(self) -> None:
@@ -906,7 +897,7 @@ class MyComponent(commands.Component):
                     
                     # Run gTTS in executor since it's synchronous
                     def generate_tts():
-                        tts = gTTS(text=text, lang=bot_language, slow=False)
+                        tts = gTTS(text=text, lang=bot_language, slow=False, tld=tld)
                         tts.save(unique_filepath)
                     
                     loop = asyncio.get_event_loop()
