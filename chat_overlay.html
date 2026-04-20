@@ -166,17 +166,12 @@
         const chatContainer = document.getElementById('chat-container');
         const emptyState = document.getElementById('empty-state');
         const API_URL = '/api/chat';
-        const TTS_API_URL = '/api/tts';
         const MAX_MESSAGES = 30; // Maximum messages to display
         const POLL_INTERVAL = 2000; // Poll every 2 seconds
-        const TTS_POLL_INTERVAL = 1000; // Poll for TTS every 1 second
         const MESSAGE_TIMEOUT = 60000; // Hide messages after 30 seconds
 
         let lastMessageIds = new Set();
         let messageElements = new Map();
-        let lastTTSTimestamp = null;
-        let audioPlayer = null;
-        let currentlyPlayingTimestamp = null; // Track which file is currently playing
         let sevenTVEmotes = {};
         let emoteCacheLoaded = false;
 
@@ -415,112 +410,15 @@
                 });
         }
 
-        function initializeTTSTimestamp() {
-            // On overlay load, check if TTS file exists and set initial timestamp
-            // This prevents playing old TTS files when the overlay refreshes
-            fetch(TTS_API_URL)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.exists && data.timestamp && data.size > 0) {
-                        // Set the initial timestamp so we don't play this old file
-                        lastTTSTimestamp = data.timestamp;
-                        console.log('Initialized TTS timestamp (ignoring old file):', data.timestamp);
-                    }
-                })
-                .catch(error => {
-                    // Silently fail - TTS might not be available
-                    console.debug('TTS initialization check error (this is normal if no TTS file exists):', error);
-                });
-        }
-
-        function checkForTTS() {
-            fetch(TTS_API_URL)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.exists && data.timestamp && data.size > 0) {
-                        // Check if this is the same file we're already playing
-                        if (currentlyPlayingTimestamp === data.timestamp) {
-                            // Same file is already playing, don't restart
-                            return;
-                        }
-                        
-                        // Check if this is a new TTS file (use timestamp to detect new files)
-                        // Only play if timestamp is significantly different (at least 0.1 seconds)
-                        if (lastTTSTimestamp === null || Math.abs(data.timestamp - lastTTSTimestamp) > 0.1) {
-                            // Don't interrupt if audio is currently playing (double check)
-                            if (audioPlayer && !audioPlayer.paused && !audioPlayer.ended) {
-                                // If it's the same timestamp, mark it as currently playing
-                                if (currentlyPlayingTimestamp === null) {
-                                    currentlyPlayingTimestamp = data.timestamp;
-                                }
-                                return;
-                            }
-                            
-                            lastTTSTimestamp = data.timestamp;
-                            currentlyPlayingTimestamp = data.timestamp;
-                            
-                            // Stop any currently playing audio
-                            if (audioPlayer) {
-                                audioPlayer.pause();
-                                audioPlayer.currentTime = 0;
-                                audioPlayer = null;
-                            }
-                            
-                            // Create new audio element and play
-                            audioPlayer = new Audio(data.url + '?t=' + data.timestamp);
-                            audioPlayer.volume = 1.0; // Full volume
-                            
-                            // Preload the audio to ensure it's ready
-                            audioPlayer.preload = 'auto';
-                            
-                            audioPlayer.play().catch(error => {
-                                console.error('Error playing TTS:', error);
-                                currentlyPlayingTimestamp = null;
-                                // Some browsers require user interaction before playing audio
-                                // This is expected in OBS browser source
-                            });
-                            
-                            // Clean up after playback
-                            audioPlayer.addEventListener('ended', () => {
-                                currentlyPlayingTimestamp = null;
-                                audioPlayer = null;
-                            });
-                            
-                            audioPlayer.addEventListener('error', (error) => {
-                                console.error('TTS playback error:', error);
-                                currentlyPlayingTimestamp = null;
-                                audioPlayer = null;
-                            });
-                        }
-                    } else {
-                        // File doesn't exist or is invalid, clear playing state
-                        if (audioPlayer && audioPlayer.ended) {
-                            currentlyPlayingTimestamp = null;
-                            audioPlayer = null;
-                        }
-                    }
-                })
-                .catch(error => {
-                    // Silently fail - TTS might not be available
-                    console.debug('TTS check error (this is normal if no TTS file exists):', error);
-                });
-        }
-
         // Initial load
-        initializeTTSTimestamp(); // Initialize TTS timestamp first to ignore old files
         load7TVEmotes(); // Load 7TV emotes first
         updateChat();
-        // Don't check for TTS immediately - wait a bit to avoid playing old files
-        setTimeout(checkForTTS, 1000);
         
         // Reload emotes every 5 minutes (in case new ones are added)
         setInterval(load7TVEmotes, 300000);
 
         // Poll for new messages
         setInterval(updateChat, POLL_INTERVAL);
-
-        // Poll for new TTS files
-        setInterval(checkForTTS, TTS_POLL_INTERVAL);
 
         // Clean up old message IDs periodically to prevent memory issues
         setInterval(() => {

@@ -78,6 +78,12 @@ def chat_overlay():
     return send_from_directory('.', 'chat_overlay.html')
 
 
+@app.route('/tts_overlay.html')
+def tts_overlay():
+    """Serve the TTS-only overlay HTML."""
+    return send_from_directory('.', 'tts_overlay.html')
+
+
 @app.route('/links')
 def links_manager():
     """Serve the links manager HTML."""
@@ -682,6 +688,7 @@ if __name__ == "__main__":
     LOGGER.info("Spotify Overlay: Writing to spotify_now_playing.txt")
     LOGGER.info("Flask Server: http://localhost:5000")
     LOGGER.info("Chat Overlay: http://localhost:5000/chat_overlay.html")
+    LOGGER.info("TTS Overlay: http://localhost:5000/tts_overlay.html")
     LOGGER.info("Links Manager: http://localhost:5000/links")
     LOGGER.info("=" * 60)
     LOGGER.info("Press Ctrl+C to stop all services")
