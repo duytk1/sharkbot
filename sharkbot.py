@@ -105,8 +105,8 @@ DEFAULT_LINKS = {
 }
 # TTS Language: gTTS uses language codes like 'en' (English), 'en-au' (Australian English), etc.
 # Common options: 'en' (US), 'en-uk' (UK), 'en-au' (Australia), 'en-ca' (Canada)
-bot_language = "en"  # Australian English
-tld = "com.au"
+bot_language = "fr"  # Australian English
+tld = "fr"
 
 
 def init_links_database():
@@ -884,38 +884,31 @@ class MyComponent(commands.Component):
             timestamp = int(time.time() * 1000)  # milliseconds for uniqueness
             unique_filename = f"tts_{timestamp}.mp3"
             unique_filepath = os.path.abspath(unique_filename)
-            
+
             # Generate and save TTS to unique file with retry logic
-            # gTTS is synchronous, so we run it in an executor
             max_retries = 3
             retry_delay = 2
             for attempt in range(max_retries):
                 try:
-                    # Add a small delay between retries to avoid rate limiting
                     if attempt > 0:
                         await asyncio.sleep(retry_delay * attempt)
-                    
-                    # Run gTTS in executor since it's synchronous
+
                     def generate_tts():
                         tts = gTTS(text=text, lang=bot_language, slow=False, tld=tld)
                         tts.save(unique_filepath)
-                    
+
                     loop = asyncio.get_event_loop()
                     await loop.run_in_executor(None, generate_tts)
-                    break  # Success, exit retry loop
+                    break
                 except Exception as e:
                     if attempt == max_retries - 1:
-                        # Last attempt failed, raise the error
                         LOGGER.error(f"TTS generation failed after {max_retries} attempts: {e}")
                         raise
-                    else:
-                        LOGGER.warning(f"TTS generation attempt {attempt + 1} failed: {e}, retrying...")
-                        await asyncio.sleep(retry_delay)
-            
-            # Small delay to ensure file is fully written and flushed to disk
+                    LOGGER.warning(f"TTS generation attempt {attempt + 1} failed: {e}, retrying...")
+                    await asyncio.sleep(retry_delay)
+
             await asyncio.sleep(0.1)
-            
-            # Get the actual duration
+
             try:
                 sound = pygame.mixer.Sound(unique_filepath)
                 duration_seconds = sound.get_length()
@@ -923,60 +916,41 @@ class MyComponent(commands.Component):
                 LOGGER.info(f"TTS file generated: {unique_filepath} (duration: {duration_ms}ms)")
             except Exception as e:
                 LOGGER.warning(f"Could not get TTS duration: {e}")
-                # Fallback to estimated duration
                 estimated_chars = len(text)
                 estimated_words = estimated_chars / 4
                 estimated_duration = (estimated_words / 150) * 60
                 duration_seconds = max(2.0, min(30.0, estimated_duration))
-            
-            # Create/update symlink or copy to main TTS_FILE for API compatibility
-            # We'll use a symlink approach: create tts.mp3 as a symlink to the current file
+
+            # Copy to main TTS_FILE for overlay/API, then delete previous unique file
             try:
-                # Remove old symlink/file if it exists
                 if os.path.exists(TTS_FILE):
                     if os.path.islink(TTS_FILE):
                         os.unlink(TTS_FILE)
                     else:
                         os.remove(TTS_FILE)
-                
-                # On Windows, we can't use symlinks easily, so we'll copy the file
-                # But actually, let's just update the current file reference and let the API handle it
                 shutil.copy2(unique_filepath, TTS_FILE)
-                
-                # Update current file reference
+
                 old_file = self._current_tts_file
                 self._current_tts_file = unique_filepath
-                
-                # Schedule cleanup of old file after it's done playing (use abs path so cwd changes don't break deletion)
+
+                # Delete old unique file immediately (overlay only uses tts.mp3)
                 if old_file:
                     old_abs = os.path.abspath(old_file) if not os.path.isabs(old_file) else old_file
-                    if os.path.exists(old_abs):
-                        asyncio.create_task(self._cleanup_old_tts_file(old_abs, duration_seconds + 5))
-                    
+                    if os.path.exists(old_abs) and old_abs != os.path.abspath(TTS_FILE):
+                        for attempt in range(3):
+                            try:
+                                os.remove(old_abs)
+                                LOGGER.debug(f"Cleaned up old TTS file: {old_abs}")
+                                break
+                            except Exception as e:
+                                if attempt < 2:
+                                    await asyncio.sleep(1.0)
+                                else:
+                                    LOGGER.warning(f"Could not clean up old TTS file {old_abs}: {e}")
             except Exception as e:
                 LOGGER.warning(f"Error updating TTS file reference: {e}")
-            
+
             return duration_seconds
-    
-    async def _cleanup_old_tts_file(self, filepath: str, delay: float) -> None:
-        """Clean up old TTS file after it's done playing."""
-        await asyncio.sleep(delay)
-        tts_abs = os.path.abspath(TTS_FILE)
-        if not filepath or filepath == tts_abs:
-            return
-        if not os.path.exists(filepath):
-            return
-        # Retry removal (Windows can briefly lock files)
-        for attempt in range(3):
-            try:
-                os.remove(filepath)
-                LOGGER.debug(f"Cleaned up old TTS file: {filepath}")
-                return
-            except Exception as e:
-                if attempt < 2:
-                    await asyncio.sleep(1.0)
-                else:
-                    LOGGER.warning(f"Could not clean up old TTS file {filepath}: {e}")
 
     async def make_tts(self, text: str) -> None:
         """Queue TTS generation request."""
