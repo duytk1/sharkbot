@@ -44,45 +44,9 @@ OWNER_ID = os.environ.get("OWNER_ID")
 SQL_DB_PATH = os.environ.get("SQL_CONNECT", "messages.db")
 
 
-def _extract_youtube_video_id(raw_value: str | None) -> str:
-    """Allow users to paste a whole YouTube URL or just the video ID."""
-    if not raw_value:
-        return ""
 
-    value = raw_value.strip()
-    if not value:
-        return ""
-
-    lowered = value.lower()
-    if "youtube.com" in lowered or "youtu.be" in lowered:
-        parsed = urlparse(value)
-
-        if parsed.netloc.endswith("youtu.be"):
-            candidate = parsed.path.lstrip("/").split("/")[0]
-            return candidate or ""
-
-        query_params = parse_qs(parsed.query)
-        if "v" in query_params and query_params["v"]:
-            return query_params["v"][0]
-
-        # Handle /live/<video_id> paths
-        if "/live/" in parsed.path:
-            return parsed.path.split("/live/")[1].split("/")[0]
-
-        # As fallback, take last path segment
-        segments = [segment for segment in parsed.path.split("/") if segment]
-        if segments:
-            return segments[-1]
-
-        return ""
-
-    # Already an ID – trim query fragments
-    return value.split("&")[0].split("?")[0]
-
-
-YOUTUBE_VIDEO_ID = _extract_youtube_video_id(
-    os.environ.get("YOUTUBE_VIDEO_ID")
-)  # YouTube live stream video ID
+YOUTUBE_VIDEO_ID = os.environ.get("YOUTUBE_VIDEO_ID")
+  # YouTube live stream video ID
 
 # Constants
 MAX_MESSAGE_HISTORY = 50
@@ -98,15 +62,15 @@ STREAMER_NAME = os.environ.get("STREAMER_NAME", "sharko51")
 DEFAULT_LINKS = {
     "pob": "https://pobb.in/V3nQhzR2IxTl",
     "profile": "https://www.pathofexile.com/account/view-profile/cbera-0095/characters",
-    "ign": "sharko_can_breed",
+    "ign": "",
     "build": "https://www.youtube.com/watch?v=nAQ1Y-Jz888&t",
     "vid": "https://www.twitch.tv/sharko51/clip/PeppyCooperativeLasagnaRiPepperonis-TqCjkjPL7Pegl2LB",
     "mb": "",
 }
 # TTS Language: gTTS uses language codes like 'en' (English), 'en-au' (Australian English), etc.
 # Common options: 'en' (US), 'en-uk' (UK), 'en-au' (Australia), 'en-ca' (Canada)
-bot_language = "fr"  # Australian English
-tld = "fr"
+bot_language = "en"  # Australian English
+tld = "us"
 
 
 def init_links_database():
@@ -588,94 +552,6 @@ class MyComponent(commands.Component):
             f"{ctx.chatter.mention}"
             + " https://www.twitch.tv/sharko51/clip/ElegantPeacefulRaccoonAllenHuhu-4SNxLLMor3NV6m11"
         )
-
-    async def process_chat_message(
-        self, chatter_name: str, message: str, platform: str = "twitch"
-    ) -> None:
-        """Process chat messages from any platform (Twitch/YouTube)."""
-        if not message:
-            return
-
-        # Optimize: get first word once
-        first_word = message.split(" ", 1)[0].lower()
-        chatter_lower = chatter_name.lower()
-        streamer_lower = STREAMER_NAME.lower()
-        is_clear_command = first_word == "clear" and chatter_lower == streamer_lower
-        is_mention = first_word in ("sharko", "@sharko51")
-        is_chatter = chatter_lower != streamer_lower
-        # Database operations
-        try:
-            with self._get_db_connection() as conn:
-                cursor = conn.cursor()
-
-                if is_clear_command:
-                    cursor.execute("DELETE FROM messages;")
-                else:
-                    # Store all messages (including streamer)
-                    # Ensure platform and timestamp columns exist
-                    try:
-                        cursor.execute(
-                            "ALTER TABLE messages ADD COLUMN platform TEXT DEFAULT 'twitch'"
-                        )
-                        conn.commit()
-                    except sqlite3.OperationalError:
-                        pass  # Column already exists
-                    try:
-                        cursor.execute(
-                            "ALTER TABLE messages ADD COLUMN timestamp REAL DEFAULT (julianday('now'))"
-                        )
-                        conn.commit()
-                    except sqlite3.OperationalError:
-                        pass  # Column already exists
-
-                    # Optimize: combine count check and delete in one query if needed
-                    cursor.execute("SELECT COUNT(*) FROM messages")
-                    count = cursor.fetchone()[0]
-                    if count >= MAX_MESSAGE_HISTORY:
-                        cursor.execute(
-                            "DELETE FROM messages WHERE id = (SELECT id FROM messages ORDER BY id ASC LIMIT 1)"
-                        )
-                    cursor.execute(
-                        "INSERT INTO messages (from_user, message, platform, timestamp) VALUES (?, ?, ?, julianday('now'))",
-                        (chatter_name, message, platform),
-                    )
-        except Exception as e:
-            LOGGER.error(f"Database error in process_chat_message: {e}")
-
-        print(f"[{platform.upper()}] [{chatter_name}]: {message}")
-
-        # Send YouTube message to Twitch chat (skip bot messages and commands)
-        if platform == "youtube" and chatter_name != BOT_NAME and not message.startswith("!") and chatter_name.lower() != STREAMER_NAME.lower():
-            twitch_message = f"{chatter_name} from youtube: {message}"
-            await self.send_twitch_message(twitch_message)
-
-        if is_chatter and chatter_name != BOT_NAME:
-            winsound.PlaySound("*", winsound.SND_ALIAS)
-
-        if is_mention:
-            # Remove mention prefixes from message before sending to AI
-            cleaned_message = (
-                message.removeprefix("@sharko51").removeprefix("sharko").strip()
-            )
-            if not cleaned_message:
-                cleaned_message = message  # Fallback if removal leaves nothing
-
-            response = SharkAI.chat_with_openai(
-                f"new message from {chatter_name} on {platform}: {cleaned_message}, response"
-            )
-
-            # For YouTube, we can't send messages back directly, but we can log it
-            if platform == "youtube":
-                LOGGER.info(f"AI Response to {chatter_name}: {response}")
-            else:
-                # For Twitch, we need the payload to send messages
-                # This will be handled in event_message
-                pass
-
-            # Single TTS: question + response in one file
-            combined_tts = f"{chatter_name} asked me: {cleaned_message}. {response}"
-            await self.make_tts(combined_tts)
-            self.play_sound(TTS_FILE)
 
     async def start_youtube_chat(self) -> None:
         """Start monitoring YouTube live chat."""
